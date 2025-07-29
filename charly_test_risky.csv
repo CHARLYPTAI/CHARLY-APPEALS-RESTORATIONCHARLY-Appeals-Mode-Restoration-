@@ -1,0 +1,5 @@
+site_address,monthly_rent,assessed_value,square_feet,vacancy_rate,income,expenses
+123 Normal St,2000,200000,2500,0.05,30000,10000
+456 Unflagged Ave,1500,150000,2000,0.03,28000,10000
+789 Still Normal,1000,100000,1000,0.02,25000,8000
+CRAZY Flag Place,800,300000,2500,0.15,10000,6000

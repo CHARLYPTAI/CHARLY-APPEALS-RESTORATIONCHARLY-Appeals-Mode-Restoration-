@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Filing Instructions</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        h2 { text-align: center; }
+        ul { margin-left: 1em; }
+        .section { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Filing Instructions – Jackson County Property Tax Appeal</h2>
+
+    <div class="section">
+        <p><strong>Submission Deadline:</strong> June 30, 2025</p>
+        <p><strong>Submission Method:</strong> Appeals may be submitted by:</p>
+        <ul>
+            <li>Online via the county portal</li>
+            <li>Mail to: Jackson County Assessment Department</li>
+            <li>Drop-off at: 415 E 12th Street, Kansas City, MO 64106</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <p><strong>Required Attachments:</strong></p>
+        <ul>
+            <li>Completed Appeal Packet</li>
+            <li>Rent Roll or Operating Statement</li>
+            <li>Evidence of Overassessment (e.g., comps, cap rate analysis)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <p><strong>Questions?</strong> Contact the Assessment Department at 816-881-3530 or your representative.</p>
+    </div>
+</body>
+</html>

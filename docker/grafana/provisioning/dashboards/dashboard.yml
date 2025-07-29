@@ -1,0 +1,19 @@
+# ============================================================================
+# CHARLY PLATFORM - GRAFANA DASHBOARD PROVISIONING
+# Apple CTO Enterprise Monitoring - Phase 3B
+# ============================================================================
+
+apiVersion: 1
+
+providers:
+  - name: 'charly-dashboards'
+    orgId: 1
+    folder: 'CHARLY Platform'
+    folderUid: charly-folder
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/json

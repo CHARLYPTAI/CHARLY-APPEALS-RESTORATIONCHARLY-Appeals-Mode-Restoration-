@@ -1,0 +1,24 @@
+[
+  {
+    "uuid": "588f605a-3aa8-40c4-b4c5-68edcdb2f525",
+    "timestamp": "2025-06-09T23:37:33.004468",
+    "original_path": "/var/folders/7x/l0p6zszn72zgjzfdljcmk1km0000gn/T/tmpbmpol3n4.json",
+    "original_filename": "tmpbmpol3n4.json",
+    "file_size_bytes": 16,
+    "source_type": "json",
+    "encrypted_filename": "588f605a-3aa8-40c4-b4c5-68edcdb2f525.enc",
+    "nonce_filename": "588f605a-3aa8-40c4-b4c5-68edcdb2f525.nonce",
+    "encryption_status": "success"
+  },
+  {
+    "uuid": "a10705b5-7e21-4bec-a4b9-69c32b25d596",
+    "timestamp": "2025-06-09T23:38:21.798660",
+    "original_path": "/var/folders/7x/l0p6zszn72zgjzfdljcmk1km0000gn/T/tmpc5g2e_2_.json",
+    "original_filename": "tmpc5g2e_2_.json",
+    "file_size_bytes": 16,
+    "source_type": "json",
+    "encrypted_filename": "a10705b5-7e21-4bec-a4b9-69c32b25d596.enc",
+    "nonce_filename": "a10705b5-7e21-4bec-a4b9-69c32b25d596.nonce",
+    "encryption_status": "success"
+  }
+]

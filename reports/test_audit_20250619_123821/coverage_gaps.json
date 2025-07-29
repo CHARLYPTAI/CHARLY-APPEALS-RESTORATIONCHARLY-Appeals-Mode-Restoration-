@@ -1,0 +1,17 @@
+{
+  "overall_coverage": 0.0,
+  "critical_path_coverage": {
+    "tax_calculation": 0.0,
+    "jurisdiction_rules": 0.0,
+    "document_generation": 0.0,
+    "data_ingestion": 0.0,
+    "ai_rag_system": 0.0
+  },
+  "compliance_coverage": {
+    "encryption_security": 0.0,
+    "audit_logging": 0.0,
+    "user_authentication": 0.0
+  },
+  "high_risk_gaps": [],
+  "analysis_timestamp": "2025-06-19T12:49:39.395169"
+}

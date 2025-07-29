@@ -1,0 +1,4 @@
+property_id,property_address,assessment_value,market_value,property_type,jurisdiction,building_size,lot_size,age,vacancy_rate,expense_ratio,cap_rate,gross_income,net_operating_income,last_sale_date,last_sale_price,total_income,total_expenses,overassessment,vacancy_anomaly,flag_properly_valued,noi,vacancy_adjustment
+JSON001,"123 JSON Street, Jackson County, MO",500000,485000,Commercial,Jackson County,8000,1.5,10,0.05,3.909465020576132e-06,0.20041158762886596,60000,37200,2023-06-15,475000,97200,0.38,False,False,True,97199.62,92340.0
+JSON002,"456 Data Avenue, Clay County, MO",750000,720000,Retail,Clay County,12000,2.0,5,0.03,2.953586497890295e-06,0.19749941666666665,90000,52200,2023-08-20,700000,142200,0.42,False,False,True,142199.58,137934.0
+JSON003,"789 Test Boulevard, Platte County, MO",300000,285000,Residential,Platte County,2500,0.5,15,0.02,5.9523809523809525e-06,0.14736754385964912,24000,18000,2023-03-10,275000,42000,0.25,False,False,False,41999.75,41160.0

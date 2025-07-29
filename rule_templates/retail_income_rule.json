@@ -1,0 +1,19 @@
+{
+  "property_type": "Retail",
+  "flag_type": "Cap Rate",
+  "cap_rate_threshold": 6.5,
+  "valuation_method_used": "income",
+  "assessed_value": 1500000,
+  "land_value": 400000,
+  "year_built": 1995,
+  "effective_year_built": 2010,
+  "depreciation_method": "straight_line",
+  "rcnld_used": false,
+  "min_rent": 30,
+  "max_rent": 55,
+  "min_expense": 10,
+  "max_expense": 20,
+  "source": "Jackson County Appraisal Manual 2024",
+  "verified_by": "C. Young",
+  "confidence_level": "high"
+}

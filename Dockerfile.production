@@ -1,0 +1,130 @@
+# ============================================================================
+# CHARLY PROPERTY TAX APPEAL PLATFORM - PRODUCTION DOCKERFILE
+# Apple CTO Enterprise Production Build - Phase 3A
+# Multi-stage build with security hardening and optimization
+# ============================================================================
+
+# ============================================================================
+# STAGE 1: BUILD ENVIRONMENT
+# ============================================================================
+FROM node:18-alpine AS builder
+
+# Security: Run as non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies first (for better layer caching)
+COPY charly_ui/package*.json ./
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy source code
+COPY charly_ui/ .
+
+# Build optimized production assets
+ENV NODE_ENV=production
+ENV VITE_APP_ENV=production
+RUN npm run build
+
+# ============================================================================
+# STAGE 2: PYTHON BACKEND BUILD
+# ============================================================================
+FROM python:3.11-alpine AS python-builder
+
+# Install build dependencies
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    libffi-dev \
+    openssl-dev \
+    cargo \
+    build-base
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# ============================================================================
+# STAGE 3: PRODUCTION RUNTIME
+# ============================================================================
+FROM nginx:1.24-alpine AS production
+
+# Security hardening
+RUN addgroup -g 1001 -S charly
+RUN adduser -S charly -u 1001 -G charly
+
+# Install Python runtime and security tools
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    supervisor \
+    curl \
+    ca-certificates \
+    tzdata \
+    dumb-init \
+    && rm -rf /var/cache/apk/*
+
+# Copy Python dependencies from builder
+COPY --from=python-builder /root/.local /usr/local
+
+# Copy built frontend assets
+COPY --from=builder --chown=charly:charly /app/dist /usr/share/nginx/html
+
+# Copy backend application
+COPY --chown=charly:charly fastapi_backend/ /app/backend/
+COPY --chown=charly:charly config/ /app/config/
+COPY --chown=charly:charly charly_ingest/ /app/charly_ingest/
+
+# Copy production configurations
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV NODE_ENV=production
+ENV VITE_APP_ENV=production
+ENV NGINX_USER=charly
+ENV NGINX_GROUP=charly
+
+# Security: Remove nginx user from conf and use our custom user
+RUN sed -i 's/user nginx;/user charly;/' /etc/nginx/nginx.conf
+
+# Create necessary directories with proper permissions
+RUN mkdir -p /var/cache/nginx /var/log/nginx /var/run/nginx \
+    && chown -R charly:charly /var/cache/nginx /var/log/nginx /var/run/nginx \
+    && chown -R charly:charly /usr/share/nginx/html \
+    && chown -R charly:charly /app
+
+# Health check
+COPY docker/healthcheck.sh /usr/local/bin/healthcheck.sh
+RUN chmod +x /usr/local/bin/healthcheck.sh
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD /usr/local/bin/healthcheck.sh
+
+# Expose ports (8080 for frontend, 8000 for backend API)
+EXPOSE 8080 8000
+
+# Switch to non-root user
+USER charly
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
+# Start supervisor to manage both nginx and backend
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
+# ============================================================================
+# METADATA
+# ============================================================================
+LABEL maintainer="Apple CTO Enterprise Team"
+LABEL version="3.0.0"
+LABEL description="CHARLY Property Tax Appeal Platform - Production Build"
+LABEL org.opencontainers.image.title="CHARLY Platform"
+LABEL org.opencontainers.image.description="Enterprise Property Tax Appeal Platform"
+LABEL org.opencontainers.image.version="3.0.0"
+LABEL org.opencontainers.image.vendor="Apple CTO Enterprise"
