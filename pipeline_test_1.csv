@@ -1,0 +1,3 @@
+total_income,total_expenses,market_value,vacancy_rate,overassessment,vacancy_anomaly,flag_properly_valued,noi,expense_ratio,cap_rate,vacancy_adjustment
+100000,60000,500000,0.1,False,False,False,40000,0.6,0.08,90000.0
+0,0,250000,0.2,False,False,False,0,,0.0,0.0

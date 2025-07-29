@@ -1,0 +1,15 @@
+{
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "test": "cd charly_ui && npm test",
+    "lint": "cd charly_ui && npm run lint",
+    "build": "cd charly_ui && npm run build"
+  },
+  "dependencies": {
+    "@radix-ui/react-toggle-group": "^1.1.10"
+  }
+}

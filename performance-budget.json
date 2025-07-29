@@ -1,0 +1,149 @@
+{
+  "budgets": [
+    {
+      "path": "/*",
+      "timings": [
+        {
+          "metric": "first-contentful-paint",
+          "budget": 1000,
+          "tolerance": 100
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 2500,
+          "tolerance": 200
+        },
+        {
+          "metric": "interactive",
+          "budget": 3000,
+          "tolerance": 300
+        },
+        {
+          "metric": "total-blocking-time",
+          "budget": 300,
+          "tolerance": 50
+        },
+        {
+          "metric": "cumulative-layout-shift",
+          "budget": 0.1,
+          "tolerance": 0.02
+        },
+        {
+          "metric": "speed-index",
+          "budget": 3000,
+          "tolerance": 300
+        }
+      ],
+      "resourceSizes": [
+        {
+          "resourceType": "script",
+          "budget": 250,
+          "tolerance": 25
+        },
+        {
+          "resourceType": "stylesheet",
+          "budget": 50,
+          "tolerance": 10
+        },
+        {
+          "resourceType": "font",
+          "budget": 100,
+          "tolerance": 20
+        },
+        {
+          "resourceType": "image",
+          "budget": 200,
+          "tolerance": 50
+        },
+        {
+          "resourceType": "total",
+          "budget": 1000,
+          "tolerance": 100
+        }
+      ],
+      "resourceCounts": [
+        {
+          "resourceType": "script",
+          "budget": 10
+        },
+        {
+          "resourceType": "stylesheet",
+          "budget": 5
+        },
+        {
+          "resourceType": "font",
+          "budget": 4
+        },
+        {
+          "resourceType": "image",
+          "budget": 20
+        },
+        {
+          "resourceType": "third-party",
+          "budget": 10
+        }
+      ]
+    },
+    {
+      "path": "/dashboard",
+      "timings": [
+        {
+          "metric": "first-contentful-paint",
+          "budget": 800,
+          "tolerance": 100
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 2000,
+          "tolerance": 200
+        },
+        {
+          "metric": "interactive",
+          "budget": 2500,
+          "tolerance": 300
+        }
+      ]
+    },
+    {
+      "path": "/login",
+      "timings": [
+        {
+          "metric": "first-contentful-paint",
+          "budget": 600,
+          "tolerance": 100
+        },
+        {
+          "metric": "largest-contentful-paint",
+          "budget": 1500,
+          "tolerance": 200
+        },
+        {
+          "metric": "interactive",
+          "budget": 2000,
+          "tolerance": 300
+        }
+      ]
+    }
+  ],
+  "accessibility": {
+    "requiredScore": 100,
+    "checks": [
+      "color-contrast",
+      "image-alt",
+      "heading-order",
+      "label",
+      "link-name",
+      "list",
+      "tap-targets",
+      "viewport"
+    ]
+  },
+  "seo": {
+    "requiredScore": 90,
+    "checks": ["document-title", "meta-description", "viewport"]
+  },
+  "bestPractices": {
+    "requiredScore": 95,
+    "checks": ["uses-https", "no-vulnerable-libraries", "csp-xss"]
+  }
+}

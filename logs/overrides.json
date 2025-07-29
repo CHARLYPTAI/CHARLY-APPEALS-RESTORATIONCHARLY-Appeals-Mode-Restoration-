@@ -1,0 +1,44 @@
+[
+  {
+    "property_id": 1001,
+    "comment": "Adjusted based on updated comps.",
+    "user": "alice@example.com",
+    "timestamp": "2025-06-05T22:52:14.642893"
+  },
+  {
+    "property_id": 1001,
+    "comment": "Adjusted based on updated comps.",
+    "user": "alice@example.com",
+    "timestamp": "2025-06-05T22:52:32.537616"
+  },
+  {
+    "property_id": 1001,
+    "comment": "Adjusted based on updated comps.",
+    "user": "alice@example.com",
+    "timestamp": "2025-06-05T22:52:35.822983"
+  },
+  {
+    "property_id": 1003,
+    "comment": "Manual review cleared this",
+    "user": "alice@example.com",
+    "timestamp": "2025-06-05T22:52:35.824607"
+  },
+  {
+    "property_id": 1001,
+    "comment": "Sample override comment for 1001",
+    "user": "alice@example.com",
+    "timestamp": "2025-06-06T10:15:27.636361"
+  },
+  {
+    "property_id": 1001,
+    "comment": "This is test 2",
+    "user": "alice@example.com",
+    "timestamp": "2025-06-06T10:17:07.594709"
+  },
+  {
+    "property_id": 1001,
+    "comment": "One more test",
+    "user": "alice@example.com",
+    "timestamp": "2025-06-06T12:42:26.855047"
+  }
+]

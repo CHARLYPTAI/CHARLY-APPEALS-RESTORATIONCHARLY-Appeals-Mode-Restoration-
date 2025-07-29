@@ -1,0 +1,177 @@
+version: '3.8'
+
+services:
+  # Main CHARLY application
+  charly-app:
+    build: .
+    ports:
+      - "8501:8501"  # Streamlit app
+    environment:
+      # Monitoring configuration
+      - CHARLY_MONITORING_PROMETHEUS=true
+      - CHARLY_MONITORING_ALERTING=true
+      - CHARLY_MONITORING_LOG_LEVEL=INFO
+      
+      # Slack alerting (configure with your webhook)
+      - CHARLY_SLACK_WEBHOOK_URL=${CHARLY_SLACK_WEBHOOK_URL}
+      - CHARLY_SLACK_CHANNEL=#alerts
+      - CHARLY_SLACK_USERNAME=CHARLY-Bot
+      
+      # Email alerting (configure with your SMTP)
+      - CHARLY_SMTP_HOST=${CHARLY_SMTP_HOST}
+      - CHARLY_SMTP_PORT=${CHARLY_SMTP_PORT:-587}
+      - CHARLY_SMTP_USER=${CHARLY_SMTP_USER}
+      - CHARLY_SMTP_PASSWORD=${CHARLY_SMTP_PASSWORD}
+      - CHARLY_SMTP_USE_TLS=true
+      - CHARLY_ALERT_EMAIL=${CHARLY_ALERT_EMAIL:-alerts@charly.com}
+      - CHARLY_FROM_EMAIL=${CHARLY_FROM_EMAIL:-noreply@charly.com}
+      
+      # Alert configuration
+      - CHARLY_ALERT_MAX_RETRIES=3
+      - CHARLY_ALERT_RETRY_DELAY=1.0
+      - CHARLY_ALERT_RATE_LIMIT=10
+      
+      # Stripe payment configuration
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - CHARLY_PAYMENTS_DB=/app/data/payments.db
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./logs:/app/logs
+    command: streamlit run charly_ui/app.py --server.address 0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - charly-network
+
+  # Stripe webhook handler
+  charly-webhooks:
+    build: .
+    ports:
+      - "8002:8002"  # Webhook service
+    environment:
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - CHARLY_PAYMENTS_DB=/app/data/payments.db
+      - CHARLY_MONITORING_PROMETHEUS=true
+      - CHARLY_MONITORING_ALERTING=true
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    command: python charly_ui/webhook_server.py --host 0.0.0.0 --port 8002 --init-db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - charly-app
+    networks:
+      - charly-network
+
+  # Dedicated health service
+  charly-health:
+    build: .
+    ports:
+      - "8001:8001"  # Health service API
+      - "8000:8000"  # Prometheus metrics
+    environment:
+      - CHARLY_MONITORING_PROMETHEUS=true
+      - CHARLY_MONITORING_ALERTING=true
+      - CHARLY_SLACK_WEBHOOK_URL=${CHARLY_SLACK_WEBHOOK_URL}
+      - CHARLY_SLACK_CHANNEL=#alerts
+      - CHARLY_SMTP_HOST=${CHARLY_SMTP_HOST}
+      - CHARLY_SMTP_PORT=${CHARLY_SMTP_PORT:-587}
+      - CHARLY_SMTP_USER=${CHARLY_SMTP_USER}
+      - CHARLY_SMTP_PASSWORD=${CHARLY_SMTP_PASSWORD}
+      - CHARLY_ALERT_EMAIL=${CHARLY_ALERT_EMAIL:-alerts@charly.com}
+    command: python charly_ui/health_service.py
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 2
+    depends_on:
+      - charly-app
+    networks:
+      - charly-network
+
+  # Prometheus server (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - charly-network
+
+  # Grafana dashboard (optional)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./monitoring/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./monitoring/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+    networks:
+      - charly-network
+
+  # AlertManager (optional)
+  alertmanager:
+    image: prom/alertmanager:latest
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    networks:
+      - charly-network
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  alertmanager_data:
+
+networks:
+  charly-network:
+    driver: bridge
+
+# Usage:
+# 1. Create .env file with your credentials:
+#    CHARLY_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
+#    CHARLY_SMTP_HOST=smtp.gmail.com
+#    CHARLY_SMTP_USER=your-email@gmail.com
+#    CHARLY_SMTP_PASSWORD=your-app-password
+#    CHARLY_ALERT_EMAIL=alerts@yourcompany.com
+#
+# 2. Start services:
+#    docker-compose -f docker-compose.monitoring.yml up -d
+#
+# 3. Access services:
+#    - CHARLY App: http://localhost:8501
+#    - Health API: http://localhost:8001/health
+#    - Prometheus: http://localhost:9090 (optional)
+#    - Grafana: http://localhost:3000 (optional, admin/admin)
+#    - AlertManager: http://localhost:9093 (optional)

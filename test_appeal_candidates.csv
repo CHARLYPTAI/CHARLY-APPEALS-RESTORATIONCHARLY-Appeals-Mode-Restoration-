@@ -1,0 +1,3 @@
+property_id,address,jurisdiction,market_value,assessment_value,assessment_ratio,variance_percent,properly_valued
+PROP001,100 Main St,"Jackson County, MO",1000000,1100000,1.1,10.0,False
+PROP004,400 Elm Dr,"Los Angeles County, CA",1200000,1500000,1.25,25.0,False

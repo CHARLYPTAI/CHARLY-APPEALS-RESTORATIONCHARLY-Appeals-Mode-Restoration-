@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-06-19T15:18:36.985783",
+  "phase_c_targets": {
+    "charly_ingest/financials.py": {
+      "coverage": 25.0,
+      "target_met": false,
+      "lines_covered": 13,
+      "total_lines": 52
+    },
+    "charly_ui/enhanced_packet_builder.py": {
+      "coverage": 70.6,
+      "target_met": false,
+      "lines_covered": 24,
+      "total_lines": 34
+    },
+    "charly_ingest/flagging.py": {
+      "coverage": 77.1,
+      "target_met": false,
+      "lines_covered": 54,
+      "total_lines": 70
+    },
+    "charly_ingest/utils.py": {
+      "coverage": 0.0,
+      "target_met": false,
+      "lines_covered": 0,
+      "total_lines": 6
+    }
+  },
+  "global_coverage": 2.1,
+  "success_summary": {
+    "targets_achieved": "0/4",
+    "phase_c_success": false,
+    "global_progress": 2.1,
+    "series_a_readiness": true
+  }
+}

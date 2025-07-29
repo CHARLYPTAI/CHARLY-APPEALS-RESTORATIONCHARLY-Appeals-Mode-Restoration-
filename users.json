@@ -1,0 +1,38 @@
+{
+  "users": {
+    "admin": {
+      "password": "admin123",
+      "role": "Admin",
+      "full_name": "System Administrator",
+      "email": "admin@charly.com",
+      "created_date": "2025-01-01",
+      "last_login": "2025-06-08T21:52:25.407493"
+    },
+    "analyst": {
+      "password": "analyst123",
+      "role": "Analyst",
+      "full_name": "Property Analyst",
+      "email": "analyst@charly.com",
+      "created_date": "2025-01-01",
+      "last_login": "2025-06-08T21:52:25.408554"
+    },
+    "viewer": {
+      "password": "viewer123",
+      "role": "Read-Only",
+      "full_name": "Data Viewer",
+      "email": "viewer@charly.com",
+      "created_date": "2025-01-01",
+      "last_login": "2025-06-08T21:52:25.409170"
+    },
+    "demo": {
+      "password": "demo",
+      "role": "Analyst",
+      "full_name": "Demo User",
+      "email": "demo@charly.com",
+      "created_date": "2025-01-01",
+      "last_login": "2025-06-08T21:52:25.409860"
+    }
+  },
+  "schema_version": "1.0",
+  "last_updated": "2025-06-08"
+}

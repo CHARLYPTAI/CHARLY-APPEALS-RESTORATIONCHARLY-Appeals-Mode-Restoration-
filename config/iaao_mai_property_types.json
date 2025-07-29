@@ -1,0 +1,381 @@
+{
+  "version": "1.0",
+  "standard": "IAAO/MAI_COMPLIANT",
+  "last_updated": "2025-07-13",
+  "description": "IAAO and MAI compliant property type taxonomy for professional property tax appeals",
+  "property_categories": {
+    "commercial": {
+      "category_name": "Commercial",
+      "iaao_code": "COM",
+      "mai_classification": "Income-Producing",
+      "subtypes": {
+        "office": {
+          "type_name": "Office",
+          "iaao_code": "COM-OFF",
+          "subtypes": {
+            "class_a_office": {
+              "name": "Class A Office Building",
+              "iaao_code": "COM-OFF-A",
+              "mai_class": "Class A Office",
+              "description": "Premium office buildings with superior construction, design, and amenities"
+            },
+            "class_b_office": {
+              "name": "Class B Office Building", 
+              "iaao_code": "COM-OFF-B",
+              "mai_class": "Class B Office",
+              "description": "Good quality office buildings with standard amenities"
+            },
+            "class_c_office": {
+              "name": "Class C Office Building",
+              "iaao_code": "COM-OFF-C", 
+              "mai_class": "Class C Office",
+              "description": "Older office buildings with basic amenities"
+            },
+            "medical_office": {
+              "name": "Medical Office Building",
+              "iaao_code": "COM-OFF-MED",
+              "mai_class": "Medical Office",
+              "description": "Office buildings designed for medical and healthcare use"
+            },
+            "government_office": {
+              "name": "Government Office Building",
+              "iaao_code": "COM-OFF-GOV",
+              "mai_class": "Government Office", 
+              "description": "Office buildings used for government operations"
+            }
+          }
+        },
+        "retail": {
+          "type_name": "Retail",
+          "iaao_code": "COM-RET",
+          "subtypes": {
+            "shopping_center": {
+              "name": "Shopping Center",
+              "iaao_code": "COM-RET-SC",
+              "mai_class": "Shopping Center",
+              "description": "Enclosed or open-air retail centers with multiple tenants"
+            },
+            "strip_center": {
+              "name": "Strip Center",
+              "iaao_code": "COM-RET-STRIP",
+              "mai_class": "Strip Center", 
+              "description": "Linear retail centers with storefronts facing parking"
+            },
+            "standalone_retail": {
+              "name": "Standalone Retail",
+              "iaao_code": "COM-RET-STAND",
+              "mai_class": "Freestanding Retail",
+              "description": "Single-tenant retail buildings"
+            },
+            "big_box": {
+              "name": "Big Box Store",
+              "iaao_code": "COM-RET-BB",
+              "mai_class": "Big Box Retail",
+              "description": "Large format retail stores (typically 50,000+ sq ft)"
+            },
+            "department_store": {
+              "name": "Department Store",
+              "iaao_code": "COM-RET-DEPT",
+              "mai_class": "Department Store",
+              "description": "Large retail stores with multiple departments"
+            }
+          }
+        },
+        "industrial": {
+          "type_name": "Industrial",
+          "iaao_code": "COM-IND",
+          "subtypes": {
+            "warehouse": {
+              "name": "Warehouse/Distribution",
+              "iaao_code": "COM-IND-WH",
+              "mai_class": "Warehouse",
+              "description": "Buildings used for storage and distribution"
+            },
+            "manufacturing": {
+              "name": "Manufacturing Facility",
+              "iaao_code": "COM-IND-MFG",
+              "mai_class": "Manufacturing",
+              "description": "Buildings used for production and manufacturing"
+            },
+            "flex_space": {
+              "name": "Flex/R&D Space",
+              "iaao_code": "COM-IND-FLEX", 
+              "mai_class": "Flex Industrial",
+              "description": "Flexible industrial space combining office and warehouse"
+            },
+            "cold_storage": {
+              "name": "Cold Storage Facility",
+              "iaao_code": "COM-IND-COLD",
+              "mai_class": "Cold Storage",
+              "description": "Temperature-controlled storage facilities"
+            },
+            "data_center": {
+              "name": "Data Center",
+              "iaao_code": "COM-IND-DATA",
+              "mai_class": "Data Center",
+              "description": "Facilities housing computer systems and data storage"
+            }
+          }
+        },
+        "hospitality": {
+          "type_name": "Hospitality",
+          "iaao_code": "COM-HOSP",
+          "subtypes": {
+            "full_service_hotel": {
+              "name": "Full-Service Hotel",
+              "iaao_code": "COM-HOSP-FS",
+              "mai_class": "Full-Service Hotel",
+              "description": "Hotels with restaurants, meeting facilities, and full services"
+            },
+            "limited_service_hotel": {
+              "name": "Limited-Service Hotel", 
+              "iaao_code": "COM-HOSP-LS",
+              "mai_class": "Limited-Service Hotel",
+              "description": "Hotels with basic amenities and limited services"
+            },
+            "extended_stay": {
+              "name": "Extended Stay Hotel",
+              "iaao_code": "COM-HOSP-ES",
+              "mai_class": "Extended Stay",
+              "description": "Hotels designed for longer-term stays"
+            },
+            "resort": {
+              "name": "Resort Property",
+              "iaao_code": "COM-HOSP-RESORT",
+              "mai_class": "Resort",
+              "description": "Destination properties with recreational amenities"
+            }
+          }
+        },
+        "mixed_use": {
+          "type_name": "Mixed Use",
+          "iaao_code": "COM-MIXED",
+          "subtypes": {
+            "residential_commercial": {
+              "name": "Residential/Commercial Mixed Use",
+              "iaao_code": "COM-MIXED-RC",
+              "mai_class": "Mixed Use",
+              "description": "Properties combining residential and commercial uses"
+            },
+            "office_retail": {
+              "name": "Office/Retail Mixed Use",
+              "iaao_code": "COM-MIXED-OR",
+              "mai_class": "Mixed Use",
+              "description": "Properties combining office and retail uses"
+            }
+          }
+        }
+      }
+    },
+    "multifamily": {
+      "category_name": "Multifamily Residential",
+      "iaao_code": "MF",
+      "mai_classification": "Income-Producing Residential",
+      "subtypes": {
+        "garden_apartments": {
+          "name": "Garden Apartments",
+          "iaao_code": "MF-GARDEN",
+          "mai_class": "Garden Apartments",
+          "description": "Low-rise apartment complexes with landscaping"
+        },
+        "mid_rise": {
+          "name": "Mid-Rise Apartments",
+          "iaao_code": "MF-MIDRISE",
+          "mai_class": "Mid-Rise Multifamily",
+          "description": "4-12 story apartment buildings"
+        },
+        "high_rise": {
+          "name": "High-Rise Apartments",
+          "iaao_code": "MF-HIGHRISE", 
+          "mai_class": "High-Rise Multifamily",
+          "description": "13+ story apartment buildings"
+        },
+        "student_housing": {
+          "name": "Student Housing",
+          "iaao_code": "MF-STUDENT",
+          "mai_class": "Student Housing",
+          "description": "Housing specifically designed for students"
+        },
+        "senior_housing": {
+          "name": "Senior Housing",
+          "iaao_code": "MF-SENIOR",
+          "mai_class": "Senior Housing", 
+          "description": "Housing designed for senior citizens"
+        },
+        "affordable_housing": {
+          "name": "Affordable Housing",
+          "iaao_code": "MF-AFFORD",
+          "mai_class": "Affordable Housing",
+          "description": "Subsidized or income-restricted housing"
+        }
+      }
+    },
+    "residential": {
+      "category_name": "Residential",
+      "iaao_code": "RES",
+      "mai_classification": "Residential",
+      "subtypes": {
+        "single_family": {
+          "name": "Single Family Home",
+          "iaao_code": "RES-SF",
+          "mai_class": "Single Family",
+          "description": "Detached single-family residential properties"
+        },
+        "condominium": {
+          "name": "Condominium",
+          "iaao_code": "RES-CONDO",
+          "mai_class": "Condominium",
+          "description": "Individual ownership units in multi-unit buildings"
+        },
+        "townhome": {
+          "name": "Townhome",
+          "iaao_code": "RES-TOWN",
+          "mai_class": "Townhouse",
+          "description": "Attached residential units with individual ownership"
+        },
+        "mobile_home": {
+          "name": "Mobile Home",
+          "iaao_code": "RES-MOBILE",
+          "mai_class": "Mobile Home",
+          "description": "Manufactured housing units"
+        }
+      }
+    },
+    "agricultural": {
+      "category_name": "Agricultural",
+      "iaao_code": "AGR",
+      "mai_classification": "Agricultural", 
+      "subtypes": {
+        "cropland": {
+          "name": "Cropland",
+          "iaao_code": "AGR-CROP",
+          "mai_class": "Agricultural Land",
+          "description": "Land used for growing crops"
+        },
+        "pasture": {
+          "name": "Pasture/Grazing Land",
+          "iaao_code": "AGR-PASTURE",
+          "mai_class": "Agricultural Land",
+          "description": "Land used for livestock grazing"
+        },
+        "timberland": {
+          "name": "Timberland",
+          "iaao_code": "AGR-TIMBER",
+          "mai_class": "Timberland",
+          "description": "Land used for timber production"
+        },
+        "agricultural_buildings": {
+          "name": "Agricultural Buildings",
+          "iaao_code": "AGR-BLDG",
+          "mai_class": "Agricultural Improvements",
+          "description": "Barns, silos, and other agricultural structures"
+        }
+      }
+    },
+    "special_purpose": {
+      "category_name": "Special Purpose",
+      "iaao_code": "SP",
+      "mai_classification": "Special Purpose",
+      "subtypes": {
+        "government": {
+          "name": "Government Buildings",
+          "iaao_code": "SP-GOV",
+          "mai_class": "Government",
+          "description": "Buildings used for government operations"
+        },
+        "religious": {
+          "name": "Religious Buildings",
+          "iaao_code": "SP-REL",
+          "mai_class": "Religious",
+          "description": "Churches, temples, and other religious facilities"
+        },
+        "educational": {
+          "name": "Educational Facilities",
+          "iaao_code": "SP-EDU",
+          "mai_class": "Educational",
+          "description": "Schools, universities, and educational buildings"
+        },
+        "recreational": {
+          "name": "Recreational Facilities",
+          "iaao_code": "SP-REC",
+          "mai_class": "Recreational",
+          "description": "Sports facilities, entertainment venues, recreation centers"
+        },
+        "healthcare": {
+          "name": "Healthcare Facilities",
+          "iaao_code": "SP-HEALTH",
+          "mai_class": "Healthcare",
+          "description": "Hospitals, clinics, and medical facilities"
+        }
+      }
+    },
+    "utilities": {
+      "category_name": "Utilities",
+      "iaao_code": "UTIL",
+      "mai_classification": "Utility",
+      "subtypes": {
+        "electric": {
+          "name": "Electric Utility",
+          "iaao_code": "UTIL-ELEC",
+          "mai_class": "Electric Utility",
+          "description": "Electric generation, transmission, and distribution facilities"
+        },
+        "gas": {
+          "name": "Gas Utility",
+          "iaao_code": "UTIL-GAS",
+          "mai_class": "Gas Utility",
+          "description": "Natural gas transmission and distribution facilities"
+        },
+        "telecommunications": {
+          "name": "Telecommunications",
+          "iaao_code": "UTIL-TELECOM",
+          "mai_class": "Telecommunications",
+          "description": "Telephone, cable, and wireless communication facilities"
+        },
+        "water_sewer": {
+          "name": "Water/Sewer Utility",
+          "iaao_code": "UTIL-WATER",
+          "mai_class": "Water/Sewer Utility",
+          "description": "Water treatment and sewer facilities"
+        }
+      }
+    },
+    "vacant_land": {
+      "category_name": "Vacant Land",
+      "iaao_code": "LAND",
+      "mai_classification": "Land",
+      "subtypes": {
+        "commercial_land": {
+          "name": "Commercial Land",
+          "iaao_code": "LAND-COM",
+          "mai_class": "Commercial Land",
+          "description": "Vacant land zoned for commercial development"
+        },
+        "residential_land": {
+          "name": "Residential Land",
+          "iaao_code": "LAND-RES",
+          "mai_class": "Residential Land",
+          "description": "Vacant land zoned for residential development"
+        },
+        "industrial_land": {
+          "name": "Industrial Land",
+          "iaao_code": "LAND-IND",
+          "mai_class": "Industrial Land",
+          "description": "Vacant land zoned for industrial development"
+        }
+      }
+    }
+  },
+  "compliance_standards": {
+    "iaao_standard": "IAAO Standard on Assessment Appeal Procedures",
+    "mai_standard": "MAI Real Estate Classification System (RECS)",
+    "uspap_compliance": "Uniform Standards of Professional Appraisal Practice",
+    "last_reviewed": "2025-07-13"
+  },
+  "usage_guidelines": {
+    "primary_classification": "Use category + type + subtype for full classification",
+    "fallback_options": "If specific subtype not available, use type level classification",
+    "validation_required": "All property classifications must include IAAO code",
+    "jurisdiction_mapping": "Map to local jurisdiction property type codes as needed"
+  }
+}

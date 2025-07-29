@@ -1,0 +1,53 @@
+name: 🚀 BULLETPROOF GCP DEPLOYMENT
+
+on:
+  push:
+    branches: [ dashboard-recovery-*, main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install dependencies
+      run: npm ci
+      
+    - name: 🏗️ Build React app
+      run: npm run build
+      
+    - name: 🔧 Setup Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+        
+    - name: 🚀 Deploy to GCP App Engine
+      run: |
+        echo "runtime: nodejs18" > app.yaml
+        echo "service: charly-dashboard" >> app.yaml
+        echo "handlers:" >> app.yaml
+        echo "- url: /(.*)" >> app.yaml
+        echo "  static_files: dist/\\1" >> app.yaml
+        echo "  upload: dist/(.*)" >> app.yaml
+        echo "- url: /" >> app.yaml
+        echo "  static_files: dist/index.html" >> app.yaml
+        echo "  upload: dist/index.html" >> app.yaml
+        
+        gcloud app deploy app.yaml --quiet
+        
+    - name: ✅ Deployment Success
+      run: |
+        echo "🎉 CHARLY Dashboard deployed successfully!"
+        echo "🌐 URL: https://charly-dashboard-dot-${{ secrets.GCP_PROJECT_ID }}.appspot.com"

@@ -1,0 +1,501 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://charly.ai/schemas/narrative-export/v1.0.0",
+  "title": "CHARLY Narrative Export Schema",
+  "description": "Comprehensive schema for property tax appeal narrative exports with enterprise-grade validation and metadata tracking",
+  "type": "object",
+  "required": [
+    "narrative_text",
+    "timestamp",
+    "user_id", 
+    "version",
+    "source_id",
+    "export_metadata",
+    "schema_version"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema version for backward compatibility and migration support"
+    },
+    "narrative_text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000000,
+      "description": "The complete narrative text content, sanitized and validated"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when narrative was exported (UTC)"
+    },
+    "user_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]{1,64}$",
+      "description": "Unique identifier of the user who exported the narrative"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the narrative (e.g., 1.0.0, 1.2.3)"
+    },
+    "source_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]{1,128}$",
+      "description": "Unique identifier linking to the source property or session"
+    },
+    "export_id": {
+      "type": "string",
+      "pattern": "^exp_[a-zA-Z0-9_-]{1,128}_\\d+$",
+      "description": "Unique identifier for this specific export operation"
+    },
+    "narrative_word_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of words in the narrative text"
+    },
+    "audit_trail": {
+      "type": "object",
+      "properties": {
+        "revision_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of revisions made to this narrative"
+        },
+        "access_log": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When the access occurred"
+              },
+              "user_id": {
+                "type": "string",
+                "description": "User who accessed the narrative"
+              },
+              "action": {
+                "type": "string",
+                "enum": ["view", "edit", "export", "share"],
+                "description": "Type of access action"
+              }
+            }
+          }
+        }
+      }
+    },
+    "export_metadata": {
+      "type": "object",
+      "required": [
+        "export_format",
+        "file_size_bytes",
+        "export_duration_ms",
+        "compression_enabled"
+      ],
+      "properties": {
+        "export_format": {
+          "type": "string",
+          "enum": ["txt", "json"],
+          "description": "Format of the exported file"
+        },
+        "file_size_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 104857600,
+          "description": "Size of exported file in bytes (max 100MB)"
+        },
+        "export_duration_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Time taken to generate export in milliseconds"
+        },
+        "compression_enabled": {
+          "type": "boolean",
+          "description": "Whether compression was applied to the export"
+        },
+        "compression_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Compression ratio if compression was enabled"
+        },
+        "checksum": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$",
+          "description": "SHA-256 checksum for file integrity verification"
+        },
+        "client_ip": {
+          "type": "string",
+          "oneOf": [
+            {"format": "ipv4"},
+            {"format": "ipv6"}
+          ],
+          "description": "IP address of the client who requested the export"
+        },
+        "user_agent": {
+          "type": "string",
+          "maxLength": 512,
+          "description": "User agent string of the client browser"
+        }
+      },
+      "additionalProperties": false
+    },
+    "client_branding": {
+      "type": "object",
+      "description": "Optional client branding information applied to the narrative",
+      "properties": {
+        "theme_name": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Name of the applied branding theme"
+        },
+        "primary_color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "description": "Primary brand color in hex format"
+        },
+        "company_name": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Company name for branding"
+        },
+        "logo_url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048,
+          "description": "URL or data URI of the company logo"
+        },
+        "footer_text": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Custom footer text for branded exports"
+        }
+      },
+      "additionalProperties": false
+    },
+    "appeal_details": {
+      "type": "object",
+      "description": "Property tax appeal details and context",
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{1,64}$",
+          "description": "Unique property identifier"
+        },
+        "property_address": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Complete property address"
+        },
+        "jurisdiction": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Tax jurisdiction (county, city, district)"
+        },
+        "tax_year": {
+          "type": "integer",
+          "minimum": 1900,
+          "maximum": 2100,
+          "description": "Tax year for the appeal"
+        },
+        "appeal_type": {
+          "type": "string",
+          "enum": ["assessment", "classification", "exemption", "valuation"],
+          "description": "Type of tax appeal being filed"
+        },
+        "filing_deadline": {
+          "type": "string",
+          "format": "date",
+          "description": "Deadline for filing the appeal (ISO 8601 date)"
+        },
+        "appeal_status": {
+          "type": "string",
+          "enum": ["draft", "pending", "filed", "under_review", "decided", "closed"],
+          "description": "Current status of the appeal"
+        }
+      },
+      "additionalProperties": false
+    },
+    "financial_summary": {
+      "type": "object",
+      "description": "Financial metrics and calculations supporting the narrative",
+      "properties": {
+        "assessment_value": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Current assessed value"
+        },
+        "market_value": {
+          "type": "number", 
+          "minimum": 0,
+          "description": "Estimated market value"
+        },
+        "proposed_value": {
+          "type": "number",
+          "minimum": 0, 
+          "description": "Proposed value for appeal"
+        },
+        "potential_savings": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Estimated tax savings if appeal successful"
+        },
+        "cap_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Capitalization rate used in valuation"
+        },
+        "net_operating_income": {
+          "type": "number",
+          "description": "Annual net operating income"
+        },
+        "expense_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Operating expense ratio"
+        },
+        "vacancy_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Property vacancy rate"
+        }
+      },
+      "additionalProperties": false
+    },
+    "flagging_results": {
+      "type": "object",
+      "description": "Results from CHARLY's automated flagging system",
+      "properties": {
+        "overall_flag_status": {
+          "type": "string",
+          "enum": ["green", "yellow", "red"],
+          "description": "Overall flagging status indicating appeal likelihood"
+        },
+        "flag_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Numerical flag score (0-100)"
+        },
+        "individual_flags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["flag_type", "severity", "description"],
+            "properties": {
+              "flag_type": {
+                "type": "string",
+                "maxLength": 50,
+                "description": "Type of flag triggered"
+              },
+              "severity": {
+                "type": "string", 
+                "enum": ["low", "medium", "high", "critical"],
+                "description": "Severity level of the flag"
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 1000,
+                "description": "Detailed description of the flag"
+              },
+              "value": {
+                "type": ["string", "number", "boolean"],
+                "description": "Value that triggered the flag"
+              },
+              "threshold": {
+                "type": ["string", "number"],
+                "description": "Threshold value for the flag"
+              }
+            },
+            "additionalProperties": false
+          },
+          "maxItems": 100,
+          "description": "Array of individual flags triggered"
+        },
+        "confidence_level": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence level in the flagging results (0.0 - 1.0)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "generation_metadata": {
+      "type": "object",
+      "description": "Metadata about how the narrative was generated",
+      "properties": {
+        "generation_method": {
+          "type": "string",
+          "enum": ["manual", "ai_assisted", "template", "hybrid"],
+          "description": "Method used to generate the narrative"
+        },
+        "ai_model_version": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._-]{1,50}$",
+          "description": "Version of AI model used (if applicable)"
+        },
+        "template_id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{1,64}$",
+          "description": "Template identifier used (if applicable)"
+        },
+        "word_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Word count of the narrative text"
+        },
+        "readability_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Readability score (Flesch-Kincaid or similar)"
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+          "default": "en-US",
+          "description": "Language code (ISO 639-1 with optional region)"
+        },
+        "custom_sections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "maxItems": 20,
+          "description": "Custom sections included in the narrative"
+        }
+      },
+      "additionalProperties": false
+    },
+    "audit_trail": {
+      "type": "object",
+      "description": "Complete audit trail for compliance and tracking",
+      "properties": {
+        "created_timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the narrative was originally created"
+        },
+        "modified_timestamp": {
+          "type": "string",
+          "format": "date-time", 
+          "description": "When the narrative was last modified"
+        },
+        "created_by": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{1,64}$",
+          "description": "User who originally created the narrative"
+        },
+        "modified_by": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{1,64}$",
+          "description": "User who last modified the narrative"
+        },
+        "revision_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of revisions made to the narrative"
+        },
+        "access_log": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["timestamp", "user_id", "action"],
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+              },
+              "action": {
+                "type": "string",
+                "enum": ["view", "edit", "export", "share", "delete"]
+              },
+              "ip_address": {
+                "type": "string",
+                "oneOf": [
+                  {"format": "ipv4"},
+                  {"format": "ipv6"}
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "maxItems": 1000,
+          "description": "Log of all access and modification events"
+        }
+      },
+      "additionalProperties": false
+    },
+    "compliance": {
+      "type": "object",
+      "description": "Compliance and regulatory information",
+      "properties": {
+        "data_classification": {
+          "type": "string",
+          "enum": ["public", "internal", "confidential", "restricted"],
+          "default": "confidential",
+          "description": "Data classification level for security purposes"
+        },
+        "retention_policy": {
+          "type": "string",
+          "enum": ["1_year", "3_years", "7_years", "indefinite"],
+          "default": "7_years",
+          "description": "Data retention policy requirement"
+        },
+        "encryption_required": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether encryption is required for this data"
+        },
+        "pii_contained": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the narrative contains personally identifiable information"
+        },
+        "gdpr_applicable": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether GDPR regulations apply to this data"
+        },
+        "export_restrictions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["no_email", "no_cloud_storage", "encrypted_only", "audit_required"]
+          },
+          "uniqueItems": true,
+          "description": "Restrictions on how the exported data can be used"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "version_pattern": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "id_pattern": {
+      "type": "string", 
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "hex_color": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    }
+  }
+}

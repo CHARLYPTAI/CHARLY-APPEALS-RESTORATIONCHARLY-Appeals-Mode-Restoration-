@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Alias Map Schema",
+  "description": "Schema to validate that alias_map.json is a mapping of cleaned alias (string) to field name (string).",
+  "type": "object",
+  "additionalProperties": {
+    "type": "string",
+    "minLength": 1
+  },
+  "patternProperties": {
+    "^[a-z0-9]+$": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "propertyNames": {
+    "pattern": "^[a-z0-9]+$"
+  }
+}
