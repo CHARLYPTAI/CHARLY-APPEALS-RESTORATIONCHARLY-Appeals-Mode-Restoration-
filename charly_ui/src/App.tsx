@@ -16,7 +16,10 @@ import { BUILD_SHA, BUILD_TIME } from './version';
 
 function App() {
   useEffect(() => {
-    console.info('CHARLY BUILD', BUILD_SHA, BUILD_TIME);
+    console.info("CHARLY BUILD", BUILD_SHA, BUILD_TIME);
+    fetch("/api/version").then(r => r.json()).then(v =>
+      console.info("BACKEND VERSION", v)
+    ).catch(e => console.warn("BACKEND VERSION fetch failed", e));
   }, []);
 
   return (
@@ -43,8 +46,8 @@ function App() {
             </Route>
           </Routes>
           {/* Version footer */}
-          <div className="fixed bottom-2 right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-75 font-mono">
-            CHARLY • {BUILD_SHA} • {new Date(BUILD_TIME).toLocaleString()}
+          <div className="fixed bottom-2 right-2 text-xs opacity-70">
+            CHARLY • {BUILD_SHA.slice(0,7)} • {BUILD_TIME}
           </div>
         </div>
       </Router>
