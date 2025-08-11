@@ -1,15 +1,15 @@
 # CHARLY 2.0: Intelligent Canvas – Appeals Mode Task Tracker
 
 ## Canvas Restoration
-- [ ] Reconfirm correct `Appeals.tsx` file (1802 lines)
-- [ ] Mount Appeals into Canvas switcher correctly
-- [ ] Verify `/appeals` route renders as expected
-- [ ] Confirm tab navigation reaches Appeals Mode
+- [x] Reconfirm correct `Appeals.tsx` file (2067 lines)
+- [x] Mount Appeals into Canvas switcher correctly
+- [x] Verify `/appeals` route renders as expected
+- [x] Confirm tab navigation reaches Appeals Mode
 
 ## Functional Repair
-- [ ] Reconnect useStore hooks to state correctly
-- [ ] Confirm Packet generation UI loads properly
-- [ ] Test submission flow from Appeals mode
+- [x] Reconnect useStore hooks to state correctly
+- [x] Confirm Packet generation UI loads properly (moved to Portfolio Property Workup modal)
+- [x] Test submission flow from Appeals mode
 
 ## Jony Ive UI Cleanup
 - [ ] Audit all colors → enforce Apple blue, clean white, success green

@@ -1,0 +1,91 @@
+charly_ui/src/test/accessibility/wcag-compliance.test.tsx
+charly_ui/src/components/ui/dialog.tsx
+charly_ui/src/components/AutomatedFiling.tsx
+charly_ui/src/components/AdvancedReporting.tsx
+charly_ui/src/components/security/SecurityAnalyticsDashboard.tsx
+charly_ui/src/components/security/SecureComponents.tsx
+charly_ui/src/components/SkipToContent.tsx
+charly_ui/src/components/payment/CheckoutForm.tsx
+charly_ui/src/components/payment/PlanUpgradeModal.tsx
+charly_ui/src/components/payment/CreditAwareButton.tsx
+charly_ui/src/components/payment/PaymentMethodManager.tsx
+charly_ui/src/components/payment/UsageDisplay.tsx
+charly_ui/src/components/payment/ChargedAIComponent.tsx
+charly_ui/src/components/payment/UsageLimitWarning.tsx
+charly_ui/src/components/payment/CreditPurchase.tsx
+charly_ui/src/components/payment/UsageStatusCard.tsx
+charly_ui/src/components/payment/SubscriptionManager.tsx
+charly_ui/src/components/payment/CreditBalance.tsx
+charly_ui/src/components/payment/CreditPurchaseModal.tsx
+charly_ui/src/components/color/AccessibilityAudit.tsx
+charly_ui/src/components/color/PerformanceTest.tsx
+charly_ui/src/components/charts/AIBriefingDashboard.tsx
+charly_ui/src/components/microinteractions/InteractiveButton.tsx
+charly_ui/src/components/microinteractions/DataVisualizationHover.tsx
+charly_ui/src/components/microinteractions/StateAnimations.tsx
+charly_ui/src/components/microinteractions/MicroInteractionOrchestrator.tsx
+charly_ui/src/components/v2/ExpandableCard.tsx
+charly_ui/src/components/v2/PropertyClaimModal.tsx
+charly_ui/src/components/v2/PacketGenerator.tsx
+charly_ui/src/components/v2/ClientReportingEngine 2.tsx
+charly_ui/src/components/v2/DisclosureTrigger.tsx
+charly_ui/src/components/v2/OpportunityRankingEngine 2.tsx
+charly_ui/src/components/v2/WorkflowNavigation 2.tsx
+charly_ui/src/components/v2/WorkflowNavigation.tsx
+charly_ui/src/components/v2/PropertySearch.tsx
+charly_ui/src/components/BulkOperations.tsx
+charly_ui/src/components/CommercialPropertyAnalysis.tsx
+charly_ui/src/components/TaxAttorneyWorkflow.tsx
+charly_ui/src/components/BusinessIntelligenceDashboard.tsx
+charly_ui/src/components/mobile/LongPressContextMenu.tsx
+charly_ui/src/components/mobile/TouchOptimizedButton.tsx
+charly_ui/src/components/mobile/MobileNavigation.tsx
+charly_ui/src/components/mobile/AdaptiveLayout.tsx
+charly_ui/src/components/mobile/GestureAccessibility.tsx
+charly_ui/src/components/mobile/PinchZoomProvider.tsx
+charly_ui/src/components/mobile/GesturePerformanceOptimizer.tsx
+charly_ui/src/components/NarrativeDisplay.tsx
+charly_ui/src/components/ReportPreview.tsx
+charly_ui/src/components/typography/HighContrastMode.tsx
+charly_ui/src/components/portfolio/PropertyCard.tsx
+charly_ui/src/components/portfolio/AnalyticsView.tsx
+charly_ui/src/components/portfolio/PropertyFilters 2.tsx
+charly_ui/src/components/portfolio/AddPropertyModal.tsx
+charly_ui/src/components/portfolio/PropertyAnalysisModal.tsx
+charly_ui/src/components/portfolio/BulkActionsModal.tsx
+charly_ui/src/components/portfolio/ComparisonView.tsx
+charly_ui/src/components/portfolio/PropertyFilters.tsx
+charly_ui/src/components/MultiStateJurisdiction.tsx
+charly_ui/src/components/PropertyFilters.tsx
+charly_ui/src/components/valuation/Reconciliation.tsx
+charly_ui/src/components/valuation/SalesComparisonApproach.tsx
+charly_ui/src/components/valuation/SalesComparisonComprehensive.tsx
+charly_ui/src/components/AIAnalysisProgress.tsx
+charly_ui/src/components/ValuationTabs.tsx
+charly_ui/src/components/ClientPortalWhiteLabel.tsx
+charly_ui/src/components/CloudUploadButton.tsx
+charly_ui/src/components/MonitoringDashboard.tsx
+charly_ui/src/components/ErrorBoundary.tsx
+charly_ui/src/pages/Settings.tsx
+charly_ui/src/pages/Reports.tsx
+charly_ui/src/pages/PortfolioV2.tsx
+charly_ui/src/pages/AppealsV2.tsx
+charly_ui/src/pages/PropertyAnalysisV2.tsx
+charly_ui/src/pages/MarketIntelligenceV2.tsx
+charly_ui/src/pages/Appeals 2.tsx
+charly_ui/src/pages/Dashboard.tsx
+charly_ui/src/pages/TestAppeals.tsx
+charly_ui/src/pages/Appeals.tsx
+charly_ui/src/pages/TestButton.tsx
+charly_ui/src/pages/Portfolio.tsx
+charly_ui/src/pages/V2Demo 2.tsx
+charly_ui/src/pages/V2Demo 3.tsx
+charly_ui/src/pages/Filing.tsx
+charly_ui/src/pages/Billing.tsx
+charly_ui/src/pages/Dashboard 2.tsx
+charly_ui/src/pages/TestAuth.tsx
+charly_ui/src/pages/AdvancedAnalyticsDashboard.tsx
+charly_ui/src/pages/DashboardV2.tsx
+charly_ui/src/engine/AdaptiveArchitecture.tsx
+charly_ui/src/engine/SearchDrivenInterface.tsx
+charly_ui/src/engine/SearchResultTransformer.tsx
