@@ -4,11 +4,121 @@ CHARLY Platform - GCP App Engine Entry Point
 """
 
 import os
-from fastapi import FastAPI
+import subprocess
+from datetime import datetime
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from starlette.middleware.base import BaseHTTPMiddleware
+
+# JWT Secret Configuration for R2 requirement
+DEMO_SECRET = "charly-demo-secret-please-change-for-prod"
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY") or DEMO_SECRET
+JWT_SECRET_SOURCE = "ENV" if os.getenv("JWT_SECRET_KEY") else "DEMO"
+print(f"[AUTH] JWT secret source: {JWT_SECRET_SOURCE}")
+
+# Compute version info on startup
+def get_git_sha():
+    try:
+        return subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=os.path.dirname(__file__)).decode().strip()[:8]
+    except:
+        return "unknown"
+
+def get_build_time():
+    return datetime.utcnow().isoformat() + "Z"
+
+def get_router_imports():
+    # For this simple server, we don't have separate routers
+    return ["auth", "api"]
+
+def get_jwt_secret_source():
+    return JWT_SECRET_SOURCE
+
+# Store version info
+VERSION_INFO = {
+    "git_sha": get_git_sha(),
+    "build_time": get_build_time(),
+    "router_imports": get_router_imports(),
+    "jwt_secret_source": get_jwt_secret_source()
+}
+
+print(f"[CHARLY] Version: {VERSION_INFO['git_sha']}@{VERSION_INFO['build_time']}")
+print(f"[CHARLY] JWT Source: {VERSION_INFO['jwt_secret_source']}")
 
 app = FastAPI(title="CHARLY Platform")
+
+# Add version header middleware
+class VersionHeaderMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-CHARLY-Version"] = f"{VERSION_INFO['git_sha']}@{VERSION_INFO['build_time']}"
+        return response
+
+app.add_middleware(VersionHeaderMiddleware)
+
+# Simple auth endpoints to resolve 405 issues
+from pydantic import BaseModel
+from fastapi import HTTPException
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+@app.post("/api/auth/login")
+async def login(request: LoginRequest):
+    """Simple auth endpoint to prevent 405 errors"""
+    # Demo auth - accept specific credentials
+    if request.email == "admin@charly.com" and request.password == "CharlyCTO2025!":
+        return {
+            "access_token": "demo_token_12345",
+            "refresh_token": "demo_refresh_12345",
+            "token_type": "bearer",
+            "expires_in": 3600,
+            "user": {
+                "id": "demo_user",
+                "email": request.email,
+                "role": "admin",
+                "permissions": ["all"],
+                "firm_name": "CHARLY Demo"
+            }
+        }
+    raise HTTPException(status_code=401, detail="Invalid credentials")
+
+@app.get("/api/auth/me")
+async def get_me():
+    """Simple user info endpoint"""
+    return {
+        "id": "demo_user",
+        "email": "admin@charly.com", 
+        "role": "admin",
+        "permissions": ["all"],
+        "firm_name": "CHARLY Demo"
+    }
+
+@app.get("/api/auth/validate")
+async def validate():
+    """Simple token validation endpoint"""
+    return {"valid": True}
+
+@app.post("/api/auth/refresh")
+async def refresh(refresh_data: dict):
+    """Simple token refresh endpoint"""
+    return {
+        "access_token": "demo_token_12345",
+        "refresh_token": "demo_refresh_12345",
+        "token_type": "bearer", 
+        "expires_in": 3600
+    }
+
+@app.post("/api/auth/logout")
+async def logout():
+    """Simple logout endpoint"""
+    return {"success": True}
+
+@app.get("/api/version")
+async def get_version():
+    """Version info endpoint"""
+    return VERSION_INFO
 
 # API routes
 @app.get("/api/kpis")

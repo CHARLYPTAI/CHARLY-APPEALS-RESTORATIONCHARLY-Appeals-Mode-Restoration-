@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -12,12 +12,17 @@ import Settings from './pages/Settings';
 import TestButton from './pages/TestButton';
 import TestAppeals from './pages/TestAppeals';
 import TestAuth from './pages/TestAuth';
+import { BUILD_SHA, BUILD_TIME } from './version';
 
 function App() {
+  useEffect(() => {
+    console.info('CHARLY BUILD', BUILD_SHA, BUILD_TIME);
+  }, []);
+
   return (
     <ErrorBoundary>
       <Router>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 relative">
           <Toaster position="top-right" />
           <Routes>
             <Route path="/" element={<Layout />}>
@@ -37,6 +42,10 @@ function App() {
               <Route path="test-auth" element={<TestAuth />} />
             </Route>
           </Routes>
+          {/* Version footer */}
+          <div className="fixed bottom-2 right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-75 font-mono">
+            CHARLY • {BUILD_SHA} • {new Date(BUILD_TIME).toLocaleString()}
+          </div>
         </div>
       </Router>
     </ErrorBoundary>

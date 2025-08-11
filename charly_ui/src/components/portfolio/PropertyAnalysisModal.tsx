@@ -55,6 +55,7 @@ export function PropertyAnalysisModal({
   onValuationComplete,
   onFileAppeal
 }: PropertyAnalysisModalProps) {
+  console.info("%cACTIVE_HANDLER", "color:#0bf;font-weight:bold", "components/portfolio/PropertyAnalysisModal.tsx");
   const {
     isAnalyzing,
     analysisComplete,

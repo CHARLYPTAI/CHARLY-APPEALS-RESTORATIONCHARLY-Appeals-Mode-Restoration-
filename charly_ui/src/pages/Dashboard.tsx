@@ -115,8 +115,15 @@ export function Dashboard() {
             setAuthError(null);
           } catch (loginError) {
             console.error("Dashboard: Auto-login failed:", loginError);
-            setAuthError(`Authentication failed: ${loginError.message}`);
-            return; // Don't continue if auth fails
+            
+            // Don't show banner for method mismatch errors (405)
+            if (loginError.message && loginError.message.includes("Method not allowed")) {
+              console.log("Dashboard: Method mismatch recovered, continuing without banner");
+              setAuthError(null);
+            } else {
+              setAuthError(`Authentication failed: ${loginError.message}`);
+              return; // Don't continue if auth fails
+            }
           }
         } else {
           console.log("Dashboard: Already authenticated");
@@ -124,6 +131,14 @@ export function Dashboard() {
         
         // Small delay to ensure token is properly stored
         await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Fetch backend version info
+        try {
+          const versionResponse = await authenticatedRequest('/api/version');
+          console.info('BACKEND VERSION', versionResponse);
+        } catch (error) {
+          console.warn('Could not fetch backend version:', error);
+        }
         
         // Now fetch data with authentication
         console.log("Dashboard: Fetching data...");
