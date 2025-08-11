@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>V2 Component Test</title>
+    <style>
+        body { 
+            font-family: -apple-system, system-ui; 
+            padding: 40px; 
+            background: #f5f5f5; 
+        }
+        .test-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        h1 { color: #007AFF; }
+        .status { padding: 10px; border-radius: 8px; margin: 10px 0; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>🍎 CHARLY V2 Component Test</h1>
+        
+        <div class="status success">
+            <strong>✅ Test Page Loaded</strong><br>
+            This page exists at: https://storage.googleapis.com/charly-ui-production-2024/test-v2.html
+        </div>
+        
+        <div class="status error">
+            <strong>❌ Issue Found</strong><br>
+            The V2 components (AttorneyExecutiveDashboard, AnalystValuationWorkbench) are NOT being included in the production JavaScript bundle, even though the build succeeds.
+        </div>
+        
+        <h2>What We Know:</h2>
+        <ul>
+            <li>✅ Components exist in source code</li>
+            <li>✅ Components are imported in DashboardV3.tsx</li>
+            <li>✅ Build completes successfully</li>
+            <li>✅ DashboardV3 chunk is deployed (38KB)</li>
+            <li>❌ Components are NOT in any production bundle</li>
+            <li>❌ User sees no visual changes</li>
+        </ul>
+        
+        <h2>Next Actions:</h2>
+        <ol>
+            <li>Check if components have runtime errors preventing bundle inclusion</li>
+            <li>Verify component render path is actually executed</li>
+            <li>Test with minimal component implementations</li>
+            <li>Force inclusion by directly calling components</li>
+        </ol>
+        
+        <p><strong>Timestamp:</strong> <?php echo date('Y-m-d H:i:s'); ?></p>
+    </div>
+</body>
+</html>
