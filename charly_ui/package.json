@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node ../scripts/inject-build-env.mjs",
     "build": "vite build",
     "build:typecheck": "tsc -b && vite build",
     "lint": "eslint .",
