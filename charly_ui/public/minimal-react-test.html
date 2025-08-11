@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal React Test</title>
+    <link rel="stylesheet" href="./assets/index-DORc9lsG.css">
+</head>
+<body>
+    <div id="test-root"></div>
+    
+    <!-- Load React -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <script>
+        // Simple React component test
+        const { createElement: h, useState } = React;
+        const { createRoot } = ReactDOM;
+        
+        function MinimalTest() {
+            const [count, setCount] = useState(0);
+            
+            console.log("✅ MINIMAL REACT COMPONENT RENDERED");
+            
+            return h('div', {
+                style: {
+                    padding: '40px',
+                    background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
+                    minHeight: '100vh'
+                }
+            }, [
+                h('div', {
+                    key: 'container',
+                    style: {
+                        maxWidth: '800px',
+                        margin: '0 auto',
+                        backgroundColor: 'white',
+                        padding: '32px',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                        border: '2px solid #10b981'
+                    }
+                }, [
+                    h('h1', {
+                        key: 'title',
+                        style: {
+                            fontSize: '32px',
+                            fontWeight: 'bold',
+                            color: '#111827',
+                            margin: '0 0 16px 0'
+                        }
+                    }, '🍎 REACT WORKS!'),
+                    
+                    h('p', {
+                        key: 'desc',
+                        style: {
+                            fontSize: '18px',
+                            color: '#6b7280',
+                            margin: '0 0 24px 0'
+                        }
+                    }, 'This proves React components can render in production.'),
+                    
+                    h('div', {
+                        key: 'test',
+                        style: {
+                            padding: '20px',
+                            backgroundColor: '#dbeafe',
+                            borderRadius: '8px',
+                            border: '2px dashed #3b82f6',
+                            marginBottom: '20px'
+                        }
+                    }, [
+                        h('p', {
+                            key: 'status',
+                            style: {
+                                fontSize: '16px',
+                                color: '#1e40af',
+                                fontWeight: '500',
+                                margin: 0
+                            }
+                        }, `✅ React State Working: ${count} clicks`)
+                    ]),
+                    
+                    h('button', {
+                        key: 'button',
+                        onClick: () => setCount(count + 1),
+                        style: {
+                            padding: '12px 24px',
+                            backgroundColor: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '16px',
+                            fontWeight: '500',
+                            cursor: 'pointer'
+                        }
+                    }, 'Test React State')
+                ])
+            ]);
+        }
+        
+        // Render the component
+        const root = createRoot(document.getElementById('test-root'));
+        root.render(h(MinimalTest));
+        
+        console.log("🧪 React test initialized");
+    </script>
+</body>
+</html>

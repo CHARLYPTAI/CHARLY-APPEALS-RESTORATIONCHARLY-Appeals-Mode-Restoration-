@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ branding.theme_name or 'Property Tax' }} Appeal Packet</title>
+  <style>
+    /* CSS Variables for Dynamic Branding */
+    :root {
+      --primary-color: {{ branding.primary_color or '#1f77b4' }};
+      --accent-color: {{ branding.accent_color or '#ff7f0e' }};
+      --heading-font: {{ branding.heading_font or 'Arial' }}, sans-serif;
+      --body-font: {{ branding.body_font or 'Arial' }}, sans-serif;
+      --button-style: {{ 'rounded' if branding.button_style == 'rounded' else 'square' }};
+      --border-radius: {{ '8px' if branding.button_style == 'rounded' else '2px' }};
+    }
+    
+    /* Custom Font Face Definitions */
+    {% if branding.heading_font_url %}
+    @font-face {
+      font-family: 'CustomHeadingFont';
+      src: url('{{ branding.heading_font_url }}') format('woff2'),
+           url('{{ branding.heading_font_url }}') format('woff'),
+           url('{{ branding.heading_font_url }}') format('truetype');
+      font-display: swap;
+    }
+    {% endif %}
+    
+    {% if branding.body_font_url %}
+    @font-face {
+      font-family: 'CustomBodyFont';
+      src: url('{{ branding.body_font_url }}') format('woff2'),
+           url('{{ branding.body_font_url }}') format('woff'),
+           url('{{ branding.body_font_url }}') format('truetype');
+      font-display: swap;
+    }
+    {% endif %}
+    
+    /* Base Styles with CSS Variables */
+    body {
+      font-family: {% if branding.body_font_url %}CustomBodyFont, {% endif %}var(--body-font);
+      margin: 40px;
+      line-height: 1.6;
+      background: #ffffff;
+      color: #333333;
+    }
+    
+    /* Title Page Header with Logo */
+    .title-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 30px 0;
+      border-bottom: 3px solid var(--primary-color);
+      background: linear-gradient(135deg, {{ branding.primary_color or '#1f77b4' }}0D, {{ branding.accent_color or '#ff7f0e' }}0D);
+    }
+    
+    .company-logo {
+      max-width: 200px;
+      max-height: 80px;
+      margin-bottom: 20px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));
+    }
+    
+    h1 {
+      font-family: {% if branding.heading_font_url %}CustomHeadingFont, {% endif %}var(--heading-font);
+      color: var(--primary-color);
+      margin: 20px 0 10px 0;
+      font-size: 28px;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .subtitle {
+      font-family: {% if branding.heading_font_url %}CustomHeadingFont, {% endif %}var(--heading-font);
+      color: var(--accent-color);
+      font-size: 18px;
+      font-weight: 500;
+      margin-top: 10px;
+    }
+    
+    h2 {
+      font-family: {% if branding.heading_font_url %}CustomHeadingFont, {% endif %}var(--heading-font);
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-size: 20px;
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--accent-color);
+      padding-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    h3 {
+      font-family: {% if branding.heading_font_url %}CustomHeadingFont, {% endif %}var(--heading-font);
+      color: var(--accent-color);
+      font-size: 16px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+    
+    /* Enhanced Table Styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 25px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    th, td {
+      border: 1px solid #e0e0e0;
+      padding: 12px 15px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    
+    th {
+      background: linear-gradient(135deg, var(--primary-color), {{ branding.primary_color or '#1f77b4' }}CC);
+      color: white;
+      font-family: {% if branding.heading_font_url %}CustomHeadingFont, {% endif %}var(--heading-font);
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    .field-name {
+      width: 30%;
+      background: linear-gradient(135deg, {{ branding.accent_color or '#ff7f0e' }}1A, {{ branding.accent_color or '#ff7f0e' }}0D);
+      font-weight: 500;
+      color: var(--primary-color);
+    }
+    
+    .field-value {
+      width: 70%;
+      background: #ffffff;
+    }
+    
+    /* Enhanced Section Styling */
+    .section {
+      margin-bottom: 40px;
+      padding: 20px;
+      background: #fafafa;
+      border-radius: var(--border-radius);
+      border-left: 4px solid var(--accent-color);
+    }
+    
+    /* Improved Footer */
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      margin-top: 50px;
+      padding: 20px;
+      color: #666;
+      border-top: 2px solid var(--primary-color);
+      background: linear-gradient(135deg, {{ branding.primary_color or '#1f77b4' }}0D, {{ branding.accent_color or '#ff7f0e' }}0D);
+    }
+    
+    .footer-branding {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #999;
+    }
+    
+    /* Custom CSS Injection */
+    {{ branding.custom_css|safe }}
+    
+    /* Print Optimization */
+    @media print {
+      body {
+        margin: 20px;
+        background: white !important;
+      }
+      
+      .title-header {
+        background: none !important;
+      }
+      
+      table {
+        box-shadow: none;
+      }
+      
+      .section {
+        background: none !important;
+        border-left: 2px solid var(--accent-color);
+      }
+      
+      .footer {
+        background: none !important;
+      }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        margin: 20px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      .subtitle {
+        font-size: 16px;
+      }
+      
+      th, td {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+      
+      .field-name {
+        width: 35%;
+      }
+      
+      .field-value {
+        width: 65%;
+      }
+    }
+    
+    /* Fallback Styles for Missing Branding */
+    .fallback-header {
+      background: #f8f9fa;
+      border: 2px dashed #dee2e6;
+      padding: 20px;
+      text-align: center;
+      color: #6c757d;
+      border-radius: var(--border-radius);
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Title Page Header with Branding -->
+  <div class="title-header">
+    {% if branding.logo_url %}
+    <img src="{{ branding.logo_url }}" alt="{{ branding.theme_name or 'Company' }} Logo" class="company-logo" onerror="this.style.display='none'">
+    {% else %}
+    <div class="fallback-header">
+      <h3>{{ branding.theme_name or 'Property Tax' }} Professional Services</h3>
+    </div>
+    {% endif %}
+    
+    <h1>Property Tax Appeal Packet</h1>
+    
+    {% if branding.theme_name %}
+    <div class="subtitle">{{ branding.theme_name }} Professional Services</div>
+    {% endif %}
+  </div>
+
+  <!-- Section: Identification -->
+  <div class="section">
+    <h2>Identification</h2>
+    <table>
+      {% if data.property_id %}
+      <tr>
+        <th class="field-name">Property ID</th>
+        <td class="field-value">{{ data.property_id }}</td>
+      </tr>
+      {% endif %}
+      {% if data.property_address %}
+      <tr>
+        <th class="field-name">Address</th>
+        <td class="field-value">{{ data.property_address }}</td>
+      </tr>
+      {% endif %}
+      {% if data.owner_name %}
+      <tr>
+        <th class="field-name">Owner Name</th>
+        <td class="field-value">{{ data.owner_name }}</td>
+      </tr>
+      {% endif %}
+    </table>
+  </div>
+
+  <!-- Section: All Other Fields -->
+  <div class="section">
+    <h2>All Property Details</h2>
+    <table>
+      {% for key, value in data.items() %}
+        {% if key not in ["property_id", "property_address", "owner_name"] and value is not none %}
+          <tr>
+            <th class="field-name">{{ key.replace('_', ' ') | title }}</th>
+            <td class="field-value">{{ value }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    {% if branding.footer_text %}
+    {{ branding.footer_text }}<br>
+    {% endif %}
+    
+    {% if branding.contact_email %}
+    Contact: {{ branding.contact_email }}
+    {% if branding.support_url %} | Support: <a href="{{ branding.support_url }}" style="color: var(--accent-color);">{{ branding.support_url }}</a>{% endif %}
+    <br>
+    {% endif %}
+    
+    Generated on {{ now }}
+    
+    {% if not branding.white_label %}
+    <div class="footer-branding">
+      Professional Property Tax Analysis
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
