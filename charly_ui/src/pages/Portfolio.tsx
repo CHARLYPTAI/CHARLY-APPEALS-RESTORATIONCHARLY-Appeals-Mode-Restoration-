@@ -4,6 +4,7 @@ import { usePortfolioStore } from "@/store/portfolio";
 import { usePropertyAnalysisStore } from "@/store/propertyAnalysis";
 import { useAppealsIntegrationStore } from "@/store/appealsIntegration";
 import { authService, authenticatedRequest } from "@/lib/auth";
+import { mapPropertyTypeLabelToBackend } from '@/config/property_type_crosswalk';
 import { ValuationTabs } from "@/components/ValuationTabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,53 @@ import { getJurisdictionOptions } from "@/services/jurisdictionService";
 import { getAllPropertyTypes } from "@/services/propertyTypeService";
 import { mapPropertyTypeLabelToBackend } from "@/config/property_type_crosswalk";
 
+// Portfolio render resilience helpers
+type PropIn = any;
+type PropOut = {
+  id?: string | number;
+  address?: string;
+  city?: string;
+  county?: string;
+  currentAssessment?: number | null;
+  marketValue?: number | null;
+  propertyType?: string | null;
+  squareFootage?: number | null;
+  yearBuilt?: number | null;
+  estimatedValue?: number | null;
+  potentialSavings?: number | null;
+  status?: string | null;
+  jurisdiction?: string | null;
+  parcelNumber?: string | null;
+  ownerName?: string | null;
+};
+
+function normalizeProperty(p: PropIn): PropOut {
+  return {
+    id: p.id ?? p.property_id ?? p._id ?? null,
+    address: p.address ?? null,
+    city: p.city ?? null,
+    county: p.county ?? null,
+    currentAssessment: p.current_assessment ?? p.currentAssessment ?? null,
+    marketValue: p.market_value ?? p.estimatedValue ?? null,
+    estimatedValue: p.market_value ?? p.estimatedValue ?? null,
+    propertyType: p.property_type ?? p.propertyType ?? null,
+    squareFootage: p.square_footage ?? p.squareFootage ?? null,
+    yearBuilt: p.year_built ?? p.yearBuilt ?? null,
+    potentialSavings: p.potential_savings ?? p.potentialSavings ?? null,
+    status: p.status ?? null,
+    jurisdiction: p.jurisdiction ?? null,
+    parcelNumber: p.parcel_number ?? p.parcelNumber ?? null,
+    ownerName: p.owner_name ?? p.ownerName ?? null,
+  };
+}
+
+// Safe number formatting
+const fmtNumber = (v: number | string | null | undefined) =>
+  Number(v ?? 0).toLocaleString('en-US');
+
+const fmtUSD = (v: number | string | null | undefined) =>
+  Number(v ?? 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
 interface MockProperty {
   id: string;
   address: string;
@@ -41,6 +89,7 @@ interface MockProperty {
 }
 
 export function Portfolio() {
+  console.info("%cACTIVE_HANDLER", "color:#0bf;font-weight:bold", "pages/Portfolio.tsx", "filters patch applied");
   const [authError, setAuthError] = useState<string | null>(null);
   const [appealPacketGenerated, setAppealPacketGenerated] = useState<string | null>(null); // stores packet ID
   
@@ -140,6 +189,12 @@ export function Portfolio() {
   const [, ] = useState(false); // Export modal state for future use
   const [showBulkActionsModal, setShowBulkActionsModal] = useState(false);
 
+  // Helper function for property ID normalization (used in action handlers)
+  const getPropId = (p: any) => 
+    String(p.id ?? p.property_id ?? '')
+      .replace(/^prop_00prop_/, 'prop_')  // sanitize double prefix
+      .trim();
+
   const handlePropertySelect = async (propertyId: string) => {
     const property = displayProperties.find(p => p.id === propertyId);
     if (!property) return;
@@ -156,7 +211,7 @@ export function Portfolio() {
       jurisdiction: property.jurisdiction,
       parcelNumber: property.parcelNumber,
       ownerName: property.ownerName,
-      yearBuilt: property.yearBuilt,
+      yearBuilt: (property.yearBuilt ?? '—'),
       squareFootage: property.squareFootage
     };
 
@@ -171,7 +226,7 @@ export function Portfolio() {
         current_assessment: property.currentAssessment,
         market_value: property.estimatedValue,
         squareFootage: property.squareFootage,
-        yearBuilt: property.yearBuilt,
+        yearBuilt: (property.yearBuilt ?? '—'),
         grossIncome: property.estimatedValue * 0.08, // 8% cap rate assumption
         netOperatingIncome: property.estimatedValue * 0.06, // 6% NOI assumption
         capRate: 0.08,
@@ -258,14 +313,14 @@ export function Portfolio() {
             narrative_type: "income_summary" as const,
             narrative: [
               `INCOME APPROACH ANALYSIS - ${property.address}`,
-              `Property Assessment: $${property.currentAssessment.toLocaleString()}`,
-              `Income-Based Value: $${property.estimatedValue.toLocaleString()}`,
+              `Property Assessment: ${fmtUSD(property.currentAssessment)}`,
+              `Income-Based Value: ${fmtUSD(property.estimatedValue)}`,
               `INCOME ANALYSIS SUMMARY:`,
-              `The income approach methodology provides compelling evidence that the current assessment exceeds fair market value. Based on market rental rates for similar ${property.propertyType.toLowerCase()} properties, this ${property.squareFootage.toLocaleString()} square foot property generates approximately $${(property.estimatedValue * 0.06).toLocaleString()} in net operating income annually.`,
+              `The income approach methodology provides compelling evidence that the current assessment exceeds fair market value. Based on market rental rates for similar ${property.propertyType.toLowerCase()} properties, this ${fmtNumber(property.squareFootage)} square foot property generates approximately ${(property.estimatedValue * 0.06)}) in net operating income annually.`,
               `CAPITALIZATION RATE ANALYSIS:`,
               `Market-derived capitalization rate of 8.0% reflects current investor expectations for properties of this type and location. Recent sales of comparable income-producing properties support this rate.`,
               `VALUATION CONCLUSION:`,
-              `Using the income approach (NOI ÷ Cap Rate = Value), the indicated value is $${property.estimatedValue.toLocaleString()}. This represents a more accurate reflection of the property's economic value based on its income-generating potential.`,
+              `Using the income approach (NOI ÷ Cap Rate = Value), the indicated value is ${fmtUSD(property.estimatedValue)}. This represents a more accurate reflection of the property's economic value based on its income-generating potential.`,
               `RECOMMENDATION:`,
               `The assessment should be reduced to align with income approach valuation, providing justifiable grounds for appeal.`
             ].join('\n\n'),
@@ -280,21 +335,21 @@ export function Portfolio() {
             narrative_type: "sales_comparison" as const,
             narrative: [
               `SALES COMPARISON ANALYSIS - ${property.address}`,
-              `Property Assessment: $${property.currentAssessment.toLocaleString()}`,
-              `Market Value Indication: $${property.estimatedValue.toLocaleString()}`,
+              `Property Assessment: ${fmtUSD(property.currentAssessment)}`,
+              `Market Value Indication: ${fmtUSD(property.estimatedValue)}`,
               `COMPARABLE SALES ANALYSIS:`,
               `Recent sales of comparable ${property.propertyType.toLowerCase()} properties in the market area provide strong evidence supporting a lower valuation. Three similar properties with comparable size, age, and location characteristics have sold within the past 12 months.`,
               `MARKET ADJUSTMENTS:`,
               `After appropriate adjustments for:`,
-              `- Size differences (${property.squareFootage.toLocaleString()} sq ft subject property)`,
-              `- Age variation (${2024 - property.yearBuilt} years old)`,
+              `- Size differences (${fmtNumber(property.squareFootage)} sq ft subject property)`,
+              `- Age variation (${property.yearBuilt ? 2024 - property.yearBuilt : 'Unknown'} years old)`,
               `- Location and accessibility factors`,
               `- Market conditions at time of sale`,
-              `The adjusted sales prices range from $${(property.estimatedValue * 0.95).toLocaleString()} to $${(property.estimatedValue * 1.05).toLocaleString()}, with a median of $${property.estimatedValue.toLocaleString()}.`,
+              `The adjusted sales prices range from ${fmtUSD(property.estimatedValue * 0.95)} to ${fmtUSD(property.estimatedValue * 1.05)}, with a median of ${fmtUSD(property.estimatedValue)}.`,
               `MARKET CONCLUSION:`,
               `The sales comparison approach clearly indicates the current assessment exceeds demonstrated market values for comparable properties.`,
               `RECOMMENDATION:`,
-              `Assessment reduction to $${property.estimatedValue.toLocaleString()} is supported by recent market transactions.`
+              `Assessment reduction to ${fmtUSD(property.estimatedValue)} is supported by recent market transactions.`
             ].join('\n\n'),
             model_used: "demo-mode",
             tokens_used: 0,
@@ -307,24 +362,24 @@ export function Portfolio() {
             narrative_type: "cost_approach" as const,
             narrative: [
               `COST APPROACH ANALYSIS - ${property.address}`,
-              `Property Assessment: $${property.currentAssessment.toLocaleString()}`,
-              `Cost Approach Value: $${property.estimatedValue.toLocaleString()}`,
+              `Property Assessment: ${fmtUSD(property.currentAssessment)}`,
+              `Cost Approach Value: ${fmtUSD(property.estimatedValue)}`,
               `COST APPROACH METHODOLOGY:`,
               `The cost approach estimates property value by calculating current replacement cost of improvements, less depreciation, plus land value.`,
               `REPLACEMENT COST:`,
-              `Current replacement cost for this ${property.squareFootage.toLocaleString()} square foot ${property.propertyType.toLowerCase()} property is estimated at $${(property.estimatedValue * 1.4).toLocaleString()} based on:`,
+              `Current replacement cost for this ${fmtNumber(property.squareFootage)} square foot ${property.propertyType.toLowerCase()} property is estimated at ${(property.estimatedValue * 1.4)}) based on:`,
               `- Current construction costs per square foot`,
               `- Building specifications and quality`,
               `- Local construction market conditions`,
               `DEPRECIATION ANALYSIS:`,
-              `Total depreciation of ${Math.round(((2024 - property.yearBuilt) / 40) * 100)}% applied based on:`,
-              `- Physical depreciation (${2024 - property.yearBuilt} years of age)`,
+              `Total depreciation of ${Math.round(((2024 - (property.yearBuilt ?? '—')) / 40) * 100)}% applied based on:`,
+              `- Physical depreciation (${2024 - (property.yearBuilt ?? '—')} years of age)`,
               `- Functional obsolescence considerations`,
               `- Economic obsolescence factors`,
-              `Depreciated improvement value: $${(property.estimatedValue * 0.75).toLocaleString()}`,
-              `Land value: $${(property.estimatedValue * 0.25).toLocaleString()}`,
+              `Depreciated improvement value: ${(property.estimatedValue * 0.75)}}`,
+              `Land value: ${(property.estimatedValue * 0.25)}}`,
               `COST APPROACH CONCLUSION:`,
-              `Total indicated value: $${property.estimatedValue.toLocaleString()}`,
+              `Total indicated value: ${fmtUSD(property.estimatedValue)}`,
               `RECOMMENDATION:`,
               `The cost approach supports assessment reduction to reflect current replacement cost methodology.`
             ].join('\n\n'),
@@ -473,7 +528,15 @@ export function Portfolio() {
     }
   ];
 
-  const displayProperties: MockProperty[] = properties.length > 0 ? properties as unknown as MockProperty[] : mockProperties;
+  // Normalize response shape and handle either array or { items: [...] }
+  const normalizeApiResponse = (apiData: any) => {
+    const raw = Array.isArray(apiData) ? apiData : Array.isArray(apiData?.items) ? apiData.items : [];
+    return raw.map(normalizeProperty);
+  };
+  
+  const displayProperties: MockProperty[] = properties.length > 0 
+    ? normalizeApiResponse(properties) as unknown as MockProperty[] 
+    : mockProperties;
 
   // Enhanced search and filter logic
   const searchAndFilterProperties = (properties: MockProperty[]) => {
@@ -544,7 +607,7 @@ export function Portfolio() {
   const handleValuationComplete = (finalValue: number) => {
     toast({
       title: "Valuation Completed",
-      description: `Final appraised value: $${finalValue.toLocaleString()}`,
+      description: `Final appraised value: ${fmtUSD(finalValue)}`,
     });
     completeAnalysis();
   };
@@ -714,74 +777,113 @@ export function Portfolio() {
     setIsAddingProperty(true);
 
     try {
-      // Prepare property data
-      const rawType = newPropertyData.propertyType;
-      const mappedType = mapPropertyTypeLabelToBackend(rawType);
+      // Map property type to backend enum before sending
+      const mappedType = mapPropertyTypeLabelToBackend(newPropertyData.propertyType);
       
-      const propertyPayload = {
+      console.info('[Add Property] Payload:', {
         address: newPropertyData.address.trim(),
-        propertyType: newPropertyData.propertyType,
-        currentAssessment: Number(newPropertyData.currentAssessment),
-        estimatedValue: newPropertyData.estimatedValue 
+        property_type: mappedType,
+        current_assessment: Number(newPropertyData.currentAssessment),
+        market_value: newPropertyData.estimatedValue 
           ? Number(newPropertyData.estimatedValue) 
-          : Number(newPropertyData.currentAssessment) * 0.88, // Default to 12% reduction
-        jurisdiction: newPropertyData.jurisdiction,
-        parcelNumber: newPropertyData.parcelNumber.trim(),
-        ownerName: newPropertyData.ownerName.trim(),
-        yearBuilt: newPropertyData.yearBuilt ? Number(newPropertyData.yearBuilt) : 2000,
-        squareFootage: newPropertyData.squareFootage ? Number(newPropertyData.squareFootage) : 2000,
-        notes: newPropertyData.notes
-      };
+          : Number(newPropertyData.currentAssessment) * 0.88
+      });
 
-      // Make API call to backend
+      // Make API call to backend with correct payload structure
       const response = await authenticatedRequest('/api/portfolio/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          address: propertyPayload.address,
-          property_type: mappedType,                // 🔑 backend enum value
-          current_assessment: propertyPayload.currentAssessment,
-          market_value: propertyPayload.estimatedValue,
-          square_footage: propertyPayload.squareFootage,
-          year_built: propertyPayload.yearBuilt,
-          city: propertyPayload.jurisdiction,
-          county: propertyPayload.jurisdiction
+          address: newPropertyData.address.trim(),
+          city: newPropertyData.jurisdiction?.trim() || 'Default City',
+          county: newPropertyData.jurisdiction?.trim() || 'Default County', 
+          property_type: mappedType,
+          current_assessment: Number(newPropertyData.currentAssessment),
+          market_value: newPropertyData.estimatedValue 
+            ? Number(newPropertyData.estimatedValue) 
+            : Number(newPropertyData.currentAssessment) * 0.88,
+          square_footage: newPropertyData.squareFootage ? Number(newPropertyData.squareFootage) : null,
+          year_built: newPropertyData.yearBuilt ? Number(newPropertyData.yearBuilt) : null
         })
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add property');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Failed to add property: ${response.status}`);
       }
 
       const result = await response.json();
+      console.info('[Add Property] Response:', result);
       
-      // Add property to local state using the response data
-      const newProperty = {
-        id: result.property_id || `prop_${Date.now()}`,
-        address: result.address,
-        market_value: result.market_value || result.current_assessment,
-        assessed_value: result.current_assessment,
-        flags: result.current_assessment > (result.market_value || result.current_assessment) ? ["potentially_over_assessed"] : []
-      };
+      // Clear any active filters so new property is visible
+      setSearchQuery('');
+      setFilterStatus('all');
+      setSelectedJurisdiction('all');
+      setSelectedPropertyType('all');
+      setMinValue('');
+      setMaxValue('');
       
-      addProperty(newProperty);
+      try {
+        // Add property to store using normalized data
+        if (result && result.id) {
+          const normalizedProperty = normalizeProperty({
+            ...result,
+            id: getPropId(result) // Ensure ID normalization
+          });
+          
+          // Optimistic insert - add to store (appends to end of list)
+          addProperty(normalizedProperty);
+          
+          toast({
+            title: "Property Added Successfully",
+            description: `${result.address || newPropertyData.address} has been added to your portfolio.`,
+          });
+          
+          console.info('[Add Property] Added to store:', normalizedProperty.id);
+        } else {
+          // If no response data, show generic success
+          toast({
+            title: "Property Added Successfully", 
+            description: `Property has been added to your portfolio. Refresh the page to see it.`,
+          });
+        }
+        
+        // Reset form and close modal
+        resetNewPropertyForm();
+        setShowAddPropertyModal(false);
+        
+      } catch (uiError) {
+        console.warn('[Add Property] UI error during success handling:', uiError);
+        // Still show success since API call worked
+        toast({
+          title: "Property Added Successfully",
+          description: "Property was added but there was a display issue. Refresh the page to see it.",
+        });
+        resetNewPropertyForm();
+        setShowAddPropertyModal(false);
+      }
       
-      toast({
-        title: "Property Added Successfully",
-        description: `${result.address} has been added to your portfolio and is ready for analysis`,
-      });
-      
-      // Reset form and close modal
-      resetNewPropertyForm();
-      setShowAddPropertyModal(false);
-      
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding property:', error);
+      
+      // Extract server validation error details
+      let errorMessage = "Unable to add property. Please try again.";
+      if (error?.detail) {
+        // FastAPI validation error format
+        if (typeof error.detail === 'string') {
+          errorMessage = error.detail;
+        } else if (Array.isArray(error.detail)) {
+          errorMessage = error.detail.map((e: any) => e.msg || e.message || String(e)).join(', ');
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error Adding Property",
-        description: "Unable to add property. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -970,7 +1072,7 @@ export function Portfolio() {
                   <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" scope="row">Current Assessment</th>
                   {compareData.map((property: MockProperty) => (
                     <td key={property.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      ${property.currentAssessment.toLocaleString()}
+                      ${fmtUSD(property.currentAssessment)}
                     </td>
                   ))}
                 </tr>
@@ -978,7 +1080,7 @@ export function Portfolio() {
                   <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" scope="row">Estimated Value</th>
                   {compareData.map((property: MockProperty) => (
                     <td key={property.id} className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-semibold">
-                      ${property.estimatedValue.toLocaleString()}
+                      ${fmtUSD(property.estimatedValue)}
                     </td>
                   ))}
                 </tr>
@@ -986,7 +1088,7 @@ export function Portfolio() {
                   <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" scope="row">Potential Savings</th>
                   {compareData.map((property: MockProperty) => (
                     <td key={property.id} className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold">
-                      ${property.potentialSavings.toLocaleString()}
+                      ${fmtUSD(property.potentialSavings)}
                     </td>
                   ))}
                 </tr>
@@ -1053,7 +1155,7 @@ export function Portfolio() {
           <Card className="bg-green-50">
             <CardContent className="p-6">
               <h3 className="text-sm font-medium text-green-600">Total Potential Savings</h3>
-              <p className="text-3xl font-bold text-green-700 mt-2">${totalSavings.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-green-700 mt-2">{fmtUSD(totalSavings)}</p>
             </CardContent>
           </Card>
           <Card className="bg-purple-50">
@@ -1261,7 +1363,7 @@ export function Portfolio() {
                 className="text-2xl font-bold text-green-700"
                 aria-describedby="potential-savings-label"
               >
-                ${sortedAndFilteredProperties.reduce((sum: number, p: MockProperty) => sum + (p.potentialSavings || 0), 0).toLocaleString()}
+                {fmtUSD(sortedAndFilteredProperties.reduce((sum: number, p: MockProperty) => sum + (p.potentialSavings || 0), 0))}
               </p>
             </div>
             <div 
@@ -1734,13 +1836,13 @@ export function Portfolio() {
                       <div>
                         <p className="text-sm font-medium text-gray-700">Current Assessment</p>
                         <p className="text-lg font-semibold text-gray-900">
-                          ${property.currentAssessment.toLocaleString()}
+                          ${fmtUSD(property.currentAssessment)}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-700">Est. Fair Value</p>
                         <p className="text-lg font-semibold text-blue-600">
-                          ${property.estimatedValue.toLocaleString()}
+                          ${fmtUSD(property.estimatedValue)}
                         </p>
                       </div>
                     </div>
@@ -1749,7 +1851,7 @@ export function Portfolio() {
                       <div>
                         <p className="text-sm font-medium text-gray-700">Potential Savings</p>
                         <p className="text-lg font-semibold text-green-600">
-                          ${property.potentialSavings?.toLocaleString() || '0'}
+                          {fmtUSD(property.potentialSavings)}
                         </p>
                       </div>
                       <div>
@@ -1940,7 +2042,7 @@ export function Portfolio() {
                       <div className="text-center">
                         <p className="text-sm font-medium text-purple-600">Potential Reduction</p>
                         <p className="text-2xl font-bold text-purple-700">
-                          ${getCurrentAnalysis()?.estimated_reduction?.toLocaleString() || 'N/A'}
+                          {fmtUSD(getCurrentAnalysis()?.estimated_reduction) || 'N/A'}
                         </p>
                       </div>
                       <div className="text-center">
@@ -1999,33 +2101,101 @@ export function Portfolio() {
                           try {
                             console.log("Generating appeal packet for:", currentProperty.address);
                             
-                            // Make real API call to backend
+                            // Use shared helper function for property ID normalization
+                            const propertyId = getPropId(currentProperty);
+                            console.log('📋 Normalized property ID for API:', propertyId);
+                            console.info('[Proof] Appeals payload', { property_id: propertyId });
+                            
+                            // Make real API call to backend with correct property_id (simplified payload)
                             const response = await authenticatedRequest('/api/appeals/generate-packet', {
                               method: 'POST',
                               headers: {
                                 'Content-Type': 'application/json',
                               },
                               body: JSON.stringify({
-                                property_address: currentProperty.address,
-                                jurisdiction: currentProperty.jurisdiction || "Default County",
-                                current_assessment: currentProperty.currentAssessment || 0,
-                                proposed_value: currentProperty.estimatedValue || 0,
-                                property_data: currentProperty
+                                property_id: propertyId
                               })
                             });
                             
                             if (!response.ok) {
-                              throw new Error(`API call failed: ${response.status}`);
+                              const errorData = await response.json().catch(() => ({}));
+                              throw new Error(errorData.detail || `Appeal packet generation failed: ${response.status}`);
                             }
                             
                             const result = await response.json();
-                            const packetId = result.packet_id || `packet_${Date.now()}`;
+                            const packetId = result.packet_id ?? result.id;
+                            console.log('✅ Appeal packet generation started, ID:', packetId);
                             
+                            // C2: APPEALS STATUS POLLING with backoff
+                            console.log('🔄 Starting status polling for packet:', packetId);
+                            let tries = 0;
+                            const maxTries = 20;
+                            
+                            while (tries < maxTries) {
+                              tries++;
+                              const waitTime = Math.min(2000, 300 + tries * 200); // Progressive backoff
+                              await new Promise(resolve => setTimeout(resolve, waitTime));
+                              
+                              console.log(`🔍 Status check ${tries}/${maxTries} for packet ${packetId}`);
+                              const statusResponse = await authenticatedRequest(`/api/appeals/packet-status/${packetId}`);
+                              
+                              if (!statusResponse.ok) {
+                                const errorData = await statusResponse.json().catch(() => ({}));
+                                console.warn('Status check failed:', errorData.detail || statusResponse.status);
+                                continue; // Continue polling on status check failures
+                              }
+                              
+                              const statusJson = await statusResponse.json();
+                              console.log('📊 Status response:', statusJson);
+                              
+                              if (statusJson.status === 'ready' || statusJson.status === 'completed') {
+                                console.log('✅ Appeal packet ready for download');
+                                break;
+                              }
+                              
+                              if (statusJson.status === 'error' || statusJson.status === 'failed') {
+                                throw new Error('Appeal packet generation failed on server');
+                              }
+                            }
+                            
+                            if (tries >= maxTries) {
+                              throw new Error('Appeal packet generation timeout - please try again later');
+                            }
+                            
+                            // C2: DOWNLOAD APPEAL PACKET
+                            console.log('📥 GET /api/appeals/download/' + packetId);
+                            const downloadResponse = await authenticatedRequest(`/api/appeals/download/${packetId}`);
+                            
+                            if (!downloadResponse.ok) {
+                              const errorData = await downloadResponse.json().catch(() => ({}));
+                              throw new Error(errorData.detail || `Appeal packet download failed: ${downloadResponse.status}`);
+                            }
+                            
+                            // Handle file download with Content-Disposition
+                            const blob = await downloadResponse.blob();
+                            const contentDisposition = downloadResponse.headers.get('Content-Disposition');
+                            let filename = `appeal_packet_${propertyId}.pdf`;
+                            
+                            if (contentDisposition) {
+                              const matches = contentDisposition.match(/filename="?([^"]+)"?/);
+                              if (matches) filename = matches[1];
+                            }
+                            
+                            // Create download link and trigger download
+                            const downloadLink = document.createElement('a');
+                            downloadLink.href = URL.createObjectURL(blob);
+                            downloadLink.download = filename;
+                            document.body.appendChild(downloadLink);
+                            downloadLink.click();
+                            document.body.removeChild(downloadLink);
+                            URL.revokeObjectURL(downloadLink.href);
+                            
+                            console.log('✅ Appeal packet downloaded:', filename);
                             setAppealPacketGenerated(packetId);
                             
                             toast({
-                              title: "Appeal Packet Generated",
-                              description: `Professional appeal packet created for ${currentProperty.address}. Ready to file with county.`,
+                              title: "Appeal Packet Complete",
+                              description: `Professional appeal packet for ${currentProperty.address} generated and downloaded successfully.`,
                             });
                             
                           } catch (error) {
@@ -2101,10 +2271,13 @@ export function Portfolio() {
                       try {
                         console.log('Starting Supernova report generation for:', currentProperty);
                         
-                        // Validate required data before proceeding
-                        if (!currentProperty.address || !currentProperty.propertyType) {
-                          throw new Error('Property address and type are required for report generation');
+                        // Validate required data before proceeding - use crosswalk for type normalization
+                        if (!currentProperty.address) {
+                          throw new Error('Property address is required for report generation');
                         }
+                        
+                        // Derive backend property type using crosswalk system
+                        const backendPropertyType = mapPropertyTypeLabelToBackend(currentProperty.propertyType);
                         
                         // Generate comprehensive IAAO/MAI compliant report data with Phase 1 enhancements
                         console.log('Getting current analysis...');
@@ -2119,131 +2292,85 @@ export function Portfolio() {
                           throw new Error('Analysis data is required for Supernova report generation. Please run AI analysis first.');
                         }
                         
-                        // SUPERNOVA PHASE 2B: Fetch AI-enhanced market intelligence
-                        console.log('Calling MarketDataService.generateSupernova2BReport...');
-                        const supernovaIntelligence = await MarketDataService.generateSupernova2BReport({
-                          address: currentProperty.address,
-                          propertyType: currentProperty.propertyType,
-                          squareFootage: currentProperty.squareFootage,
-                          yearBuilt: currentProperty.yearBuilt,
-                          jurisdiction: currentProperty.jurisdiction,
-                          parcelNumber: currentProperty.parcelNumber,
-                          radiusMiles: 3,
-                          maxComps: 10,
-                          maxAgeDays: 365
+                        // C1: SUPERNOVA API FLOW - Generate → Unlock → Download
+                        const propertyId = getPropId(currentProperty);
+                        console.log('🌟 Starting Supernova API flow for property:', propertyId);
+                        console.info('[Proof] Supernova payload', { property_id: propertyId, report_type: 'supernova' });
+                        // Step 1: Generate Report
+                        console.log('📤 POST /api/reports/generate');
+                        const generateResponse = await authenticatedRequest('/api/reports/generate', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            property_id: propertyId,
+                            report_type: 'supernova'
+                          })
                         });
-                        console.log('Supernova intelligence generated:', supernovaIntelligence);
                         
-                        // Calculate enhanced appeal recommendation with safe division
-                        const assessmentValue = currentProperty.currentAssessment || 0;
-                        const estimatedValue = currentProperty.estimatedValue || 0;
-                        
-                        if (estimatedValue === 0) {
-                          throw new Error('Cannot generate report: Property estimated value is required');
+                        if (!generateResponse.ok) {
+                          const errorData = await generateResponse.json().catch(() => ({}));
+                          throw new Error(errorData.detail || `Report generation failed: ${generateResponse.status}`);
                         }
                         
-                        const assessmentToValueRatio = assessmentValue / estimatedValue;
-                        const overAssessmentPercentage = assessmentToValueRatio > 1 ? ((assessmentToValueRatio - 1) * 100).toFixed(2) : 0;
-                        const shouldAppeal = assessmentToValueRatio > 1.05; // Over-assessed by more than 5%
+                        const genJson = await generateResponse.json();
+                        const reportId = genJson.report_id ?? genJson.id;
+                        console.log('✅ Report generation started, ID:', reportId);
                         
-                        // Use jurisdiction-specific tax rate if available
-                        const taxRate = 0.025; // Default 2.5% tax rate - should come from jurisdiction data
-                        const potentialSavings = currentProperty.potentialSavings || (assessmentValue - estimatedValue);
-                        const annualTaxSavings = Math.max(0, potentialSavings * (taxRate / 100));
-                        const fiveYearSavings = annualTaxSavings * 5;
-                        const appealCost = supernovaIntelligence.jurisdictionData?.appealFee || 2500;
-                        const roi = appealCost > 0 ? ((fiveYearSavings - appealCost) / appealCost * 100) : 0;
-                      
-                      const generatedReportData = {
-                        // Basic Information
-                        property: currentProperty,
-                        analysis: currentAnalysis,
-                        valuation: currentValuation,
-                        date: new Date().toLocaleDateString(),
-                        preparedBy: "CHARLY AI Property Tax Appeal Analysis System",
-                        reportType: "Comprehensive Property Tax Appeal Analysis",
+                        // Step 2: Unlock Report (always required for Supernova)
+                        console.log('🔓 POST /api/reports/unlock');
+                        const unlockResponse = await authenticatedRequest('/api/reports/unlock', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ report_id: reportId })
+                        });
                         
-                        // Executive Summary Data
-                        appealRecommendation: shouldAppeal ? "STRONG APPEAL CANDIDATE" : assessmentToValueRatio > 0.95 ? "MARGINAL APPEAL CANDIDATE" : "FAIRLY ASSESSED",
-                        assessmentAnalysis: {
-                          currentAssessment: currentProperty?.currentAssessment || 0,
-                          estimatedMarketValue: currentProperty?.estimatedValue || 0,
-                          assessmentToValueRatio: (assessmentToValueRatio * 100).toFixed(2),
-                          overAssessmentAmount: currentProperty?.potentialSavings || 0,
-                          overAssessmentPercentage: overAssessmentPercentage,
-                          confidenceLevel: currentAnalysis?.confidence_score || 0,
-                          successProbability: currentAnalysis?.success_probability || 0
-                        },
-                        
-                        // Financial Impact
-                        financialImpact: {
-                          currentAnnualTaxes: currentProperty ? (currentProperty.currentAssessment * taxRate) : 0,
-                          projectedAnnualTaxes: currentProperty ? (currentProperty.estimatedValue * taxRate) : 0,
-                          annualTaxSavings: annualTaxSavings,
-                          fiveYearSavings: fiveYearSavings,
-                          appealCost: appealCost,
-                          netBenefit: fiveYearSavings - appealCost,
-                          roi: roi,
-                          paybackPeriod: annualTaxSavings > 0 ? (appealCost / annualTaxSavings).toFixed(1) : "N/A"
-                        },
-                        
-                        // Valuation Summary
-                        valuationSummary: {
-                          incomeApproachValue: currentValuation?.incomeValue || 0,
-                          salesApproachValue: currentValuation?.salesValue || 0,
-                          costApproachValue: currentValuation?.costValue || 0,
-                          reconciledValue: currentValuation?.weightedValue || 0,
-                          weights: {
-                            income: 40,
-                            sales: 40,
-                            cost: 20
-                          }
-                        },
-                        
-                        // SUPERNOVA PHASE 2B: Enhanced Market Analysis with AI Intelligence
-                        marketAnalysis: {
-                          jurisdiction: currentProperty.jurisdiction,
-                          propertyType: currentProperty.propertyType,
-                          comparableSalesCount: supernovaIntelligence?.marketData?.comparableSales?.length || 0,
-                          marketTrend: supernovaIntelligence?.marketData?.marketTrends?.marketCondition || "Stable",
-                          averagePricePerSqFt: supernovaIntelligence?.marketData?.pricePerSqFtAnalysis?.marketAverage || 0,
-                          subjectPricePerSqFt: supernovaIntelligence?.marketData?.pricePerSqFtAnalysis?.subject || 0,
-                          priceVariance: supernovaIntelligence?.marketData?.pricePerSqFtAnalysis?.variance || 0,
-                          marketPosition: supernovaIntelligence?.marketData?.pricePerSqFtAnalysis?.ranking || "Average",
-                          comparableSales: supernovaIntelligence?.aiEnhancements?.smartComparableSelection?.selectedComparables?.slice(0, 3) || [], // AI-selected top comparables
-                          assessmentHistory: supernovaIntelligence?.assessmentHistory || [],
-                          jurisdictionIntelligence: supernovaIntelligence?.jurisdictionData || {},
-                          propertyAnalytics: supernovaIntelligence?.propertyAnalytics || {},
-                          strategicRecommendations: supernovaIntelligence?.strategicRecommendations || {}
-                        },
-                        
-                        // SUPERNOVA 2B: AI-Enhanced Intelligence Scores
-                        marketPositionScore: supernovaIntelligence?.marketPositionScore || 75,
-                        appealTimingScore: supernovaIntelligence?.appealTimingScore || 80,
-                        
-                        // SUPERNOVA 2B: Advanced AI Analysis Results
-                        supernovaEnhancements: {
-                          aiAnalysisVersion: supernovaIntelligence?.aiEnhancements?.analysisVersion || "2B-1.0",
-                          successProbability: supernovaIntelligence?.aiEnhancements?.successProbabilityModel || {},
-                          smartComparables: supernovaIntelligence?.aiEnhancements?.smartComparableSelection || {},
-                          enhancedPositioning: supernovaIntelligence?.aiEnhancements?.enhancedMarketPositioning || {},
-                          supernovaRecommendations: supernovaIntelligence?.supernovaRecommendations || {},
-                          confidenceLevel: supernovaIntelligence?.aiEnhancements?.confidenceLevel || 85,
-                          generatedAt: supernovaIntelligence?.aiEnhancements?.generatedAt || new Date().toISOString()
+                        if (!unlockResponse.ok) {
+                          const errorData = await unlockResponse.json().catch(() => ({}));
+                          throw new Error(errorData.detail || `Report unlock failed: ${unlockResponse.status}`);
                         }
-                      };
-                      
-                      // Show preview instead of immediate download
-                      setReportData(generatedReportData as unknown as ReportData);
-                      setShowReportPreview(true);
-                      
-                      toast({
-                        title: "🌟 SUPERNOVA 2B Report Generated",
-                        description: `Advanced AI analysis complete with ${supernovaIntelligence?.aiEnhancements?.confidenceLevel || 85}% confidence level`,
-                      });
-                      
-                      // Mark analysis as complete so Generate Appeal button shows
-                      completeAnalysis();
+                        
+                        const unlockJson = await unlockResponse.json();
+                        const downloadUrl = unlockJson.download_url || `/api/reports/download/${reportId}`;
+                        console.log('✅ Report unlocked, download URL:', downloadUrl);
+                        
+                        // Step 3: Download Report
+                        console.log('📥 GET', downloadUrl);
+                        const downloadResponse = await authenticatedRequest(downloadUrl);
+                        
+                        if (!downloadResponse.ok) {
+                          const errorData = await downloadResponse.json().catch(() => ({}));
+                          throw new Error(errorData.detail || `Report download failed: ${downloadResponse.status}`);
+                        }
+                        
+                        // Handle file download with Content-Disposition
+                        const blob = await downloadResponse.blob();
+                        const contentDisposition = downloadResponse.headers.get('Content-Disposition');
+                        let filename = `supernova_report_${propertyId}.pdf`;
+                        
+                        if (contentDisposition) {
+                          const matches = contentDisposition.match(/filename="?([^"]+)"?/);
+                          if (matches) filename = matches[1];
+                        }
+                        
+                        // Create download link and trigger download
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = URL.createObjectURL(blob);
+                        downloadLink.download = filename;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                        URL.revokeObjectURL(downloadLink.href);
+                        
+                        console.log('✅ Supernova report downloaded:', filename);
+                        
+                        // Show success message
+                        toast({
+                          title: "🌟 Supernova Report Generated",
+                          description: `Professional IAAO-compliant report for ${currentProperty.address} downloaded successfully.`,
+                        });
+                        
+                        // Mark analysis as complete so Generate Appeal button shows
+                        completeAnalysis();
                       
                     } catch (error: unknown) {
                       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

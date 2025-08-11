@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useValuationStore } from '@/store/valuation';
+import { authService } from '@/lib/auth';
 import { IncomeApproachComprehensive } from './valuation/IncomeApproachComprehensive';
 import { SalesComparisonComprehensive } from './valuation/SalesComparisonComprehensive';
 import { CostApproachComprehensive } from './valuation/CostApproachComprehensive';
@@ -32,6 +33,8 @@ export function ValuationTabs({
 }: ValuationTabsProps) {
   const [activeTab, setActiveTab] = useState('income');
   const [isDraft, setIsDraft] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const {
     loading,
@@ -48,10 +51,23 @@ export function ValuationTabs({
   } = useValuationStore();
 
   useEffect(() => {
-    if (propertyId) {
-      console.log(`🔄 Loading valuation data for property: ${propertyId}`);
-      loadValuation(propertyId);
-    }
+    const loadValuationData = async () => {
+      if (propertyId) {
+        console.log(`🔄 Loading valuation data for property: ${propertyId}`);
+        
+        // R3 requirement: Ensure auth is ready before making API calls
+        try {
+          console.log('Workup: Ensuring auth readiness before valuation API calls...');
+          await authService.ensureReady();
+          
+          await loadValuation(propertyId);
+        } catch (error) {
+          console.error('Failed to load valuation data:', error);
+        }
+      }
+    };
+    
+    loadValuationData();
   }, [propertyId, loadValuation]);
 
   useEffect(() => {
@@ -76,12 +92,37 @@ export function ValuationTabs({
   };
 
   const handleFinalize = async () => {
+    if (isSubmitted || isSubmitting) return; // Prevent double-clicks
+    
+    setIsSubmitting(true);
     try {
-      await finalizeValuation();
+      const result = await finalizeValuation();
       const finalValue = calculateWeightedValue();
+      
+      // Mark as submitted and disable the button
+      setIsSubmitted(true);
+      
+      // Show success toast
+      const { toast } = await import('@/components/ui/use-toast');
+      toast({
+        title: "✅ Valuation Finalized",
+        description: `Valuation submitted successfully. Filing ID: ${result?.filingId || 'N/A'}`,
+      });
+      
       onValuationComplete?.(finalValue);
     } catch (error) {
       console.error('Failed to finalize valuation:', error);
+      
+      // Show error toast with FastAPI detail
+      const { toast } = await import('@/components/ui/use-toast');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to finalize valuation';
+      toast({
+        title: "Finalization Failed",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -175,11 +216,11 @@ export function ValuationTabs({
               </Button>
               <Button 
                 onClick={handleFinalize}
-                disabled={weightedValue <= 0}
-                className="bg-green-600 hover:bg-green-700"
+                disabled={weightedValue <= 0 || isSubmitted || isSubmitting}
+                className={isSubmitted ? "bg-gray-500" : "bg-green-600 hover:bg-green-700"}
               >
                 <Target className="w-4 h-4 mr-2" />
-                Finalize
+                {isSubmitting ? 'Submitting...' : isSubmitted ? 'Submitted' : 'Finalize'}
               </Button>
             </div>
           </div>

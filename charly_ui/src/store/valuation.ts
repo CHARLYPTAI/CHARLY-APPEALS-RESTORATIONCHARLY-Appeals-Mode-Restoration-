@@ -583,17 +583,41 @@ export const useValuationStore = create<ValuationState>()(
         
         try {
           const finalValue = get().calculateWeightedValue();
-          // For frontend-only testing, simulate successful finalization
-          console.log(`Finalizing valuation for property: ${propertyId} with value: $${finalValue.toLocaleString()} (simulated)`);
-          await new Promise(resolve => setTimeout(resolve, 300));
+          console.log(`Finalizing valuation for property: ${propertyId} with value: $${finalValue.toLocaleString()}`);
           
-          // Update last saved timestamp and mark as finalized
+          // C3: FINALIZE - Submit to electronic filing endpoint
+          const { authenticatedRequest } = await import('../lib/auth');
+          
+          const response = await authenticatedRequest('/api/filing/electronic-submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              property_id: propertyId,
+              finalized_value: finalValue,
+              valuation_complete: true,
+              submission_type: 'valuation_finalization'
+            })
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || `Filing submission failed: ${response.status}`);
+          }
+          
+          const result = await response.json();
+          console.log('✅ Valuation finalized and submitted:', result);
+          
+          // Update state to reflect successful submission
           set({ 
             lastUpdated: new Date().toISOString(),
-            // Could add finalized flag if needed in the future
+            // Could add filing confirmation data if needed
           });
+          
+          return result; // Return filing confirmation
+          
         } catch (error) {
           set({ error: error instanceof Error ? error.message : 'Failed to finalize valuation' });
+          throw error; // Re-throw so the UI can handle it
         }
       },
 

@@ -39,7 +39,7 @@ curl -s http://127.0.0.1:8001/api/health | head -1
 2. **Say**: "I'll add a commercial property to demonstrate CHARLY's valuation capabilities"  
 3. **Fill Sample Data**:
    - **Address**: 123 Main Street, Austin, TX 78701
-   - **Property Type**: Commercial  
+   - **Property Type**: Standalone Retail *(UI labels map to backend enum automatically)*
    - **Current Assessment**: $1,200,000  
    - **Estimated Market Value**: $950,000  
    - **Square Footage**: 15000  
@@ -48,6 +48,13 @@ curl -s http://127.0.0.1:8001/api/health | head -1
 4. **Submit**: Click "Add Property"  
 5. **Success Cue**: Property appears in portfolio list  
 6. **Say**: "Notice CHARLY immediately calculates the potential tax savings - in this case, the property appears over-assessed by $250,000"
+
+### Property Type Crosswalk
+**Note**: UI labels map to backend enum automatically:
+- **"Standalone Retail" → Commercial**
+- **"Restaurant / Bar" → Commercial** 
+- **"Warehouse/Distribution" → Industrial**
+- **"Mixed-Use (Resi over Retail)" → Mixed Use**
 
 **Response Time**: 1-2 seconds  
 **Recovery**: If form fails, refresh and re-enter data  
@@ -219,4 +226,29 @@ git restore --source=HEAD -- charly_ui/src/pages/Appeals.tsx "charly_ui/src/page
 git restore --source=HEAD -- charly_ui/src/pages/Portfolio.tsx  
 git restore --source=HEAD -- fastapi_backend/routes/reports_endpoints.py
 git restore --source=HEAD -- fastapi_backend/routes/appeals_endpoints.py
+
+---
+
+## Phase C: Action Button Success Cues
+
+### Supernova Report (Generate → Unlock → Download)
+**Success Indicators**:
+- Network: POST `/api/reports/generate` (200/202) → POST `/api/reports/unlock` (200) → GET `/api/reports/download/<id>` (200)
+- Console: "✅ Supernova report downloaded: supernova_report_<property_id>.pdf"
+- Toast: "🌟 Supernova Report Generated - Professional IAAO-compliant report for [address] downloaded successfully"
+- File: PDF automatically downloads to browser's download folder
+
+### Generate Appeal (Generate → Status Poll → Download)  
+**Success Indicators**:
+- Network: POST `/api/appeals/generate-packet` (200) → multiple GET `/api/appeals/packet-status/<id>` → GET `/api/appeals/download/<id>` (200)
+- Console: "✅ Appeal packet downloaded: appeal_packet_<property_id>.pdf"
+- Toast: "Appeal Packet Complete - Professional appeal packet for [address] generated and downloaded successfully"
+- File: PDF automatically downloads to browser's download folder
+
+### Finalize Valuation (Submit to Filing)
+**Success Indicators**:
+- Network: POST `/api/filing/electronic-submit` (200)
+- Console: "✅ Valuation finalized and submitted: {filingId: '...', status: 'submitted'}"
+- Toast: "✅ Valuation Finalized - Valuation submitted successfully. Filing ID: [filing_id]"
+- UI: Button changes to "Submitted" (gray, disabled)
 ```

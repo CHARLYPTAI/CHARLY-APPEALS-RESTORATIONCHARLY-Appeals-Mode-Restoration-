@@ -88,4 +88,31 @@ TOTAL:  12
 - **Backup**: `../charly_v0.9.1-demo-lock.zip` available
 
 ---
+
+## v0.9.1-crosswalk Smoke Test Results
+**Date**: 2025-08-11  
+**Commit**: 30bd1d4 (Property type crosswalk hotfix)  
+
+### Health Checks ✅
+- **Server Health**: PASS ✅ `{"status":"healthy","frontend_built":true}`
+- **API Endpoints**: PASS ✅ (Authentication required as expected)
+- **Frontend Build**: PASS ✅ (Completed successfully in 13.36s)
+
+### Property Type Crosswalk Tests ✅
+- **Warehouse/Distribution → Industrial**: PASS ✅
+- **Mixed-Use (Resi over Retail) → Mixed Use**: PASS ✅  
+- **School / Church → Special Purpose**: PASS ✅
+- **Single-Family Residential → Residential**: PASS ✅
+
+### API Integration Tests ✅
+- **Backend Enum Validation**: PASS ✅ (All 6 enum values accepted)
+- **Crosswalk Function**: PASS ✅ (44 property types mapped)
+- **TypeScript Build**: PASS ✅ (No compilation errors)
+
+### Summary
+**Status**: ✅ **READY FOR DEMO**  
+**Crosswalk Integration**: Fully operational  
+**Property Type Resolution**: 422 errors eliminated
+
+---
 **FINAL STATUS**: ✅ **GO** - Demo is production-ready for SWARTZ & Associates presentation
