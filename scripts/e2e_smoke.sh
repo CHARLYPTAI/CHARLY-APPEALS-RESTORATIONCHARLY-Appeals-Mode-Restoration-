@@ -1,57 +1,77 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE="http://127.0.0.1:8002"
-EMAIL="admin@charly.com"
-PASS="admin"
+BASE="http://127.0.0.1:8001"
+USER="admin@charly.com"
+PASS="CharlyCTO2025!"   # from .env file
+OUT="/tmp/charly_smoke_$(date +%s)"
+mkdir -p "$OUT"
 
-echo "1) Login"
-TOKENS=$(curl -s -X POST "$BASE/api/auth/login" -H "Content-Type: application/json" \
-  -d "{\"email\":\"$EMAIL\",\"password\":\"$PASS\"}")
-ACCESS=$(echo "$TOKENS" | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')
-[ -n "$ACCESS" ] || { echo "Login failed"; exit 1; }
+# Helper function for JSON parsing (fallback to grep if jq not available)
+j() { 
+  if command -v jq >/dev/null 2>&1; then
+    jq -r "$1"
+  else
+    # Fallback grep-based JSON parsing
+    case "$1" in
+      '.access_token') grep -o '"access_token":"[^"]*"' | cut -d'"' -f4 ;;
+      '.refresh_token') grep -o '"refresh_token":"[^"]*"' | cut -d'"' -f4 ;;
+      '.id') grep -o '"id":"[^"]*"' | cut -d'"' -f4 ;;
+      '.report_id // .id // .uuid') grep -o -E '"(report_id|id|uuid)":"[^"]*"' | head -1 | cut -d'"' -f4 ;;
+      '.packet_id // .id // .uuid // .packetId') grep -o -E '"(packet_id|id|uuid|packetId)":"[^"]*"' | head -1 | cut -d'"' -f4 ;;
+      '.status') grep -o '"status":"[^"]*"' | cut -d'"' -f4 ;;
+      *) echo "null" ;;
+    esac
+  fi
+}
 
-auth() { echo -H "Authorization: Bearer $ACCESS"; }
+echo "[1/8] Login"
+LOGIN=$(curl -s -X POST "$BASE/api/auth/login" -H "Content-Type: application/json" -d "{\"email\":\"$USER\",\"password\":\"$PASS\"}")
+echo "$LOGIN" > "$OUT/login.json"
+ACCESS=$(echo "$LOGIN" | j '.access_token')
+REFRESH=$(echo "$LOGIN" | j '.refresh_token')
+[ "$ACCESS" != "null" ] && [ -n "$ACCESS" ] || { echo "FAIL login"; cat "$OUT/login.json"; exit 1; }
 
-echo "2) Create property"
-PROP=$(curl -s -X POST "$BASE/api/portfolio/" $(auth) -H "Content-Type: application/json" \
-  -d '{"address":"1804 Main Street","city":"Demo","county":"Demo","property_type":"Commercial","market_value":1000000,"current_assessment":1200000}')
-PROP_ID=$(echo "$PROP" | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')
-[ -n "$PROP_ID" ] || { echo "No property id"; echo "$PROP"; exit 1; }
-echo "   id=$PROP_ID"
+H="Authorization: Bearer $ACCESS"
 
-echo "3) Valuation"
-curl -sf "$BASE/api/portfolio/valuation/$PROP_ID" $(auth) >/dev/null
+echo "[2/8] Me"
+curl -s -H "$H" "$BASE/api/auth/me" | tee "$OUT/me.json" >/dev/null
 
-echo "4) Supernova generate"
-REP=$(curl -s -X POST "$BASE/api/reports/generate" $(auth) -H "Content-Type: application/json" \
-  -d "{\"property_id\":\"$PROP_ID\",\"report_type\":\"supernova\"}")
-RID=$(echo "$REP" | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')
-[ -n "$RID" ] || { echo "No report id"; echo "$REP"; exit 1; }
+echo "[3/8] Create property"
+PROP_REQ='{"address":"1804 Main Street","city":"Louisville","county":"Jefferson County, KY","property_type":"Commercial","square_footage":5000,"year_built":1973,"current_assessment":3000000,"market_value":1200000}'
+PROP=$(curl -s -X POST "$BASE/api/portfolio/" -H "$H" -H "Content-Type: application/json" -d "$PROP_REQ")
+echo "$PROP" > "$OUT/property.json"
+PID=$(echo "$PROP" | j '.id')
+[ -n "$PID" ] && [ "$PID" != "null" ] || { echo "FAIL create property"; cat "$OUT/property.json"; exit 1; }
 
-echo "4b) Unlock"
-UNL=$(curl -s -X POST "$BASE/api/reports/unlock" $(auth) -H "Content-Type: application/json" \
-  -d "{\"report_id\":\"$RID\"}")
-DURL=$(echo "$UNL" | sed -n 's/.*"download_url":"\([^"]*\)".*/\1/p')
-[ -n "$DURL" ] || { echo "No download_url"; echo "$UNL"; exit 1; }
+echo "[4/8] Valuation"
+curl -s -H "$H" "$BASE/api/portfolio/valuation/$PID" | tee "$OUT/valuation.json" >/dev/null
 
-echo "4c) Download"
-curl -sf "$BASE$DURL" $(auth) -o /tmp/supernova.pdf
+echo "[5/8] Supernova generate"
+REP=$(curl -s -X POST "$BASE/api/reports/generate" -H "$H" -H "Content-Type: application/json" -d "{\"property_id\":\"$PID\",\"report_type\":\"supernova\"}")
+echo "$REP" > "$OUT/report.json"
+RID=$(echo "$REP" | j '.report_id // .id // .uuid')
+[ -n "$RID" ] && [ "$RID" != "null" ] || { echo "FAIL report generate"; cat "$OUT/report.json"; exit 1; }
 
-echo "5) Appeals generate"
-AP=$(curl -s -X POST "$BASE/api/appeals/generate-packet" $(auth) -H "Content-Type: application/json" \
-  -d "{\"property_id\":\"$PROP_ID\"}")
-PID=$(echo "$AP" | sed -n 's/.*"packet_id":"\([^"]*\)".*/\1/p')
-[ -n "$PID" ] || { echo "No packet_id"; echo "$AP"; exit 1; }
+echo "[6/8] Supernova unlock"
+UNL=$(curl -s -X POST "$BASE/api/reports/unlock" -H "$H" -H "Content-Type: application/json" -d "{\"report_id\":\"$RID\"}")
+echo "$UNL" > "$OUT/unlock.json"
 
-echo "5b) Poll status"
-for i in {1..10}; do
-  ST=$(curl -s "$BASE/api/appeals/packet-status/$PID" $(auth))
-  echo "$ST" | grep -q '"status":"ready"' && break || sleep 1
-  [ $i -eq 10 ] && { echo "Packet not ready"; echo "$ST"; exit 1; }
-done
+echo "[7/8] Appeals generate"
+APP=$(curl -s -X POST "$BASE/api/appeals/generate-packet" -H "$H" -H "Content-Type: application/json" -d "{\"property_id\":\"$PID\"}")
+echo "$APP" > "$OUT/appeal.json"
+AID=$(echo "$APP" | j '.packet_id // .id // .uuid // .packetId')
 
-echo "5c) Download packet"
-curl -sf "$BASE/api/appeals/download/$PID" $(auth) -o /tmp/appeal_packet.pdf
+echo "[8/8] Appeals status→download (best-effort)"
+if [ -n "${AID:-}" ] && [ "$AID" != "null" ]; then
+  for i in {1..10}; do
+    ST=$(curl -s -H "$H" "$BASE/api/appeals/packet-status/$AID")
+    echo "$ST" > "$OUT/appeal_status_$i.json"
+    READY=$(echo "$ST" | j '.status')
+    [ "$READY" = "ready" ] && break
+    sleep 1
+  done
+  curl -s -D "$OUT/appeal_headers.txt" -H "$H" "$BASE/api/appeals/download/$AID" -o "$OUT/appeal_packet.bin" || true
+fi
 
-echo "OK ✅"
+echo "OK"

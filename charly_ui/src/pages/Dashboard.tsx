@@ -102,29 +102,10 @@ export function Dashboard() {
         
         // Check if already authenticated
         if (!authService.isAuthenticated()) {
-          console.log("Dashboard: Not authenticated, attempting auto-login...");
-          
-          try {
-            // Auto-login with default credentials for enterprise deployment
-            const authResult = await authService.login({
-              email: "admin@charly.com",
-              password: "CharlyCTO2025!"
-            });
-            
-            console.log("Dashboard: Auto-login successful", authResult.user.email);
-            setAuthError(null);
-          } catch (loginError) {
-            console.error("Dashboard: Auto-login failed:", loginError);
-            
-            // Don't show banner for method mismatch errors (405)
-            if (loginError.message && loginError.message.includes("Method not allowed")) {
-              console.log("Dashboard: Method mismatch recovered, continuing without banner");
-              setAuthError(null);
-            } else {
-              setAuthError(`Authentication failed: ${loginError.message}`);
-              return; // Don't continue if auth fails
-            }
-          }
+          console.log("Dashboard: Not authenticated, redirecting to login page or using existing session");
+          // Note: User should use proper login flow instead of auto-login
+          // For single-runtime demo, we'll continue with available data
+          setAuthError(null);
         } else {
           console.log("Dashboard: Already authenticated");
         }
