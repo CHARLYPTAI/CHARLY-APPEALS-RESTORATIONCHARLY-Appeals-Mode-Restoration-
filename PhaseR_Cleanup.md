@@ -149,3 +149,17 @@
 - ❌ Appeals generate crashed with datetime error  
 
 **Conclusion:** Appeals workflow is broken due to missing datetime import. Smoke test successfully identified production-blocking bug.
+
+## B6 — Tag & Zip Baseline
+- date_utc: 2025-08-12T01:01:20Z
+- head_sha: fa62e9f4780741ff88a9591156be8038ad1c2c01
+- tag_created: v0.9.6-nuke-drift
+- zip: charly_v0.9.6-nuke-drift.zip (sha256 below)
+- sha256: e84ff9e6fe5349dabd5fe1956251d7a2282bb43ec9b8db937562c37b310aa2c0
+## C — Prune & Ship
+- date_utc: 2025-08-12T01:25:08Z
+- head_sha: 7d68d4f0379750918e9836a94212a4ae0dcded41
+- tag_created: v0.9.7-pruned
+- zip: charly_v0.9.7-pruned.zip
+- sha256: 218b2edc1caf302b4f454fa2c3ad301010129dbf931c3d69a632c1635c2a5742
+- notes: post-prune smoke GREEN; :5174 closed; single-gateway enforced
