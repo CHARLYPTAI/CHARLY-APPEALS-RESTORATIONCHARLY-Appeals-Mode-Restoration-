@@ -171,3 +171,11 @@
 - sha256: fb9ffb644dc826588e870dec94c1a91aca6e7f9c8eefb56298147e8f83d0d88c
 - notes: silent logged-out bootstrap; gentle recovery; banner removed; post-prune smoke GREEN; single-runtime (:8001) enforced
 EOF < /dev/null
+
+## J — CSP-Safe Public Fetch
+- date_utc: 2025-08-12T03:55:59Z
+- head_sha: a8309a83430459b5256923f0bcda3f38e91862d4
+- tag_created: v0.9.10-silent-fetch
+- zip: charly_v0.9.10-silent-fetch.zip
+- sha256: f6d8bba566c7ea0a6e475c9060eaaf0c8c1a437aa0f0924b251de2c46c549214
+- notes: public /api/version (authRequired=false); same-origin URLs; logged-out boot silent; smoke GREEN
