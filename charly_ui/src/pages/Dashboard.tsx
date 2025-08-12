@@ -103,9 +103,11 @@ export function Dashboard() {
         // Check if already authenticated
         if (!authService.isAuthenticated()) {
           console.log("Dashboard: Not authenticated, redirecting to login page or using existing session");
-          // Note: User should use proper login flow instead of auto-login
-          // For single-runtime demo, we'll continue with available data
-          setAuthError(null);
+          // Try gentle auth recovery (won't throw on clean logged-out)
+          await authService.ensureAutoLoginOrRefresh();
+          if (!authService.isAuthenticated()) {
+            console.log("Dashboard: Clean logged-out state, proceeding without auth banner");
+          }
         } else {
           console.log("Dashboard: Already authenticated");
         }
@@ -130,7 +132,10 @@ export function Dashboard() {
         // fetchAIInsights();
       } catch (error) {
         console.error("Dashboard: Authentication initialization failed:", error);
-        setAuthError("Failed to initialize authentication");
+        // Only show error for actual failures, not clean logged-out states
+        if (error instanceof Error && error.message !== 'Authentication recovery failed') {
+          setAuthError("Authentication system unavailable");
+        }
         
         // Continue rendering with fallback data - never show white screen
         console.log("Dashboard: Using fallback mode due to auth error");
