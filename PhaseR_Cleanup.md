@@ -163,3 +163,11 @@
 - zip: charly_v0.9.7-pruned.zip
 - sha256: 218b2edc1caf302b4f454fa2c3ad301010129dbf931c3d69a632c1635c2a5742
 - notes: post-prune smoke GREEN; :5174 closed; single-gateway enforced
+## H — Auth Hotfix Commit
+- date_utc: 2025-08-12T01:33:34Z
+- head_sha: cfd828a5c853c9c53465ba1c1bfa9654c4607b92
+- tag_created: v0.9.8-pruned-hotfix
+- zip: charly_v0.9.8-pruned-hotfix.zip
+- sha256: fb9ffb644dc826588e870dec94c1a91aca6e7f9c8eefb56298147e8f83d0d88c
+- notes: silent logged-out bootstrap; gentle recovery; banner removed; post-prune smoke GREEN; single-runtime (:8001) enforced
+EOF < /dev/null
