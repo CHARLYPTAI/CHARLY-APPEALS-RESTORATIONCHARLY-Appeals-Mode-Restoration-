@@ -24,7 +24,6 @@ import type { ReportData } from "@/types/report";
 import MultiStateJurisdiction from "@/components/MultiStateJurisdiction";
 import { getJurisdictionOptions } from "@/services/jurisdictionService";
 import { getAllPropertyTypes } from "@/services/propertyTypeService";
-import { mapPropertyTypeLabelToBackend } from "@/config/property_type_crosswalk";
 
 // Portfolio render resilience helpers
 type PropIn = any;
@@ -235,17 +234,17 @@ export function Portfolio() {
       };
 
       const [incomeResponse, salesResponse, costResponse] = await Promise.all([
-        fetch('/api/narrative/income-summary', {
+        authenticatedRequest('/api/narrative/income-summary', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(propertyData)
         }),
-        fetch('/api/narrative/sales-comparison', {
+        authenticatedRequest('/api/narrative/sales-comparison', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(propertyData)
         }),
-        fetch('/api/narrative/cost-approach', {
+        authenticatedRequest('/api/narrative/cost-approach', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(propertyData)
@@ -897,11 +896,10 @@ export function Portfolio() {
     try {
       const selectedIds = compareProperties.length > 0 ? compareProperties : displayProperties.map(p => p.id);
       
-      const response = await fetch('/api/portfolio/export', {
+      const response = await authenticatedRequest('/api/portfolio/export', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           format: 'csv',
@@ -952,11 +950,10 @@ export function Portfolio() {
 
     setIsBulkProcessing(true);
     try {
-      const response = await fetch('/api/portfolio/bulk-actions', {
+      const response = await authenticatedRequest('/api/portfolio/bulk-actions', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           action: action,
