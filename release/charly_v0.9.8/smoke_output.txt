@@ -1,0 +1,6 @@
+🔍 CHARLY Final Smoke Test v0.9.1-demo-lock
+================================================
+
+🏥 Health Checks
+----------------
+  Server Health:                        PASS ✅
