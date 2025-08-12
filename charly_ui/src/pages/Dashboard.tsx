@@ -131,12 +131,23 @@ export function Dashboard() {
         // Small delay to ensure token is properly stored
         await new Promise(resolve => setTimeout(resolve, 200));
         
-        // Fetch backend version info
+        // Fetch backend version info (public endpoint; no auth)
         try {
-          const versionResponse = await authenticatedRequest('/api/version');
-          console.info('BACKEND VERSION', versionResponse);
+          const versionResponse = await authenticatedRequest('/api/version', {}, /* authRequired= */ false);
+          const versionData = await versionResponse.json();
+          console.info('BACKEND VERSION', versionData);
         } catch (error) {
-          console.warn('Could not fetch backend version:', error);
+          // Public fetch should not require auth; stay quiet if it fails
+          console.info("Dashboard: version fetch skipped/failed (public)", error?.message ?? error);
+        }
+        
+        // Respect logged-out state: skip all data fetches
+        const authed = authService?.isAuthenticated?.() ?? false;
+        if (!authed) {
+          console.info("Dashboard: Logged-out — skipping data fetch bootstrap");
+          // Ensure any loading spinners settle gracefully if applicable
+          try { setLoading?.(false); } catch (_) {}
+          return;
         }
         
         // Now fetch data with authentication

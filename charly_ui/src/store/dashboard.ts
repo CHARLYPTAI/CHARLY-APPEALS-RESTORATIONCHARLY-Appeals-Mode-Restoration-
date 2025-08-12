@@ -99,6 +99,15 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   aiInsights: null,
 
   fetchKPIs: async (forceRefresh = false) => {
+    // Guard: if no token, stay silent and return null/empty
+    const { authService } = await import('../lib/auth');
+    const hasToken = authService?.isAuthenticated?.() ?? false;
+    if (!hasToken) {
+      console.info("KPIs: skipped fetch — no token");
+      set({ loading: false, error: null });
+      return;
+    }
+    
     // Check cache first unless forcing refresh
     if (!forceRefresh) {
       const cached = getCachedData();

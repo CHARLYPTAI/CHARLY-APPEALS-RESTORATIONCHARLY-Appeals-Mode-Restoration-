@@ -84,7 +84,7 @@ export const tokenManager = new TokenManager();
 
 // Authentication Service
 class AuthService {
-  private baseUrl = 'http://127.0.0.1:8001/api/auth';
+  private baseUrl = '/api/auth'; // CSP-safe: same-origin relative URL
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     console.log('Auth: Starting login request to:', `${this.baseUrl}/login`);
@@ -218,7 +218,7 @@ class AuthService {
     console.log(`Auth: Current token available: ${!!token}`);
     
     if (!token) {
-      console.log('Auth: No token available, attempting auto-login');
+      console.info('Auth: No token — staying logged-out (no auto-login)');
       await this.ensureAutoLoginOrRefresh();
       token = tokenManager.getAccessToken();
       
@@ -259,7 +259,7 @@ class AuthService {
         await this.refreshToken();
         return;
       } catch (error) {
-        console.error('Auth: Refresh failed, attempting auto-login');
+        console.info('Auth: Refresh failed — staying logged-out');
         tokenManager.clearTokens();
         // After clearing tokens, treat as logged-out without error
         console.info('Auth: Cleared expired tokens, now logged-out');
@@ -321,20 +321,27 @@ if (import.meta.env.MODE === 'development') {
 
 // API Request Interceptor with Authentication
 export async function authenticatedRequest(
-  url: string, 
-  options: RequestInit = {}
+  url: string,
+  options: RequestInit = {},
+  authRequired: boolean = true
 ): Promise<Response> {
   try {
+    // CSP-safe: keep relative URLs so they hit the same origin ('self')
+    const isAbsolute = /^https?:\/\//i.test(url);
+    const fullUrl = isAbsolute ? url : url; // stay relative for /api/*
+
+    // Public/no-auth path: do NOT touch tokens/headers
+    if (!authRequired) {
+      console.log(`Auth: Public request → ${fullUrl}`);
+      return fetch(fullUrl, options);
+    }
+
     // R3 requirement: Ensure auth readiness before any API call
     await authService.ensureReady();
     
     // Always try to get a valid token first
     const token = await authService.ensureValidToken();
-    console.log(`Auth: Making authenticated request to ${url} with token present: ${!!token}, hasToken=${!!token}`);
-    
-    // Convert relative URLs to absolute backend URLs
-    const fullUrl = url.startsWith('/api') ? `http://127.0.0.1:8001${url}` : url;
-    console.log(`Auth: Full URL: ${fullUrl}`);
+    console.log(`Auth: Authenticated request → ${fullUrl} (token=${!!token})`);
     
     const headers = {
       'Content-Type': 'application/json',
