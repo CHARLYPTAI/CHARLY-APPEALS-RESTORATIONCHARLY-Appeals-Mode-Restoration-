@@ -245,6 +245,13 @@ class AuthService {
 
   async ensureAutoLoginOrRefresh(): Promise<void> {
     const refreshToken = tokenManager.getRefreshToken();
+    const accessToken = tokenManager.getAccessToken();
+    
+    // If no tokens exist, don't attempt recovery - treat as clean logged-out state
+    if (!refreshToken && !accessToken) {
+      console.log('Auth: No tokens present, treating as logged-out');
+      return;
+    }
     
     if (refreshToken) {
       console.log('Auth: Attempting token refresh');
@@ -254,20 +261,14 @@ class AuthService {
       } catch (error) {
         console.error('Auth: Refresh failed, attempting auto-login');
         tokenManager.clearTokens();
+        // After clearing tokens, treat as logged-out without error
+        console.info('Auth: Cleared expired tokens, now logged-out');
+        return;
       }
     }
     
-    // Auto-login with dev credentials
-    console.log('Auth: Attempting auto-login');
-    try {
-      await this.login({
-        email: "admin@charly.com", 
-        password: "CharlyCTO2025!"
-      });
-    } catch (error) {
-      console.error('Auth: Auto-login failed:', error);
-      throw new Error('Authentication recovery failed');
-    }
+    // No auto-login - clean logged-out state
+    console.log('Auth: Clean logged-out state');
   }
 
   hasPermission(permission: string): boolean {
