@@ -45,29 +45,11 @@ export function Filing() {
         
         // Check if already authenticated
         if (!authService.isAuthenticated()) {
-          console.log("Filing: Not authenticated, attempting auto-login...");
-          
-          try {
-            // Auto-login with default credentials for enterprise deployment
-            const authResult = await authService.login({
-              email: "admin@charly.com",
-              password: "CharlyCTO2025!"
-            });
-            
-            console.log("Filing: Auto-login successful", authResult.user.email);
-            setAuthError(null);
-          } catch (loginError) {
-            console.error("Filing: Auto-login failed:", loginError);
-            const errorMessage = loginError.message || "Authentication failed";
-            setAuthError(`Login failed: ${errorMessage}`);
-            
-            // Show user-friendly error message
-            toast({
-              title: "Authentication Error",
-              description: `Unable to login automatically. Please check if the backend is running. Error: ${errorMessage}`,
-              variant: "destructive",
-            });
-            return; // Don't continue if auth fails
+          console.log("Filing: Not authenticated, proceeding without auth");
+          // Use gentle auth recovery (no auto-login)
+          await authService.ensureAutoLoginOrRefresh();
+          if (!authService.isAuthenticated()) {
+            console.log("Filing: Clean logged-out state, proceeding with limited functionality");
           }
         } else {
           console.log("Filing: Already authenticated");

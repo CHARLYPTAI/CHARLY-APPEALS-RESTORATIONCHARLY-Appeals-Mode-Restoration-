@@ -291,7 +291,8 @@ class AuthService {
       
       const newToken = tokenManager.getAccessToken();
       if (!newToken) {
-        throw new Error('Authentication failed - no valid token available');
+        console.info('Auth: ensureReady - no valid token after refresh, staying silent for logged-out state');
+        return; // Silent return instead of noisy throw
       }
       console.log('Auth: ensureReady - token secured successfully');
     } else {

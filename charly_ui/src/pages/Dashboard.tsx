@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDashboardStore } from "@/store/dashboard";
-import { authenticatedRequest, authService } from "@/lib/auth";
+import { authenticatedRequest, authService, tokenManager } from "@/lib/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -47,7 +47,23 @@ export function Dashboard() {
   const [wsConnected, setWsConnected] = useState(false);
   const [isRunningFlaggingAnalysis, setIsRunningFlaggingAnalysis] = useState(false);
   const [showFlaggingResults, setShowFlaggingResults] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
+  const [authError, setAuthErrorState] = useState<string | null>(null);
+  
+  // Guarded setAuthError that suppresses recovery banners
+  const setAuthError = (msg: string | null) => {
+    if (!msg) return setAuthErrorState(null);
+    const hasTokens = !!(tokenManager.getAccessToken() || tokenManager.getRefreshToken());
+    // Never surface noisy recovery/invalid-token banners when logged out or tokenless
+    if (
+      !hasTokens ||
+      /^⚠️?\s*Authentication recovery failed$/i.test(msg) ||
+      /Authentication failed.*no valid token available/i.test(msg)
+    ) {
+      console.info("Dashboard: suppressing auth banner; treating as logged-out.", msg);
+      return setAuthErrorState(null);
+    }
+    setAuthErrorState(msg);
+  };
   const [flaggingResults, setFlaggingResults] = useState<{
     total_properties_analyzed: number;
     flagged_properties: number;
@@ -133,9 +149,8 @@ export function Dashboard() {
       } catch (error) {
         console.error("Dashboard: Authentication initialization failed:", error);
         // Only show error for actual failures, not clean logged-out states
-        if (error instanceof Error && error.message !== 'Authentication recovery failed') {
-          setAuthError("Authentication system unavailable");
-        }
+        // Never show auth banner for bootstrap/recovery failures - treat as clean logged-out
+        console.info('Dashboard: Auth initialization completed, proceeding with fallback data');
         
         // Continue rendering with fallback data - never show white screen
         console.log("Dashboard: Using fallback mode due to auth error");
@@ -643,19 +658,27 @@ export function Dashboard() {
         </div>
       )}
       
-      {authError && (
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-yellow-500 animate-pulse"></div>
-              <span className="font-medium">Authentication Notice</span>
+      {authError && (() => {
+        // Kill-switch: never render auth banner when logged-out or for recovery failures
+        const hasTokens = !!(tokenManager.getAccessToken() || tokenManager.getRefreshToken());
+        if (!hasTokens || /^⚠️?\s*Authentication recovery failed$/.test(authError)) {
+          console.info("Dashboard: Auth banner suppressed");
+          return null;
+        }
+        return (
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-yellow-500 animate-pulse"></div>
+                <span className="font-medium">Auth Status</span>
+              </div>
             </div>
+            <p className="mt-2 text-sm">
+              {authError} The system is running in fallback mode with demo data.
+            </p>
           </div>
-          <p className="mt-2 text-sm">
-            {authError} The system is running in fallback mode with demo data.
-          </p>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Real-time Notifications Panel */}
       {notifications.length > 0 && (
