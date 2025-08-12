@@ -98,22 +98,19 @@ export function Portfolio() {
       try {
         // Check if already authenticated
         if (!authService.isAuthenticated()) {
-          console.log("Portfolio: Not authenticated, attempting auto-login...");
-          
-          // Auto-login with default credentials for enterprise deployment
-          const authResult = await authService.login({
-            email: "admin@charly.com",
-            password: "CharlyCTO2025!"
-          });
-          
-          console.log("Portfolio: Auto-login successful", authResult.user.email);
-          setAuthError(null);
+          console.log("Portfolio: Not authenticated, proceeding without auth");
+          // Use gentle auth recovery (no auto-login)
+          await authService.ensureAutoLoginOrRefresh();
+          if (!authService.isAuthenticated()) {
+            console.log("Portfolio: Clean logged-out state, proceeding with limited functionality");
+          }
         } else {
           console.log("Portfolio: Already authenticated");
         }
       } catch (loginError: any) {
-        console.error("Portfolio: Auto-login failed:", loginError);
-        setAuthError(`Authentication failed: ${loginError.message}`);
+        console.error("Portfolio: Auth initialization failed:", loginError);
+        // Don't show auth error banner - treat as clean logged-out state
+        console.info('Portfolio: Proceeding with limited functionality');
       }
     };
     
