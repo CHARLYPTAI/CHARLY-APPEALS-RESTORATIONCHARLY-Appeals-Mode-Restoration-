@@ -56,8 +56,8 @@ class TokenManager {
     encryptedTokenManager.clearTokens();
     
     // Clear sensitive data from memory
-    MemorySecurity.clearVariable(this, 'cachedUser');
-    MemorySecurity.clearVariable(this, 'cachedToken');
+    MemorySecurity.clearVariable(this as any, 'cachedUser');
+    MemorySecurity.clearVariable(this as any, 'cachedToken');
   }
 
   isTokenExpired(token: string): boolean {

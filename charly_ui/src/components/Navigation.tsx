@@ -18,6 +18,7 @@ const NAV_ITEMS: NavItem[] = [
   { path: '/appeals', label: 'Appeals' },
   { path: '/analysis', label: 'Analysis' },
   { path: '/intelligence', label: 'Intelligence' },
+  { path: '/settings', label: 'Settings' },
 ];
 
 export const Navigation: React.FC = () => {

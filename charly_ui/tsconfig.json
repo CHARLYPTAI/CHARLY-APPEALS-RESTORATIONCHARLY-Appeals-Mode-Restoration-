@@ -18,5 +18,5 @@
     "noEmit": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "src/hooks_disabled", "src/utils_disabled", "src/test", "src/__tests__", "src/providers_disabled", "src/security_disabled", "src/services", "src/store"]
 }

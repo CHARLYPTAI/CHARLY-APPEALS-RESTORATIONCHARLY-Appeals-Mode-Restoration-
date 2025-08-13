@@ -11,6 +11,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg';
   children: ReactNode;
   loading?: boolean;
+  fullWidth?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -20,6 +21,7 @@ export const Button: React.FC<ButtonProps> = ({
   loading = false,
   disabled,
   onClick,
+  fullWidth = false,
   ...props
 }) => {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -37,6 +39,7 @@ export const Button: React.FC<ButtonProps> = ({
         ...getVariantStyles(variant),
         ...getSizeStyles(size),
         ...(disabled || loading ? getDisabledStyles() : {}),
+        ...(fullWidth ? { width: '100%' } : {}),
       }}
       onMouseEnter={(e) => {
         if (!disabled && !loading) {

@@ -16,6 +16,7 @@ const Portfolio = React.lazy(() => import('./pages/Portfolio'));
 const Appeals = React.lazy(() => import('./pages/Appeals'));
 const Analysis = React.lazy(() => import('./pages/Analysis'));
 const Intelligence = React.lazy(() => import('./pages/Intelligence'));
+const Settings = React.lazy(() => import('./pages/Settings'));
 const Login = React.lazy(() => import('./pages/Login'));
 
 function App() {
@@ -76,6 +77,7 @@ function App() {
             <Route path="/appeals/:propertyId" element={<Appeals />} />
             <Route path="/analysis" element={<Analysis />} />
             <Route path="/intelligence" element={<Intelligence />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </React.Suspense>
       </Layout>
