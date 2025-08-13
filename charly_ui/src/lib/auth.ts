@@ -86,94 +86,46 @@ export const tokenManager = new TokenManager();
 class AuthService {
   private baseUrl = '/api/auth'; // CSP-safe: same-origin relative URL
 
-  async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    console.log('Auth: Starting login request to:', `${this.baseUrl}/login`);
-    console.log('Auth: Login credentials:', { email: credentials.email, password: '[REDACTED]' });
-    
-    let response: Response;
+  async login(credentials: LoginCredentials): Promise<boolean> {
+    console.log('🔐 Auth: Starting login request');
     
     try {
-      response = await fetch(`${this.baseUrl}/login`, {
+      const response = await fetch(`${this.baseUrl}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
         },
         body: JSON.stringify(credentials),
       });
 
-      console.log('Auth: Response received:', response.status, response.statusText);
-    } catch (fetchError) {
-      console.error('Auth: Network/fetch error during login:', fetchError);
-      throw new Error(`Network error: ${fetchError.message}`);
-    }
+      console.log('🔐 Auth: Response status:', response.status);
 
-    if (!response.ok) {
-      let errorDetail = `HTTP ${response.status}`;
-      try {
-        const error = await response.json();
-        errorDetail = error.detail || error.message || errorDetail;
-      } catch (parseError) {
-        console.error('Auth: Could not parse error response:', parseError);
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ detail: 'Login failed' }));
+        console.error('🔐 Auth: Login failed:', error.detail);
+        return false;
       }
-      console.error('Auth: Login failed with response:', response.status, errorDetail);
-      throw new Error(errorDetail);
-    }
 
-    const apiResponse = await response.json();
-    console.log('Auth: Login API response received:', Object.keys(apiResponse));
-    
-    // Validate API response structure
-    if (!apiResponse.access_token || !apiResponse.user) {
-      console.error('Auth: Invalid API response structure:', apiResponse);
-      throw new Error('Invalid login response from server');
+      const data = await response.json();
+      console.log('🔐 Auth: Login successful, storing tokens');
+      
+      // Store tokens directly in localStorage (simple approach)
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token || '');
+      localStorage.setItem('user_data', JSON.stringify(data.user));
+      
+      return true;
+    } catch (error) {
+      console.error('🔐 Auth: Login error:', error);
+      return false;
     }
-    
-    // Transform API response to expected format
-    const authData: AuthResponse = {
-      user: {
-        id: apiResponse.user.id || 'unknown',
-        email: apiResponse.user.email || 'unknown@example.com',
-        name: apiResponse.user.email || 'Unknown User', // Use email as name if no name field
-        role: apiResponse.user.role || 'user',
-        permissions: apiResponse.user.permissions || [],
-        organization: apiResponse.user.firm_name || 'Unknown Organization'
-      },
-      tokens: {
-        accessToken: apiResponse.access_token,
-        refreshToken: apiResponse.refresh_token || '',
-        expiresAt: Date.now() + ((apiResponse.expires_in || 3600) * 1000),
-        tokenType: 'Bearer' as const
-      }
-    };
-    
-    // Store tokens and user data securely
-    tokenManager.setTokens(authData.tokens);
-    tokenManager.setUser(authData.user);
-    
-    console.log('Auth: Login successful, tokens stored');
-    return authData;
   }
 
   async logout(): Promise<void> {
-    const refreshToken = tokenManager.getRefreshToken();
-    
-    if (refreshToken) {
-      try {
-        await fetch(`${this.baseUrl}/logout`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${tokenManager.getAccessToken()}`,
-          },
-          body: JSON.stringify({ refreshToken }),
-        });
-      } catch (logoutError) {
-        console.error('Logout request failed:', logoutError);
-      }
-    }
-
-    tokenManager.clearTokens();
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_data');
+    console.log('🔐 Auth: Logged out successfully');
   }
 
   async refreshToken(): Promise<AuthToken> {
@@ -207,10 +159,8 @@ class AuthService {
   }
 
   isAuthenticated(): boolean {
-    const token = tokenManager.getAccessToken();
-    const isAuth = token !== null && !tokenManager.isTokenExpired(token);
-    console.log(`Auth: isAuthenticated check - token present: ${!!token}, expired: ${token ? tokenManager.isTokenExpired(token) : 'N/A'}, result: ${isAuth}`);
-    return isAuth;
+    const token = localStorage.getItem('access_token');
+    return !!token;
   }
 
   async ensureValidToken(): Promise<string> {
@@ -325,118 +275,24 @@ export async function authenticatedRequest(
   options: RequestInit = {},
   authRequired: boolean = true
 ): Promise<Response> {
-  try {
-    // CSP-safe: keep relative URLs so they hit the same origin ('self')
-    const isAbsolute = /^https?:\/\//i.test(url);
-    const fullUrl = isAbsolute ? url : url; // stay relative for /api/*
-
-    // Public/no-auth path: do NOT touch tokens/headers
-    if (!authRequired) {
-      console.log(`Auth: Public request → ${fullUrl}`);
-      return fetch(fullUrl, options);
-    }
-
-    // R3 requirement: Ensure auth readiness before any API call
-    await authService.ensureReady();
-    
-    // Always try to get a valid token first
-    const token = await authService.ensureValidToken();
-    console.log(`Auth: Authenticated request → ${fullUrl} (token=${!!token})`);
-    
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-CSRF-Token': getCsrfToken(),
-      ...options.headers,
-    };
-
-    const response = await fetch(fullUrl, {
-      ...options,
-      headers,
-    });
-
-    // One-shot 405 auto-retry with correct HTTP verb  
-    if (response.status === 405) {
-      console.log(`Auth: 405 Method Not Allowed for ${url}, attempting auto-retry with correct verb`);
-      
-      let retryMethod = options.method;
-      let retryBody = options.body;
-      
-      // Correct verbs based on auth endpoint
-      if (url.includes('/login')) {
-        retryMethod = 'POST';
-      } else if (url.includes('/refresh')) {
-        retryMethod = 'POST';
-      } else if (url.includes('/logout')) {
-        retryMethod = 'POST';  
-      } else if (url.includes('/me') || url.includes('/validate') || url.includes('/health')) {
-        retryMethod = 'GET';
-        retryBody = undefined; // Remove body for GET requests
-      }
-      
-      // Only retry if method would be different
-      if (retryMethod !== options.method) {
-        console.log(`Auth: Retrying ${url} with ${retryMethod} instead of ${options.method}`);
-        const retryResponse = await fetch(fullUrl, {
-          ...options,
-          method: retryMethod,
-          body: retryBody,
-          headers,
-        });
-        
-        if (retryResponse.ok || retryResponse.status !== 405) {
-          return retryResponse;
-        }
-      }
-    }
-
-    // Handle 401 Unauthorized with auto-retry
-    if (response.status === 401) {
-      console.log('Auth: 401 Unauthorized, attempting token refresh and retry');
-      
-      try {
-        // Clear tokens and attempt recovery
-        tokenManager.clearTokens();
-        await authService.ensureAutoLoginOrRefresh();
-        
-        // Retry the original request once with new token
-        const newToken = tokenManager.getAccessToken();
-        if (newToken) {
-          console.log('Auth: Retrying original request with fresh token');
-          const retryResponse = await fetch(fullUrl, {
-            ...options,
-            headers: {
-              ...headers,
-              'Authorization': `Bearer ${newToken}`,
-            },
-          });
-          
-          if (retryResponse.ok || retryResponse.status !== 401) {
-            return retryResponse;
-          }
-        }
-      } catch (retryError) {
-        console.error('Auth: Token recovery failed:', retryError);
-      }
-      
-      // If all recovery attempts fail, redirect to login
-      window.location.href = '/login';
-      throw new Error('Authentication required');
-    }
-
-    // Only show banner for persistent auth errors (not 405 method issues)
-    if (response.status === 405) {
-      console.log(`Auth: Method not allowed for ${url}, treating as recoverable`);
-      // Don't trigger auth error banner for 405 - it's a method mismatch, not auth failure
-      throw new Error(`Method not allowed for ${url}`);
-    }
-
-    return response;
-  } catch (requestError) {
-    console.error('Authenticated request failed:', requestError);
-    throw requestError;
+  // Public/no-auth path
+  if (!authRequired) {
+    return fetch(url, options);
   }
+
+  // Get token from localStorage
+  const token = localStorage.getItem('access_token');
+  if (!token) {
+    throw new Error('No authentication token');
+  }
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+    ...options.headers,
+  };
+
+  return response;
 }
 
 // CSRF Token Management
