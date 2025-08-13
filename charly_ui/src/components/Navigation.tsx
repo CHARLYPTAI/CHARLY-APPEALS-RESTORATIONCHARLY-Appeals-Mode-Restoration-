@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { APPLE_COLORS, NEUTRAL_COLORS } from '../design/colors';
 import { SPACING } from '../design/spacing';
 import { TRANSITIONS } from '../design/animations';
+import { useIsMobile } from '../hooks/useMediaQuery';
 
 interface NavItem {
   path: string;
@@ -24,12 +25,13 @@ const NAV_ITEMS: NavItem[] = [
 export const Navigation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   
   const currentPath = location.pathname;
 
   return (
-    <nav style={styles.nav}>
-      <div style={styles.navContent}>
+    <nav style={isMobile ? {...styles.nav, ...styles.navMobile} : styles.nav}>
+      <div style={isMobile ? {...styles.navContent, ...styles.navContentMobile} : styles.navContent}>
         {NAV_ITEMS.map((item) => {
           const isActive = currentPath === item.path || 
                           (currentPath === '/' && item.path === '/dashboard');
@@ -39,24 +41,25 @@ export const Navigation: React.FC = () => {
               key={item.path}
               style={{
                 ...styles.navItem,
-                ...(isActive ? styles.navItemActive : {}),
+                ...(isMobile ? styles.navItemMobile : {}),
+                ...(isActive ? (isMobile ? {...styles.navItemActive, ...styles.navItemActiveMobile} : styles.navItemActive) : {}),
               }}
               onClick={() => navigate(item.path)}
               onMouseEnter={(e) => {
-                if (!isActive) {
+                if (!isActive && !isMobile) {
                   e.currentTarget.style.backgroundColor = NEUTRAL_COLORS.GRAY_50;
                 }
               }}
               onMouseLeave={(e) => {
-                if (!isActive) {
+                if (!isActive && !isMobile) {
                   e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
             >
-              <span style={styles.navItemText}>
+              <span style={isMobile ? {...styles.navItemText, ...styles.navItemTextMobile} : styles.navItemText}>
                 {item.label}
               </span>
-              {isActive && <div style={styles.activeIndicator} />}
+              {isActive && <div style={isMobile ? {...styles.activeIndicator, ...styles.activeIndicatorMobile} : styles.activeIndicator} />}
             </button>
           );
         })}
@@ -74,18 +77,27 @@ const styles = {
     zIndex: 90,
   },
 
+  navMobile: {
+    top: '56px', // Below mobile header
+    overflowX: 'auto' as const,
+  },
+
   navContent: {
     maxWidth: '1280px',
     margin: '0 auto',
     display: 'flex',
     alignItems: 'center',
     padding: `0 ${SPACING.LG}`,
-    
-    // Mobile: Stack vertically
-    '@media (max-width: 768px)': {
-      flexDirection: 'column' as const,
-      padding: `0 ${SPACING.MD}`,
-    },
+  },
+
+  navContentMobile: {
+    flexDirection: 'row' as const,
+    padding: `0 ${SPACING.MD}`,
+    gap: SPACING.XS,
+    overflowX: 'auto' as const,
+    scrollbarWidth: 'none' as const, // Firefox
+    msOverflowStyle: 'none' as const, // IE/Edge
+    WebkitScrollbar: { display: 'none' }, // Webkit
   },
 
   navItem: {
@@ -103,13 +115,14 @@ const styles = {
     color: NEUTRAL_COLORS.GRAY_600,
     textDecoration: 'none',
     minHeight: '48px', // Touch target size
-    
-    // Mobile: Full width
-    '@media (max-width: 768px)': {
-      width: '100%',
-      justifyContent: 'center',
-      padding: `${SPACING.SM} ${SPACING.MD}`,
-    },
+    whiteSpace: 'nowrap' as const,
+  },
+
+  navItemMobile: {
+    padding: `${SPACING.SM} ${SPACING.MD}`,
+    minWidth: '80px', // Minimum width for touch targets
+    justifyContent: 'center',
+    flexShrink: 0, // Prevent shrinking
   },
 
   navItemActive: {
@@ -118,9 +131,17 @@ const styles = {
     fontWeight: 600,
   },
 
+  navItemActiveMobile: {
+    backgroundColor: `${APPLE_COLORS.BLUE}12`, // More visible on mobile
+  },
+
   navItemText: {
     fontSize: '16px',
     fontFamily: "'SF Pro Text', -apple-system, sans-serif",
+  },
+
+  navItemTextMobile: {
+    fontSize: '14px', // Smaller on mobile
   },
 
   activeIndicator: {
@@ -131,16 +152,11 @@ const styles = {
     height: '3px',
     backgroundColor: APPLE_COLORS.BLUE,
     borderRadius: '2px 2px 0 0',
-    
-    // Mobile: Show as left border instead
-    '@media (max-width: 768px)': {
-      left: 0,
-      right: 'auto',
-      top: SPACING.XS,
-      bottom: SPACING.XS,
-      width: '3px',
-      height: 'auto',
-      borderRadius: '0 2px 2px 0',
-    },
+  },
+
+  activeIndicatorMobile: {
+    left: SPACING.MD,
+    right: SPACING.MD,
+    height: '2px', // Thinner on mobile
   },
 } as const;

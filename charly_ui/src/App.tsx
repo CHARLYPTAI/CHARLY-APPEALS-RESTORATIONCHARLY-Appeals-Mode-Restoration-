@@ -5,10 +5,12 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { LoadingDots } from './components/LoadingDots';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { NEUTRAL_COLORS } from './design/colors';
 import { SPACING } from './design/spacing';
 import { BUILD_SHA, BUILD_TIME } from './version';
 import { authService } from './lib/auth';
+import { usePerformance, useFPSMonitoring } from './hooks/usePerformance';
 
 // Lazy load pages for optimal performance
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
@@ -22,6 +24,10 @@ const Login = React.lazy(() => import('./pages/Login'));
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Performance monitoring
+  usePerformance('App');
+  useFPSMonitoring();
 
   useEffect(() => {
     console.info("🍎 CHARLY BUILD", BUILD_SHA, BUILD_TIME);
@@ -57,32 +63,68 @@ function App() {
   // Login screen
   if (!isAuthenticated) {
     return (
-      <React.Suspense fallback={<LoadingScreen />}>
-        <Login onLoginSuccess={() => setIsAuthenticated(true)} />
-        <VersionFooter />
-      </React.Suspense>
+      <ErrorBoundary>
+        <React.Suspense fallback={<LoadingScreen />}>
+          <Login onLoginSuccess={() => setIsAuthenticated(true)} />
+          <VersionFooter />
+        </React.Suspense>
+      </ErrorBoundary>
     );
   }
 
   // Main authenticated app
   return (
-    <Router>
-      <Layout>
-        <React.Suspense fallback={<LoadingScreen />}>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/appeals" element={<Appeals />} />
-            <Route path="/appeals/:propertyId" element={<Appeals />} />
-            <Route path="/analysis" element={<Analysis />} />
-            <Route path="/intelligence" element={<Intelligence />} />
-            <Route path="/settings" element={<Settings />} />
-          </Routes>
-        </React.Suspense>
-      </Layout>
-      <VersionFooter />
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <Layout>
+          <React.Suspense fallback={<LoadingScreen />}>
+            <Routes>
+              <Route path="/" element={
+                <ErrorBoundary>
+                  <Dashboard />
+                </ErrorBoundary>
+              } />
+              <Route path="/dashboard" element={
+                <ErrorBoundary>
+                  <Dashboard />
+                </ErrorBoundary>
+              } />
+              <Route path="/portfolio" element={
+                <ErrorBoundary>
+                  <Portfolio />
+                </ErrorBoundary>
+              } />
+              <Route path="/appeals" element={
+                <ErrorBoundary>
+                  <Appeals />
+                </ErrorBoundary>
+              } />
+              <Route path="/appeals/:propertyId" element={
+                <ErrorBoundary>
+                  <Appeals />
+                </ErrorBoundary>
+              } />
+              <Route path="/analysis" element={
+                <ErrorBoundary>
+                  <Analysis />
+                </ErrorBoundary>
+              } />
+              <Route path="/intelligence" element={
+                <ErrorBoundary>
+                  <Intelligence />
+                </ErrorBoundary>
+              } />
+              <Route path="/settings" element={
+                <ErrorBoundary>
+                  <Settings />
+                </ErrorBoundary>
+              } />
+            </Routes>
+          </React.Suspense>
+        </Layout>
+        <VersionFooter />
+      </Router>
+    </ErrorBoundary>
   );
 }
 

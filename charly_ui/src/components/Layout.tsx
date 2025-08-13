@@ -6,23 +6,29 @@ import { Navigation } from './Navigation';
 import { APPLE_COLORS, NEUTRAL_COLORS } from '../design/colors';
 import { SPACING } from '../design/spacing';
 import { TRANSITIONS } from '../design/animations';
+import { useIsMobile } from '../hooks/useMediaQuery';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const isMobile = useIsMobile();
+
   return (
     <div style={styles.container}>
       {/* Header */}
-      <header style={styles.header}>
-        <div style={styles.headerContent}>
+      <header style={isMobile ? {...styles.header, ...styles.headerMobile} : styles.header}>
+        <div style={isMobile ? {...styles.headerContent, ...styles.headerContentMobile} : styles.headerContent}>
           <div style={styles.logo}>
-            <h1 style={styles.logoText}>CHARLY</h1>
+            <h1 style={isMobile ? {...styles.logoText, ...styles.logoTextMobile} : styles.logoText}>CHARLY</h1>
           </div>
           
-          <button style={styles.logoutButton} onClick={handleLogout}>
-            <span style={styles.logoutText}>Logout</span>
+          <button 
+            style={isMobile ? {...styles.logoutButton, ...styles.logoutButtonMobile} : styles.logoutButton} 
+            onClick={handleLogout}
+          >
+            {!isMobile && <span style={styles.logoutText}>Logout</span>}
             <svg 
               style={styles.logoutIcon} 
               width="16" 
@@ -45,7 +51,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Main Content */}
       <main style={styles.main}>
-        <div style={styles.content}>
+        <div style={isMobile ? {...styles.content, ...styles.contentMobile} : styles.content}>
           {children}
         </div>
       </main>
@@ -79,6 +85,10 @@ const styles = {
     boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.04)',
   },
 
+  headerMobile: {
+    height: '56px', // Slightly smaller on mobile
+  },
+
   headerContent: {
     width: '100%',
     maxWidth: '1280px',
@@ -87,6 +97,10 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+
+  headerContentMobile: {
+    padding: `0 ${SPACING.MD}`,
   },
 
   logo: {
@@ -103,6 +117,10 @@ const styles = {
     letterSpacing: '-0.5px',
   },
 
+  logoTextMobile: {
+    fontSize: '20px', // Smaller on mobile
+  },
+
   logoutButton: {
     display: 'flex',
     alignItems: 'center',
@@ -116,16 +134,18 @@ const styles = {
     fontWeight: 500,
     transition: TRANSITIONS.STANDARD,
     cursor: 'pointer',
-    
-    ':hover': {
-      backgroundColor: NEUTRAL_COLORS.GRAY_50,
-      color: NEUTRAL_COLORS.GRAY_900,
-      transform: 'rotate(90deg)', // Icon rotation on hover
-    },
+    minHeight: '44px', // Touch target size
+    minWidth: '44px',
+  },
+
+  logoutButtonMobile: {
+    padding: SPACING.SM, // More padding on mobile
+    gap: 0, // No gap since text is hidden
   },
 
   logoutText: {
     fontSize: '14px',
+    fontFamily: "'SF Pro Text', -apple-system, sans-serif",
   },
 
   logoutIcon: {
@@ -136,6 +156,7 @@ const styles = {
   main: {
     flex: 1,
     width: '100%',
+    overflow: 'hidden', // Prevent horizontal scroll
   },
 
   content: {
@@ -143,11 +164,10 @@ const styles = {
     margin: '0 auto',
     padding: SPACING.LG,
     paddingTop: SPACING.XL,
-    
-    // Mobile responsive
-    '@media (max-width: 768px)': {
-      padding: SPACING.MD,
-      paddingTop: SPACING.LG,
-    },
+  },
+
+  contentMobile: {
+    padding: SPACING.MD,
+    paddingTop: SPACING.LG,
   },
 } as const;
