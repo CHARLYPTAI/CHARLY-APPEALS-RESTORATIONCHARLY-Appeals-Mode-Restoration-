@@ -92,7 +92,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         
         <div style={styles.footer}>
           <p style={styles.footerText}>
-            Demo credentials: admin@charly.com / admin123
+            Demo credentials: demo@charly.com / demo123
           </p>
         </div>
       </div>
