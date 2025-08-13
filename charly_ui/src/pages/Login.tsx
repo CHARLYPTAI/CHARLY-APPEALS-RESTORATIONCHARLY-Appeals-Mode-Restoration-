@@ -30,7 +30,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       setLoading(true);
       setError('');
       
-      const success = await authService.login(email, password);
+      const success = await authService.login({ email, password });
       
       if (success) {
         onLoginSuccess();
@@ -94,6 +94,25 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           <p style={styles.footerText}>
             Demo credentials: demo@charly.com / demo123
           </p>
+          <button 
+            onClick={() => {
+              // Emergency bypass for testing
+              localStorage.setItem('access_token', 'test_token');
+              onLoginSuccess();
+            }}
+            style={{
+              marginTop: '8px',
+              padding: '4px 8px',
+              fontSize: '12px',
+              backgroundColor: '#FF9500',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            🚨 Bypass Login (Test Only)
+          </button>
         </div>
       </div>
     </div>

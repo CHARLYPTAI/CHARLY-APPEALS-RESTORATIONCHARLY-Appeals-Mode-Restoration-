@@ -87,7 +87,8 @@ class AuthService {
   private baseUrl = '/api/auth'; // CSP-safe: same-origin relative URL
 
   async login(credentials: LoginCredentials): Promise<boolean> {
-    console.log('🔐 Auth: Starting login request');
+    console.log('🔐 Auth: Starting login request to:', `${this.baseUrl}/login`);
+    console.log('🔐 Auth: Credentials:', { email: credentials.email, password: '***' });
     
     try {
       const response = await fetch(`${this.baseUrl}/login`, {
@@ -99,24 +100,33 @@ class AuthService {
       });
 
       console.log('🔐 Auth: Response status:', response.status);
+      console.log('🔐 Auth: Response headers:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: 'Login failed' }));
-        console.error('🔐 Auth: Login failed:', error.detail);
+        const errorText = await response.text();
+        console.error('🔐 Auth: Error response body:', errorText);
+        try {
+          const error = JSON.parse(errorText);
+          console.error('🔐 Auth: Login failed:', error.detail);
+        } catch {
+          console.error('🔐 Auth: Non-JSON error response');
+        }
         return false;
       }
 
       const data = await response.json();
-      console.log('🔐 Auth: Login successful, storing tokens');
+      console.log('🔐 Auth: Login successful, response keys:', Object.keys(data));
+      console.log('🔐 Auth: User data:', data.user);
       
       // Store tokens directly in localStorage (simple approach)
       localStorage.setItem('access_token', data.access_token);
       localStorage.setItem('refresh_token', data.refresh_token || '');
       localStorage.setItem('user_data', JSON.stringify(data.user));
       
+      console.log('🔐 Auth: Tokens stored in localStorage');
       return true;
     } catch (error) {
-      console.error('🔐 Auth: Login error:', error);
+      console.error('🔐 Auth: Login error (catch):', error);
       return false;
     }
   }
@@ -291,6 +301,11 @@ export async function authenticatedRequest(
     'Authorization': `Bearer ${token}`,
     ...options.headers,
   };
+
+  const response = await fetch(url, {
+    ...options,
+    headers,
+  });
 
   return response;
 }
