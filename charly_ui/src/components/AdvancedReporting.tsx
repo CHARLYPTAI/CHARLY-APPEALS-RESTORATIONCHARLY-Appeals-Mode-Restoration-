@@ -157,31 +157,37 @@ export const AdvancedReporting: React.FC = () => {
     }
   ];
 
-  const mockRecentReports = [
+  const mockRecentReports: ReportJob[] = [
     {
       id: 'report-001',
       name: 'Q4 2024 Portfolio Analysis',
+      template_name: 'Portfolio Analysis',
       generated: '2025-01-10',
+      created_at: '2025-01-10',
       format: 'PDF',
-      size: '2.4 MB',
+      file_size: '2.4 MB',
       status: 'completed',
       downloads: 15
     },
     {
       id: 'report-002', 
       name: 'Harris County Market Trends',
+      template_name: 'Market Trends',
       generated: '2025-01-09',
+      created_at: '2025-01-09',
       format: 'Excel',
-      size: '1.8 MB',
+      file_size: '1.8 MB',
       status: 'completed',
       downloads: 8
     },
     {
       id: 'report-003',
       name: 'Compliance Audit December',
+      template_name: 'Compliance Audit',
       generated: '2025-01-08',
+      created_at: '2025-01-08',
       format: 'PDF',
-      size: '3.1 MB',
+      file_size: '3.1 MB',
       status: 'completed',
       downloads: 23
     }
@@ -335,9 +341,10 @@ export const AdvancedReporting: React.FC = () => {
               document.body.appendChild(settingsModal);
               
               // Listen for settings updates
-              const handleSettingsUpdate = (event: CustomEvent<{range: string; format: string}>) => {
-                setSelectedDateRange(event.detail.range);
-                setSelectedFormat(event.detail.format);
+              const handleSettingsUpdate = (event: Event) => {
+                const customEvent = event as CustomEvent<{range: string; format: string}>;
+                setSelectedDateRange(customEvent.detail.range);
+                setSelectedFormat(customEvent.detail.format);
                 toast({
                   title: "Settings Updated",
                   description: "Report preferences have been saved",
@@ -464,21 +471,22 @@ export const AdvancedReporting: React.FC = () => {
                     document.body.appendChild(scheduleModal);
                     
                     // Listen for schedule creation
-                    const handleCreateSchedule = async (event: CustomEvent<{template: string; frequency: string; emails: string}>) => {
+                    const handleCreateSchedule = async (event: Event) => {
+                      const customEvent = event as CustomEvent<{template: string; frequency: string; emails: string}>;
                       try {
                         const response = await fetch('/api/reports/schedule', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({
-                            template_id: event.detail.template,
-                            schedule: event.detail.frequency,
-                            recipients: event.detail.emails.split(',').map(e => e.trim()).filter(e => e),
+                            template_id: customEvent.detail.template,
+                            schedule: customEvent.detail.frequency,
+                            recipients: customEvent.detail.emails.split(',').map(e => e.trim()).filter(e => e),
                             parameters: { date_range: selectedDateRange, format: selectedFormat }
                           })
                         });
                         const result = await response.json();
                         if (response.ok) {
-                          toast({ title: "Schedule Created", description: `Report scheduled for ${event.detail.frequency} generation` });
+                          toast({ title: "Schedule Created", description: `Report scheduled for ${customEvent.detail.frequency} generation` });
                           fetchReportData();
                         } else {
                           toast({ title: "Schedule Failed", description: result.message, variant: "destructive" });
@@ -605,10 +613,11 @@ export const AdvancedReporting: React.FC = () => {
                       `;
                       document.body.appendChild(filterModal);
                       
-                      const handleApplyFilter = (event: CustomEvent<{date: string; type: string}>) => {
+                      const handleApplyFilter = (event: Event) => {
+                        const customEvent = event as CustomEvent<{date: string; type: string}>;
                         toast({
                           title: "Filter Applied",
-                          description: `Showing reports from ${event.detail.date} of type ${event.detail.type}`,
+                          description: `Showing reports from ${customEvent.detail.date} of type ${customEvent.detail.type}`,
                         });
                         // In a real implementation, this would filter the reportJobs array
                         window.removeEventListener('applyFilter', handleApplyFilter);
@@ -673,7 +682,7 @@ export const AdvancedReporting: React.FC = () => {
                           <Badge variant="outline">{(report.format ?? 'PDF')}</Badge>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {(report.size ?? report.file_size ?? 'N/A')}
+                          {(report.file_size ?? 'N/A')}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {report.downloads}

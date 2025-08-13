@@ -32,6 +32,7 @@ interface ValuationData {
   salesValue?: number;
   costValue?: number;
   weightedValue?: number;
+  finalValue?: number;
 }
 
 interface PropertyAnalysisModalProps {
@@ -98,7 +99,9 @@ export function PropertyAnalysisModal({
               <ValuationTabs 
                 propertyId={currentProperty.id === "1" ? "prop_001" : `prop_00${currentProperty.id}`}
                 propertyAddress={currentProperty.address}
-                onValuationComplete={onValuationComplete}
+                onValuationComplete={(finalValue: number) => {
+                  onValuationComplete({ finalValue });
+                }}
               />
 
               {/* API Valuation Summary for Selected Property */}

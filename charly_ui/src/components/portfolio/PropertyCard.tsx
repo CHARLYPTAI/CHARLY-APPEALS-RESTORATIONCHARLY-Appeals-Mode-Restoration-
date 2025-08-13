@@ -1,21 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building, MapPin, Calculator, Loader2, CheckSquare, Square } from "lucide-react";
-
-interface MockProperty {
-  id: string;
-  address: string;
-  propertyType: string;
-  currentAssessment: number;
-  estimatedValue: number;
-  potentialSavings: number;
-  status: string;
-  jurisdiction: string;
-  parcelNumber: string;
-  ownerName: string;
-  yearBuilt: number;
-  squareFootage: number;
-}
+import { Property } from "@/lib/api-client";
 
 interface AnalysisResult {
   appeal_probability: number;
@@ -23,7 +9,7 @@ interface AnalysisResult {
 }
 
 interface PropertyCardProps {
-  property: MockProperty;
+  property: Property;
   isSelected: boolean;
   isAnalyzing: boolean;
   analysisResults?: AnalysisResult;
@@ -73,18 +59,22 @@ export function PropertyCard({
                 <Building className="w-5 h-5 text-gray-500 mt-1" aria-hidden="true" />
                 <div>
                   <h3 className="font-medium text-gray-900">{property.address}</h3>
-                  <p className="text-sm text-gray-600">{property.propertyType}</p>
+                  <p className="text-sm text-gray-600">{property.property_type}</p>
                   <div className="space-y-1 mt-2">
                     <div className="flex items-center">
                       <MapPin className="w-4 h-4 text-gray-400 mr-1" aria-hidden="true" />
-                      <span className="text-sm text-gray-500">{property.jurisdiction}</span>
+                      <span className="text-sm text-gray-500">{property.city}, {property.state} • {property.county}</span>
                     </div>
-                    <div className="text-sm text-gray-500">
-                      Parcel: {property.parcelNumber}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      Owner: {property.ownerName}
-                    </div>
+                    {property.property_id && (
+                      <div className="text-sm text-gray-500">
+                        Parcel: {property.property_id}
+                      </div>
+                    )}
+                    {property.square_footage && (
+                      <div className="text-sm text-gray-500">
+                        Size: {property.square_footage.toLocaleString()} sq ft
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -95,13 +85,13 @@ export function PropertyCard({
             <div>
               <p className="text-sm font-medium text-gray-700">Current Assessment</p>
               <p className="text-lg font-semibold text-gray-900">
-                ${property.currentAssessment.toLocaleString()}
+                ${property.current_assessment.toLocaleString()}
               </p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-700">Est. Fair Value</p>
               <p className="text-lg font-semibold text-blue-600">
-                ${property.estimatedValue.toLocaleString()}
+                ${property.market_value?.toLocaleString() || 'TBD'}
               </p>
             </div>
           </div>
@@ -110,7 +100,7 @@ export function PropertyCard({
             <div>
               <p className="text-sm font-medium text-gray-700">Potential Savings</p>
               <p className="text-lg font-semibold text-green-600">
-                ${property.potentialSavings?.toLocaleString() || '0'}
+                ${property.potential_savings?.toLocaleString() || '0'}
               </p>
             </div>
             <div>

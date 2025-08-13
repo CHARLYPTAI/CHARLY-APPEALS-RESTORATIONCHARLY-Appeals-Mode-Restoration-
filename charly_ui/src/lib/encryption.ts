@@ -50,15 +50,15 @@ export class SecureStorage {
     return SecureStorage.instance;
   }
 
-  // Encrypt data with salt and IV
+  // Encrypt data with salt and IV - simplified reliable approach
   encrypt(data: string): string {
     try {
-      const salt = CryptoJS.lib.WordArray.random(ENCRYPTION_CONFIG.saltSize / 8);
-      const iv = CryptoJS.lib.WordArray.random(ENCRYPTION_CONFIG.ivSize / 8);
+      const salt = CryptoJS.lib.WordArray.random(64);
+      const iv = CryptoJS.lib.WordArray.random(16);
       
       const key = CryptoJS.PBKDF2(this.encryptionKey, salt, {
-        keySize: ENCRYPTION_CONFIG.keySize / 32,
-        iterations: ENCRYPTION_CONFIG.iterations,
+        keySize: 8,
+        iterations: 1000,
       });
 
       const encrypted = CryptoJS.AES.encrypt(data, key, {
@@ -67,30 +67,39 @@ export class SecureStorage {
         padding: CryptoJS.pad.Pkcs7,
       });
 
-      // Combine salt, iv, and encrypted data
-      const combined = salt.concat(iv).concat(encrypted.ciphertext);
-      return combined.toString(CryptoJS.enc.Base64);
+      // Store as separate base64 strings separated by ':'
+      const saltStr = salt.toString(CryptoJS.enc.Base64);
+      const ivStr = iv.toString(CryptoJS.enc.Base64);
+      const cipherStr = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+      
+      return `${saltStr}:${ivStr}:${cipherStr}`;
     } catch (error) {
       console.error('Encryption failed:', error);
       throw new Error('Failed to encrypt data');
     }
   }
 
-  // Decrypt data with salt and IV extraction
+  // Decrypt data with salt and IV extraction - simplified reliable approach
   decrypt(encryptedData: string): string {
     try {
-      const combined = CryptoJS.enc.Base64.parse(encryptedData);
+      if (!encryptedData || typeof encryptedData !== 'string') {
+        throw new Error('Invalid encrypted data format');
+      }
       
-      const saltSize = ENCRYPTION_CONFIG.saltSize / 8;
-      const ivSize = ENCRYPTION_CONFIG.ivSize / 8;
+      const parts = encryptedData.split(':');
+      if (parts.length !== 3) {
+        throw new Error('Invalid encrypted data structure');
+      }
       
-      const salt = CryptoJS.lib.WordArray.create(combined.words.slice(0, saltSize / 4));
-      const iv = CryptoJS.lib.WordArray.create(combined.words.slice(saltSize / 4, (saltSize + ivSize) / 4));
-      const ciphertext = CryptoJS.lib.WordArray.create(combined.words.slice((saltSize + ivSize) / 4));
+      const [saltStr, ivStr, cipherStr] = parts;
+      
+      const salt = CryptoJS.enc.Base64.parse(saltStr);
+      const iv = CryptoJS.enc.Base64.parse(ivStr);
+      const ciphertext = CryptoJS.enc.Base64.parse(cipherStr);
 
       const key = CryptoJS.PBKDF2(this.encryptionKey, salt, {
-        keySize: ENCRYPTION_CONFIG.keySize / 32,
-        iterations: ENCRYPTION_CONFIG.iterations,
+        keySize: 8,
+        iterations: 1000,
       });
 
       const decrypted = CryptoJS.AES.decrypt(

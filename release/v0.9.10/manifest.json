@@ -1,0 +1,7 @@
+{
+  "release_version": "v0.9.10",
+  "created_at_utc": "2025-08-12T04:10:11Z",
+  "head_sha": "e10ed413eeacef9bce31ed57b0d5ac0698ba9671",
+  "tags": { "latest": "v0.9.10-silent-fetch" },
+  "artifacts": [{ "file": "charly_v0.9.10-silent-fetch-lean.zip", "sha256": "a58c76060adfc9d69262d2d9145d16a1b34408aa41a3a6ea875e8a5a8c3bb0e5" }]
+}

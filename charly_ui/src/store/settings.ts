@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { SettingsState } from '@/types/settings'
+import { authenticatedRequest } from '@/lib/auth'
 
 // API interface for backend integration
 interface BackendSettingsResponse {
@@ -156,7 +157,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     set({ loading: true, error: null })
     
     try {
-      const response = await fetch('/api/settings/')
+      const response = await authenticatedRequest('/api/settings/')
       
       if (!response.ok) {
         // In development mode, use mock data instead of throwing error
@@ -233,7 +234,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     try {
       const payload = mapFrontendToBackend(newSettings)
       
-      const response = await fetch('/api/settings/', {
+      const response = await authenticatedRequest('/api/settings/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -284,7 +285,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     set({ loading: true, error: null })
     
     try {
-      const response = await fetch('/api/settings/reset', {
+      const response = await authenticatedRequest('/api/settings/reset', {
         method: 'POST',
       })
       

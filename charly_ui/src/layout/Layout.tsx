@@ -6,10 +6,16 @@ import {
   Scale,
   FileText,
   BarChart3,
-  Settings
+  Settings,
+  LogOut
 } from 'lucide-react';
+import { authService } from '../lib/auth';
 
-const Layout = () => {
+interface LayoutProps {
+  onLogout?: () => Promise<void>;
+}
+
+const Layout = ({ onLogout }: LayoutProps) => {
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Portfolio', href: '/portfolio', icon: FolderOpen },
@@ -54,6 +60,25 @@ const Layout = () => {
               </NavLink>
             ))}
           </nav>
+          
+          {/* User info and logout */}
+          <div className="flex-shrink-0 flex bg-gray-800 p-4">
+            <div className="flex items-center justify-between w-full">
+              <div className="text-sm">
+                <p className="text-white font-medium">{authService.getCurrentUser()?.email}</p>
+                <p className="text-gray-400">{authService.getCurrentUser()?.role}</p>
+              </div>
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  className="ml-3 p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+                  title="Sign out"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </nav>
 

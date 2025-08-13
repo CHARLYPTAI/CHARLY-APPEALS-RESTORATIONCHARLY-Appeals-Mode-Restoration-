@@ -15,7 +15,7 @@ type ReportsState = {
   reports: Report[];
   loadingId: string | null;
   error: string | null;
-  fetchReports: () => void;
+  fetchReports: () => Promise<void>;
   unlockReport: (id: string) => Promise<void>;
   downloadReport: (id: string) => Promise<void>;
 };
@@ -25,38 +25,54 @@ export const useReportsStore = create<ReportsState>((set, get) => ({
   loadingId: null,
   error: null,
 
-  fetchReports: () => {
-    set({
-      reports: [
-        {
-          id: "RPT-001",
-          name: "Flagged Lead Pack",
-          description: "50 underassessed properties by jurisdiction",
-          type: "leads",
-          unlocked: false,
-          price: 99,
-          download_url: "/reports/flagged-leads.pdf",
-        },
-        {
-          id: "RPT-002",
-          name: "Savings Forecast",
-          description: "Projected tax savings across your portfolio",
-          type: "savings",
-          unlocked: false,
-          price: 129,
-          download_url: "/reports/savings-forecast.pdf",
-        },
-        {
-          id: "RPT-003",
-          name: "AI Narrative Briefing",
-          description: "GPT-generated summary across all open cases",
-          type: "narrative",
-          unlocked: false,
-          price: 149,
-          download_url: "/reports/ai-briefing.pdf",
-        },
-      ],
-    });
+  fetchReports: async () => {
+    try {
+      const response = await authenticatedRequest('/api/reports/');
+      if (!response.ok) {
+        throw new Error('Failed to fetch reports');
+      }
+      const reports = await response.json();
+      set({ reports, error: null });
+      console.log('✅ Reports loaded from backend:', reports.length);
+    } catch (err: unknown) {
+      console.error("Failed to fetch reports:", err);
+      const message = err instanceof Error ? err.message : "Failed to load reports";
+      set({ error: message });
+      
+      // Fallback to mock data if backend fails
+      console.log('⚠️ Using fallback mock reports data');
+      set({
+        reports: [
+          {
+            id: "RPT-001",
+            name: "Flagged Lead Pack",
+            description: "50 underassessed properties by jurisdiction",
+            type: "leads",
+            unlocked: false,
+            price: 99,
+            download_url: "/reports/flagged-leads.pdf",
+          },
+          {
+            id: "RPT-002",
+            name: "Savings Forecast", 
+            description: "Projected tax savings across your portfolio",
+            type: "savings",
+            unlocked: false,
+            price: 129,
+            download_url: "/reports/savings-forecast.pdf",
+          },
+          {
+            id: "RPT-003",
+            name: "AI Narrative Briefing",
+            description: "GPT-generated summary across all open cases", 
+            type: "narrative",
+            unlocked: false,
+            price: 149,
+            download_url: "/reports/ai-briefing.pdf",
+          },
+        ],
+      });
+    }
   },
 
   unlockReport: async (id) => {
@@ -99,7 +115,7 @@ export const useReportsStore = create<ReportsState>((set, get) => ({
       }
 
       // Trigger download
-      const response = await fetch(`/api/reports/download/${id}`);
+      const response = await authenticatedRequest(`/api/reports/download/${id}`);
       if (!response.ok) {
         throw new Error(`Download failed: ${response.status}`);
       }

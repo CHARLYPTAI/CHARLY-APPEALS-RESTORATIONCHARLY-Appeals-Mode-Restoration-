@@ -1,20 +1,9 @@
 import { create } from "zustand";
+import { apiClient, FilingPacket, handleApiError, isApiError } from "@/lib/api-client";
+import { toast } from "@/components/ui/use-toast";
 
-type Packet = {
-  id: string;
-  property_address: string;
-  county: string;
-  status: "Awaiting Signature" | "Filed" | "Rejected" | "Ready to File";
-  download_url: string;
-  current_assessment?: number;
-  proposed_value?: number;
-  potential_savings?: number;
-  deadline?: string;
-  created_date?: string;
-  packet_type?: string;
-  square_footage?: number;
-  year_built?: number;
-};
+// Use the standardized FilingPacket type from API client
+type Packet = FilingPacket;
 
 
 type FilingState = {
@@ -23,8 +12,6 @@ type FilingState = {
   error: string | null;
   fetchPackets: () => void;
   uploadSignedDoc: (packetId: string, file: File) => Promise<void>;
-  generatePacket: (propertyData: Record<string, unknown>) => Promise<string>;
-  generateBulkPackets: (properties: Record<string, unknown>[]) => Promise<string>;
   fileAppeal: (appealData: Record<string, unknown>) => Promise<void>;
   bulkFileAppeals: (appeals: Record<string, unknown>[]) => Promise<void>;
 };
@@ -38,7 +25,7 @@ export const useFilingStore = create<FilingState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       // Fetch packets generated from Appeals page
-      const response = await fetch('/api/filing/packets', {
+      const response = await authenticatedRequest('/api/filing/packets', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +75,7 @@ export const useFilingStore = create<FilingState>((set, get) => ({
       formData.append('file', file);
       formData.append('packet_id', packetId);
 
-      const response = await fetch('/api/filing/upload-signed-doc', {
+      const response = await authenticatedRequest('/api/filing/upload-signed-doc', {
         method: 'POST',
         body: formData,
       });
@@ -120,7 +107,7 @@ export const useFilingStore = create<FilingState>((set, get) => ({
   fileAppeal: async (appealData: Record<string, unknown>): Promise<void> => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch('/api/filing/file-appeal', {
+      const response = await authenticatedRequest('/api/filing/file-appeal', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,7 +136,7 @@ export const useFilingStore = create<FilingState>((set, get) => ({
   bulkFileAppeals: async (appeals: Record<string, unknown>[]): Promise<void> => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch('/api/filing/bulk-file-appeals', {
+      const response = await authenticatedRequest('/api/filing/bulk-file-appeals', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

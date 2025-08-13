@@ -1,20 +1,6 @@
 import { PropertyCard } from "@/components/portfolio/PropertyCard";
 import { Loader2, AlertCircle } from "lucide-react";
-
-interface MockProperty {
-  id: string;
-  address: string;
-  propertyType: string;
-  currentAssessment: number;
-  estimatedValue: number;
-  potentialSavings: number;
-  status: string;
-  jurisdiction: string;
-  parcelNumber: string;
-  ownerName: string;
-  yearBuilt: number;
-  squareFootage: number;
-}
+import { Property } from "@/lib/api-client";
 
 interface AnalysisResult {
   appeal_probability: number;
@@ -22,7 +8,7 @@ interface AnalysisResult {
 }
 
 interface PropertyListProps {
-  properties: MockProperty[];
+  properties: Property[];
   compareProperties: string[];
   analysisResults: Record<string, AnalysisResult>;
   isAnalyzing: string | null;
