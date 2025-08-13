@@ -74,7 +74,7 @@ const Portfolio: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      const response = await authenticatedRequest('/api/portfolio');
+      const response = await authenticatedRequest('/api/portfolio/');
       if (!response.ok) {
         throw new Error('Failed to load properties');
       }
