@@ -57,3 +57,6 @@ htmlcov/
 .env.local
 .env.*.local
 CHARLY_COMPLETE_BACKUP_*.tar.gz
+*.tgz
+*.zip
+*.tar.gz
