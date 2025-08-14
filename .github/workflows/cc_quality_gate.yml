@@ -1,7 +1,7 @@
 name: CC Quality & Security Gate
 on:
-  push: { branches: [ main ] }
-  pull_request: { branches: [ main ] }
+  push: { branches: [ master, main ] }
+  pull_request: { branches: [ master, main ] }
 
 jobs:
   quality-security:
@@ -51,11 +51,18 @@ jobs:
       - name: Verify BOOTSTRAP.md integrity (hash must match .bootstrap_hash)
         run: |
           EXPECTED_HASH=$(cat .bootstrap_hash 2>/dev/null || echo "")
-          if [ -z "$EXPECTED_HASH" ]; then echo "No .bootstrap_hash present"; exit 1; fi
+          if [ -z "$EXPECTED_HASH" ]; then echo "❌ No .bootstrap_hash present"; exit 1; fi
           CURRENT_HASH=$(sha256sum BOOTSTRAP.md | awk '{print $1}')
           echo "Expected: $EXPECTED_HASH"
           echo "Current : $CURRENT_HASH"
-          test "$EXPECTED_HASH" = "$CURRENT_HASH" || (echo "❌ BOOTSTRAP.md hash mismatch" && exit 1)
+          if [ "$EXPECTED_HASH" = "$CURRENT_HASH" ]; then
+            echo "✅ BOOTSTRAP.md integrity verified"
+          else
+            echo "❌ BOOTSTRAP.md hash mismatch - context drift detected"
+            echo "This indicates the bootstrap file was modified without proper hash update"
+            echo "To fix: Update .bootstrap_hash with the current BOOTSTRAP.md hash"
+            exit 1
+          fi
 
       - name: Block drift in cc_ops
         run: |
