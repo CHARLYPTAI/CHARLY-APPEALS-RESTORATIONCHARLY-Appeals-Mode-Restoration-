@@ -1,0 +1,22 @@
+:root {
+  --bg: #FFFFFF; --ink: #0B0B0C; --muted: #6B7280; --line: #E5E7EB;
+  --accent: #0EA5E9; --accent-ink: #0A0F14; --success: #10B981; --warn: #F59E0B; --error: #EF4444;
+  --r: 12px; --r-sm: 8px; --space: 8px;
+  --font-sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial;
+}
+
+* { box-sizing: border-box }
+html, body { height: 100% }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-sans); }
+
+.app-shell { display: flex; flex-direction: column; min-height: 100vh }
+.topbar { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; border-bottom: 1px solid var(--line) }
+.rail { width: 220px; border-right: 1px solid var(--line); padding: 16px; display: flex; flex-direction: column; gap: 8px }
+.main { display: flex; flex: 1; min-height: 0 }
+.content { flex: 1; padding: 24px; min-width: 0 }
+
+a { color: var(--ink); text-decoration: none; padding: 8px 10px; border-radius: 8px }
+a:hover { background: var(--line) }
+
+.brand { font-weight: 600; letter-spacing: 0.3px }
+.env { color: var(--muted); font-size: 12px }
