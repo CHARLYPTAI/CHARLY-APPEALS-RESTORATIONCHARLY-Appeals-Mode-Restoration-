@@ -1,0 +1,43 @@
+{
+  "summary": {
+    "status": "RED",
+    "icon": "🚨",
+    "timestamp": "2025-07-13T06:46:07.359Z",
+    "message": "CRITICAL: TypeScript health compromised. Immediate action required."
+  },
+  "metrics": {
+    "typeCoverage": "0%",
+    "buildTime": "9.955s",
+    "buildSuccess": false,
+    "errorCount": 33,
+    "warningCount": 0
+  },
+  "alerts": [
+    {
+      "level": "RED",
+      "message": "Type coverage 0% below minimum 85%",
+      "action": "Add explicit types to improve coverage"
+    },
+    {
+      "level": "RED",
+      "message": "Build failed with 33 TypeScript errors",
+      "action": "Fix TypeScript errors before proceeding",
+      "details": [
+        "src/pages/Portfolio.tsx(1764,37): error TS2352: Conversion of type '{ property: AnalysisProperty; analysis: PropertyAnalysisResult; valuation: ValuationData; date: string; preparedBy: string; ... 8 more ...; supernovaEnhancements: { ...; }; }' to type 'ReportData' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.",
+        "src/services/iaaoComplianceService.ts(210,49): error TS2769: No overload matches this call.",
+        "src/services/pdfExportService.ts(152,47): error TS2345: Argument of type '(comp: Record<string, unknown>) => void' is not assignable to parameter of type '(value: ComparableSale, index: number, array: ComparableSale[]) => void'.",
+        "src/services/pdfExportService.ts(154,11): error TS2322: Type 'unknown' is not assignable to type 'string | number'.",
+        "src/services/pdfExportService.ts(155,11): error TS2322: Type 'unknown' is not assignable to type 'string | number'."
+      ]
+    },
+    {
+      "level": "RED",
+      "message": "Lint failed with 4 errors",
+      "action": "Fix lint errors immediately"
+    }
+  ],
+  "recommendations": [
+    "Increase type coverage by adding explicit interfaces",
+    "Priority 1: Fix all TypeScript build errors"
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "flags_json": "{\"flag_overassessment\": false, \"flag_vacancy_anomaly\": false}",
+  "financials_json": "{\"noi\": 25000, \"cap_rate\": 0.05, \"expense_ratio\": 0.30}"
+}

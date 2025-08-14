@@ -1,0 +1,173 @@
+{
+  "timestamp": "2025-07-18T03:03:46.040Z",
+  "overallScore": 94.7,
+  "totalTests": 25,
+  "passedTests": 23,
+  "failedTests": 2,
+  "criticalFailures": 0,
+  "results": [
+    {
+      "testName": "Password Strength Validation",
+      "category": "authentication",
+      "passed": true,
+      "severity": "high"
+    },
+    {
+      "testName": "Multi-Factor Authentication",
+      "category": "authentication",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "JWT Token Security",
+      "category": "authentication",
+      "passed": true,
+      "severity": "high"
+    },
+    {
+      "testName": "Session Management",
+      "category": "authentication",
+      "passed": true,
+      "severity": "high"
+    },
+    {
+      "testName": "Brute Force Protection",
+      "category": "authentication",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "Role-Based Access Control",
+      "category": "authorization",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "Privilege Escalation Protection",
+      "category": "authorization",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "API Endpoint Authorization",
+      "category": "authorization",
+      "passed": true,
+      "severity": "high"
+    },
+    {
+      "testName": "Resource-Based Permissions",
+      "category": "authorization",
+      "passed": true,
+      "severity": "high"
+    },
+    {
+      "testName": "Cross-Site Scripting (XSS) Protection",
+      "category": "input-validation",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "SQL Injection Protection",
+      "category": "input-validation",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "Cross-Site Request Forgery (CSRF) Protection",
+      "category": "input-validation",
+      "passed": true,
+      "severity": "high"
+    },
+    {
+      "testName": "Command Injection Protection",
+      "category": "input-validation",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "File Upload Security",
+      "category": "input-validation",
+      "passed": false,
+      "severity": "medium"
+    },
+    {
+      "testName": "Data Encryption at Rest",
+      "category": "data-protection",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "Data Encryption in Transit",
+      "category": "data-protection",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "Cryptographic Key Management",
+      "category": "data-protection",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "Data Classification",
+      "category": "data-protection",
+      "passed": true,
+      "severity": "medium"
+    },
+    {
+      "testName": "Data Masking and Redaction",
+      "category": "data-protection",
+      "passed": true,
+      "severity": "medium"
+    },
+    {
+      "testName": "API Rate Limiting",
+      "category": "api-security",
+      "passed": true,
+      "severity": "high"
+    },
+    {
+      "testName": "DDoS Protection",
+      "category": "api-security",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "API Versioning Security",
+      "category": "api-security",
+      "passed": true,
+      "severity": "medium"
+    },
+    {
+      "testName": "Request/Response Validation",
+      "category": "api-security",
+      "passed": false,
+      "severity": "high"
+    },
+    {
+      "testName": "SOC 2 Type II Compliance",
+      "category": "compliance",
+      "passed": true,
+      "severity": "critical"
+    },
+    {
+      "testName": "GDPR Compliance",
+      "category": "compliance",
+      "passed": true,
+      "severity": "critical"
+    }
+  ],
+  "summary": {
+    "authentication": 100,
+    "authorization": 100,
+    "inputValidation": 90,
+    "dataProtection": 100,
+    "apiSecurity": 87.5,
+    "compliance": 100
+  },
+  "recommendations": [
+    "Enhance file upload validation to include content scanning",
+    "Implement additional API request/response validation checks",
+    "Continue regular security assessments and penetration testing"
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CHARLY Jurisdictional Rules Engine Schema",
+  "description": "Enhanced schema for county-specific property tax appeal rules with property type support",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version for future compatibility"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last modification timestamp"
+    },
+    "jurisdictions": {
+      "type": "object",
+      "description": "County-specific rule configurations",
+      "patternProperties": {
+        "^[A-Za-z\\s]+ County$": {
+          "type": "object",
+          "properties": {
+            "county_info": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "state": {"type": "string"},
+                "tax_rate": {"type": "number", "minimum": 0, "maximum": 1},
+                "assessment_ratio": {"type": "number", "minimum": 0, "maximum": 1},
+                "valuation_methods": {
+                  "type": "array",
+                  "items": {"type": "string", "enum": ["income", "sales", "cost"]}
+                },
+                "filing_deadlines": {
+                  "type": "object",
+                  "properties": {
+                    "appeal_deadline": {"type": "string"},
+                    "evidence_deadline": {"type": "string"}
+                  }
+                }
+              },
+              "required": ["name", "tax_rate", "assessment_ratio"]
+            },
+            "property_type_rules": {
+              "type": "object",
+              "description": "Rules organized by property type",
+              "patternProperties": {
+                "^(Commercial|Residential|Industrial|Retail|Office|Mixed-Use|Agricultural|Special-Purpose)$": {
+                  "type": "object",
+                  "properties": {
+                    "cap_rate_rules": {
+                      "type": "object",
+                      "properties": {
+                        "minimum_cap_rate": {"type": "number", "minimum": 0},
+                        "maximum_cap_rate": {"type": "number", "minimum": 0},
+                        "typical_range": {
+                          "type": "array",
+                          "items": {"type": "number"},
+                          "minItems": 2,
+                          "maxItems": 2
+                        }
+                      }
+                    },
+                    "vacancy_rules": {
+                      "type": "object",
+                      "properties": {
+                        "maximum_vacancy_rate": {"type": "number", "minimum": 0, "maximum": 1},
+                        "typical_vacancy_rate": {"type": "number", "minimum": 0, "maximum": 1},
+                        "vacancy_adjustment_method": {"type": "string", "enum": ["percentage", "dollar_amount", "none"]}
+                      }
+                    },
+                    "expense_ratio_rules": {
+                      "type": "object",
+                      "properties": {
+                        "minimum_expense_ratio": {"type": "number", "minimum": 0, "maximum": 1},
+                        "maximum_expense_ratio": {"type": "number", "minimum": 0, "maximum": 1},
+                        "typical_expense_ratio": {"type": "number", "minimum": 0, "maximum": 1}
+                      }
+                    },
+                    "flagging_rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "rule_name": {"type": "string"},
+                          "condition": {"type": "string"},
+                          "threshold": {"type": "number"},
+                          "comparison": {"type": "string", "enum": ["greater_than", "less_than", "equal_to", "between", "outside_range"]},
+                          "action": {"type": "string", "enum": ["flag", "warn", "exclude", "adjust"]},
+                          "severity": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+                          "description": {"type": "string"}
+                        },
+                        "required": ["rule_name", "condition", "threshold", "comparison", "action"]
+                      }
+                    },
+                    "market_adjustments": {
+                      "type": "object",
+                      "properties": {
+                        "market_conditions": {"type": "string", "enum": ["stable", "declining", "improving", "volatile"]},
+                        "adjustment_factor": {"type": "number"},
+                        "effective_date": {"type": "string", "format": "date"}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "global_rules": {
+              "type": "object",
+              "description": "County-wide rules that apply to all property types",
+              "properties": {
+                "assessment_tolerance": {
+                  "type": "number",
+                  "description": "Acceptable variance in assessment (e.g., 0.05 for 5%)",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "minimum_value_threshold": {
+                  "type": "number",
+                  "description": "Minimum property value for analysis",
+                  "minimum": 0
+                },
+                "data_quality_rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "field": {"type": "string"},
+                      "requirement": {"type": "string", "enum": ["required", "recommended", "optional"]},
+                      "validation": {"type": "string"}
+                    }
+                  }
+                },
+                "comparable_sales_rules": {
+                  "type": "object",
+                  "properties": {
+                    "max_age_months": {"type": "integer", "minimum": 1, "maximum": 60},
+                    "max_distance_miles": {"type": "number", "minimum": 0},
+                    "minimum_comps_required": {"type": "integer", "minimum": 1},
+                    "property_type_matching": {"type": "boolean"}
+                  }
+                }
+              }
+            },
+            "custom_calculations": {
+              "type": "object",
+              "description": "County-specific calculation methods",
+              "patternProperties": {
+                "^[a-zA-Z_]+$": {
+                  "type": "object",
+                  "properties": {
+                    "formula": {"type": "string"},
+                    "description": {"type": "string"},
+                    "required_fields": {
+                      "type": "array",
+                      "items": {"type": "string"}
+                    },
+                    "output_field": {"type": "string"}
+                  },
+                  "required": ["formula", "description"]
+                }
+              }
+            }
+          },
+          "required": ["county_info", "property_type_rules", "global_rules"]
+        }
+      }
+    }
+  },
+  "required": ["version", "jurisdictions"]
+}

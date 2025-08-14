@@ -1,0 +1,2783 @@
+=== charly_ui/src/test/accessibility/wcag-compliance.test.tsx ===
+244-    it('should have no accessibility violations', async () => {
+245-      const { container } = render(
+246:        <AccessibleButton onClick={vi.fn()}>
+247-          Test Button
+248-        </AccessibleButton>
+--
+256-      render(
+257-        <AccessibleButton 
+258:          onClick={vi.fn()}
+259-          ariaLabel="Custom label"
+260-          disabled={false}
+--
+272-      render(
+273-        <AccessibleButton 
+274:          onClick={vi.fn()}
+275-          disabled={true}
+276-        >
+-- api refs --
+
+=== charly_ui/src/components/ui/dialog.tsx ===
+28-      <div 
+29-        className="fixed inset-0 bg-black/50 transition-opacity duration-200" 
+30:        onClick={() => onOpenChange?.(false)}
+31-      />
+32-      <div className="relative z-50">
+-- api refs --
+
+=== charly_ui/src/components/AutomatedFiling.tsx ===
+148-
+149-        <Button 
+150:          onClick={handleSubmit}
+151-          disabled={isSubmitting}
+152-          className="w-full"
+-- api refs --
+
+=== charly_ui/src/components/AdvancedReporting.tsx ===
+298-            variant="outline" 
+299-            size="sm"
+300:            onClick={() => {
+301-              // Open settings configuration panel
+302-              const settingsModal = document.createElement('div');
+--
+399-                      <Button 
+400-                        className="w-full" 
+401:                        onClick={() => handleGenerateReport(template.id, template.name)}
+402-                        disabled={isGenerating}
+403-                      >
+--
+421-                  variant="outline" 
+422-                  size="sm"
+423:                  onClick={() => {
+424-                    // Create schedule modal
+425-                    const scheduleModal = document.createElement('div');
+--
+529-                            variant="outline" 
+530-                            size="sm"
+531:                            onClick={() => {
+532-                              toast({
+533-                                title: "Schedule Settings",
+--
+568-                    variant="outline" 
+569-                    size="sm"
+570:                    onClick={() => {
+571-                      // Create filter modal
+572-                      const filterModal = document.createElement('div');
+--
+623-                    variant="outline" 
+624-                    size="sm"
+625:                    onClick={() => {
+626-                      fetchReportData();
+627-                      toast({
+--
+683-                            variant="outline" 
+684-                            size="sm"
+685:                            onClick={async () => {
+686-                              try {
+687-                                const downloadResponse = await fetch(`/api/reports/download/${report.id}`);
+--
+724-                            variant="outline" 
+725-                            size="sm"
+726:                            onClick={() => {
+727-                              // Create preview modal
+728-                              const previewModal = document.createElement('div');
+-- api refs --
+72:        authenticatedRequest('/api/reports/templates'),
+73:        authenticatedRequest('/api/reports/jobs'),
+74:        authenticatedRequest('/api/reports/schedules')
+195:      const response = await authenticatedRequest('/api/reports/generate', {
+469:                        const response = await fetch('/api/reports/schedule', {
+687:                                const downloadResponse = await fetch(`/api/reports/download/${report.id}`);
+761:                                      fetch('/api/reports/download/${report.id}').then(r => r.json()).then(d => {
+
+=== charly_ui/src/components/security/SecurityAnalyticsDashboard.tsx ===
+480-            
+481-            <button
+482:              onClick={handleRefresh}
+483-              disabled={refreshing}
+484-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+--
+490-            <div className="flex items-center space-x-2">
+491-              <button
+492:                onClick={() => handleExportReport('pdf')}
+493-                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+494-                title="Export Security Report"
+--
+511-              <button
+512-                key={tab.id}
+513:                onClick={() => setSelectedView(tab.id as 'overview' | 'threats' | 'compliance' | 'users')}
+514-                className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+515-                  selectedView === tab.id
+-- api refs --
+173:      target: '/api/auth/login',
+185:      target: '/api/properties/search',
+197:      target: '/api/admin/users',
+
+=== charly_ui/src/components/security/SecureComponents.tsx ===
+241-        <button
+242-          type="button"
+243:          onClick={() => setShowPassword(!showPassword)}
+244-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+245-        >
+--
+545-              </div>
+546-              <button
+547:                onClick={() => removeFile(index)}
+548-                className="ml-2 p-1 text-red-500 hover:text-red-700"
+549-                title="Remove file"
+-- api refs --
+
+=== charly_ui/src/components/SkipToContent.tsx ===
+13-    <a
+14-      href="#main-content"
+15:      onClick={handleClick}
+16-      className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-md z-[9999] focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus-visible:outline-none transition-all duration-200 font-medium text-sm min-h-[44px] min-w-[44px] flex items-center justify-center"
+17-      aria-label="Skip to main content"
+-- api refs --
+
+=== charly_ui/src/components/payment/CheckoutForm.tsx ===
+186-      {plan.name === 'Free' && (
+187-        <Button
+188:          onClick={handleSubmit}
+189-          disabled={isDisabled}
+190-          className="w-full bg-gray-600 hover:bg-gray-700"
+-- api refs --
+
+=== charly_ui/src/components/payment/PlanUpgradeModal.tsx ===
+138-            <div className="flex gap-3 pt-4">
+139-              <button
+140:                onClick={onClose}
+141-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+142-                disabled={loading}
+--
+145-              </button>
+146-              <button
+147:                onClick={handleConfirm}
+148-                disabled={loading}
+149-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+-- api refs --
+
+=== charly_ui/src/components/payment/CreditAwareButton.tsx ===
+148-          {...buttonProps}
+149-          disabled={isButtonDisabled}
+150:          onClick={handleClick}
+151-          className={`
+152-            ${buttonProps.className || ''} 
+--
+177-              size="sm"
+178-              className="p-0 h-auto text-red-800 underline ml-1"
+179:              onClick={() => onUpgradeNeeded?.()}
+180-            >
+181-              Purchase more credits
+-- api refs --
+61:      const response = await fetch('/api/usage/check-operation', {
+86:      const response = await fetch('/api/appeals/check-generation-cost', {
+
+=== charly_ui/src/components/payment/PaymentMethodManager.tsx ===
+146-                    variant="ghost"
+147-                    size="sm"
+148:                    onClick={() => handleRemoveMethod(method.id)}
+149-                    disabled={removingId === method.id}
+150-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+--
+167-        {!showAddForm ? (
+168-          <Button
+169:            onClick={() => setShowAddForm(true)}
+170-            variant="outline"
+171-            className="w-full"
+--
+211-                  type="button"
+212-                  variant="outline"
+213:                  onClick={() => {
+214-                    setShowAddForm(false);
+215-                    setCardError(null);
+-- api refs --
+
+=== charly_ui/src/components/payment/UsageDisplay.tsx ===
+199-              </div>
+200-              <button 
+201:                onClick={() => window.location.href = '/billing'}
+202-                className="text-xs bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 transition-colors"
+203-              >
+-- api refs --
+
+=== charly_ui/src/components/payment/ChargedAIComponent.tsx ===
+182-          <div className="pt-4 border-t border-gray-200">
+183-            <Button
+184:              onClick={handleExecute}
+185-              disabled={isDisabled}
+186-              className="w-full"
+-- api refs --
+
+=== charly_ui/src/components/payment/UsageLimitWarning.tsx ===
+110-          <div className="flex space-x-3">
+111-            <button
+112:              onClick={onUpgrade}
+113-              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+114-            >
+--
+116-            </button>
+117-            <button
+118:              onClick={onDismiss}
+119-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+120-            >
+--
+165-                    : 'border-gray-200 hover:border-gray-300'
+166-                }`}
+167:                onClick={() => onPurchase()}
+168-              >
+169-                <div className="flex justify-between items-center">
+--
+198-          <div className="flex space-x-3">
+199-            <button
+200:              onClick={onPurchase}
+201-              className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+202-            >
+--
+204-            </button>
+205-            <button
+206:              onClick={onDismiss}
+207-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+208-            >
+--
+318-      <div 
+319-        className={shouldShowWarning ? 'relative cursor-not-allowed' : ''}
+320:        onClick={handleFeatureClick}
+321-      >
+322-        {/* Overlay for blocked features */}
+--
+332-              </div>
+333-              <button
+334:                onClick={(e) => {
+335-                  e.stopPropagation();
+336-                  if (gateResult!.action === 'upgrade') {
+--
+407-      <span>{gateResult.reason}</span>
+408-      <button 
+409:        onClick={() => window.location.href = '/billing'}
+410-        className="text-blue-600 hover:text-blue-700 underline"
+411-      >
+-- api refs --
+
+=== charly_ui/src/components/payment/CreditPurchase.tsx ===
+160-                selectedPackage === pkg ? 'ring-2 ring-green-500 bg-green-50' : ''
+161-              }`}
+162:              onClick={() => !isProcessing && setSelectedPackage(pkg)}
+163-            >
+164-              <div className="text-center space-y-3">
+--
+206-                {/* Purchase Button */}
+207-                <Button
+208:                  onClick={(e) => {
+209-                    e.stopPropagation();
+210-                    handlePurchase(pkg);
+--
+266-          <Button 
+267-            variant="ghost" 
+268:            onClick={onClose}
+269-            disabled={isProcessing}
+270-          >
+--
+298-    <>
+299-      <Button
+300:        onClick={() => openPurchase(creditsNeeded)}
+301-        variant="outline"
+302-        size="sm"
+-- api refs --
+
+=== charly_ui/src/components/payment/UsageStatusCard.tsx ===
+259-          <div className="pt-4 border-t">
+260-            <Button 
+261:              onClick={onUpgrade} 
+262-              className="w-full"
+263-              variant="default"
+-- api refs --
+73:      const response = await fetch('/api/usage/status', {
+
+=== charly_ui/src/components/payment/SubscriptionManager.tsx ===
+98-
+99-              <button
+100:                onClick={() => handlePlanSelect(plan)}
+101-                disabled={isCurrentPlan}
+102-                className={`w-full py-3 rounded-lg font-medium transition-colors ${
+--
+130-          
+131-          <button
+132:            onClick={handleCancelSubscription}
+133-            disabled={canceling}
+134-            className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+-- api refs --
+
+=== charly_ui/src/components/payment/CreditBalance.tsx ===
+77-            size="sm"
+78-            variant="outline"
+79:            onClick={openCreditPurchase}
+80-            className="ml-auto"
+81-          >
+--
+97-          variant="ghost"
+98-          size="sm"
+99:          onClick={handleRefresh}
+100-          disabled={isRefreshing}
+101-          className="h-8 w-8 p-0"
+--
+124-            {showPurchaseButton && (
+125-              <Button 
+126:                onClick={openCreditPurchase}
+127-                className="flex items-center space-x-1"
+128-              >
+--
+157-                size="sm"
+158-                className="flex items-center space-x-1"
+159:                onClick={() => {/* Open transaction history */}}
+160-              >
+161-                <History className="h-3 w-3" />
+--
+168-              size="sm"
+169-              className="flex items-center space-x-1"
+170:              onClick={() => {/* Open usage stats */}}
+171-            >
+172-              <TrendingUp className="h-3 w-3" />
+-- api refs --
+
+=== charly_ui/src/components/payment/CreditPurchaseModal.tsx ===
+149-                : 'hover:border-gray-300'
+150-            }`}
+151:            onClick={() => onSelectPackage(pkg)}
+152-          >
+153-            <CardContent className="p-4">
+--
+224-
+225-          <Button 
+226:            onClick={handlePurchase}
+227-            disabled={isProcessing || !stripe || !elements}
+228-            className="w-full"
+--
+340-        {!isLoading && !success && (
+341-          <DialogFooter>
+342:            <Button variant="outline" onClick={onClose}>
+343-              Cancel
+344-            </Button>
+-- api refs --
+70:      const response = await fetch('/api/payments/credits/create-payment-intent', {
+105:        const confirmResponse = await fetch('/api/payments/credits/confirm-purchase', {
+118:          const balanceResponse = await fetch('/api/usage/credits/balance', {
+268:      const response = await fetch('/api/payments/credits/packages');
+
+=== charly_ui/src/components/color/AccessibilityAudit.tsx ===
+112-          </div>
+113-          <button
+114:            onClick={runCompleteAudit}
+115-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+116-          >
+-- api refs --
+
+=== charly_ui/src/components/color/PerformanceTest.tsx ===
+125-        
+126-        <button
+127:          onClick={runPerformanceTest}
+128-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+129-        >
+-- api refs --
+
+=== charly_ui/src/components/charts/AIBriefingDashboard.tsx ===
+274-                  key={index} 
+275-                  className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+276:                  onClick={() => handleInsightDrilldown(insight)}
+277-                >
+278-                  <div className="flex items-start justify-between mb-2">
+--
+297-                      size="sm"
+298-                      className="text-xs h-7"
+299:                      onClick={(e) => {
+300-                        e.stopPropagation();
+301-                        handleActionClick(insight.action, insight.message);
+--
+333-                    size="sm"
+334-                    className="w-full h-8 text-xs"
+335:                    onClick={() => handleActionClick(`action_${index}`, rec)}
+336-                  >
+337-                    <FileText className="w-3 h-3 mr-2" />
+--
+395-                    size="sm"
+396-                    className="w-full mt-3 h-8 text-xs"
+397:                    onClick={() => handleActionClick('market_analysis', `Analyze ${intel.jurisdiction} ${intel.opportunity}`)}
+398-                  >
+399-                    <Target className="w-3 h-3 mr-2" />
+--
+450-                variant="ghost" 
+451-                size="sm" 
+452:                onClick={() => setShowDetailedResults(false)}
+453-                className="text-blue-600 hover:text-blue-800"
+454-              >
+-- api refs --
+
+=== charly_ui/src/components/microinteractions/InteractiveButton.tsx ===
+213-      style={getVariantStyles()}
+214-      className={`interactive-button ${className}`}
+215:      onClick={handleClick}
+216-      onMouseEnter={handleMouseEnter}
+217-      onMouseLeave={handleMouseLeave}
+-- api refs --
+
+=== charly_ui/src/components/microinteractions/DataVisualizationHover.tsx ===
+473-      onMouseMove={handleMouseMove}
+474-      onMouseLeave={handleMouseLeave}
+475:      onClick={handleClick}
+476-      onKeyDown={handleKeyDown}
+477-      tabIndex={0}
+-- api refs --
+
+=== charly_ui/src/components/microinteractions/StateAnimations.tsx ===
+447-            <motion.button
+448-              className="flex-shrink-0 ml-3 p-1 rounded-full hover:bg-black hover:bg-opacity-10 transition-colors"
+449:              onClick={handleClose}
+450-              whileHover={{ scale: 1.1 }}
+451-              whileTap={{ scale: 0.9 }}
+-- api refs --
+519:            width: `${progressValue.get()}%`
+
+=== charly_ui/src/components/microinteractions/MicroInteractionOrchestrator.tsx ===
+440-        </h3>
+441-        <button
+442:          onClick={clearHistory}
+443-          className="text-xs px-2 py-1 rounded"
+444-          style={{
+-- api refs --
+148:    const controls = animationControlsRef.current.get(elementId);
+157:    const controls = elementIds.map(id => animationControlsRef.current.get(id)).filter(Boolean);
+227:        animationControlsRef.current.delete(elementId);
+
+=== charly_ui/src/components/v2/ExpandableCard.tsx ===
+37-      {/* Header */}
+38-      <button
+39:        onClick={() => setIsOpen(!isOpen)}
+40-        className="w-full flex items-center justify-between px-6 py-4 text-label-medium font-medium text-white hover:bg-white/10 transition-colors duration-200"
+41-      >
+-- api refs --
+
+=== charly_ui/src/components/v2/PropertyClaimModal.tsx ===
+218-                : "hover:bg-gray-50"
+219-            )}
+220:            onClick={() => handleClaimTypeChange(option.value as ClaimFormData['claimType'])}
+221-          >
+222-            <div className="p-4">
+--
+272-                : "border-gray-200 hover:border-gray-300"
+273-            )}
+274:            onClick={() => handleEvidenceToggle(evidence.value as VerificationMethod)}
+275-          >
+276-            <div className="flex items-start justify-between">
+--
+317-            <Button
+318-              variant="outline"
+319:              onClick={() => document.getElementById('fileUpload')?.click()}
+320-            >
+321-              Choose Files
+--
+339-                  variant="ghost"
+340-                  size="sm"
+341:                  onClick={() => removeFile(index)}
+342-                >
+343-                  <X className="w-4 h-4" />
+--
+496-            <Button
+497-              variant="outline"
+498:              onClick={() => setCurrentStep(prev => prev - 1)}
+499-              disabled={isLoading}
+500-            >
+--
+505-          <Button
+506-            variant="outline"
+507:            onClick={onClose}
+508-            disabled={isLoading}
+509-          >
+--
+513-          {currentStep < totalSteps ? (
+514-            <Button
+515:              onClick={() => setCurrentStep(prev => prev + 1)}
+516-              disabled={!canProceedToNextStep() || isLoading}
+517-            >
+--
+520-          ) : (
+521-            <Button
+522:              onClick={handleSubmit}
+523-              disabled={!canProceedToNextStep() || isLoading}
+524-            >
+-- api refs --
+
+=== charly_ui/src/components/v2/PacketGenerator.tsx ===
+429-          <div className="space-y-4">
+430-            <Button
+431:              onClick={generateNarrative}
+432-              disabled={isGenerating}
+433-              variant="secondary"
+-- api refs --
+
+=== charly_ui/src/components/v2/ClientReportingEngine 2.tsx ===
+262-            <Button
+263-              variant="primary"
+264:              onClick={handleGenerateReport}
+265-            >
+266-              Generate Report
+--
+268-            <Button
+269-              variant="secondary"
+270:              onClick={() => handleExportReport('pdf')}
+271-            >
+272-              Export PDF
+--
+274-            <Button
+275-              variant="secondary"
+276:              onClick={() => handleExportReport('excel')}
+277-            >
+278-              Export Excel
+--
+458-                variant="primary"
+459-                size="sm"
+460:                onClick={() => handleExportReport('pdf')}
+461-              >
+462-                Download PDF
+--
+465-                variant="secondary"
+466-                size="sm"
+467:                onClick={() => handleExportReport('preview')}
+468-              >
+469-                Preview
+-- api refs --
+
+=== charly_ui/src/components/v2/DisclosureTrigger.tsx ===
+33-  return (
+34-    <button
+35:      onClick={onToggle}
+36-      disabled={disabled}
+37-      className={cn(
+-- api refs --
+
+=== charly_ui/src/components/v2/OpportunityRankingEngine 2.tsx ===
+262-                variant="primary"
+263-                size="sm"
+264:                onClick={() => handleBulkAction('generate-appeals')}
+265-              >
+266-                Generate Appeals
+--
+269-                variant="secondary"
+270-                size="sm"
+271:                onClick={() => handleBulkAction('export')}
+272-              >
+273-                Export Selection
+--
+370-                    variant="primary"
+371-                    size="sm"
+372:                    onClick={() => onPropertySelect?.(property)}
+373-                  >
+374-                    Analyze Property
+--
+393-            <Button
+394-              variant="secondary"
+395:              onClick={() => setFilterBy('all')}
+396-            >
+397-              Show All Properties
+-- api refs --
+141:      newSelection.delete(propertyId);
+
+=== charly_ui/src/components/v2/WorkflowNavigation 2.tsx ===
+247-              <button
+248-                key={index}
+249:                onClick={() => handleModeTransition(action.mode, action.context)}
+250-                className={`p-4 rounded-apple-lg border-2 transition-all duration-200 text-left hover:scale-[1.02] hover:shadow-apple-md ${
+251-                  action.urgent 
+--
+287-              <button
+288-                key={mode}
+289:                onClick={() => !isActive && isAvailable && handleModeTransition(mode as WorkflowMode)}
+290-                disabled={!isAvailable}
+291-                className={`p-4 rounded-apple-lg border-2 transition-all duration-200 text-center ${
+-- api refs --
+
+=== charly_ui/src/components/v2/WorkflowNavigation.tsx ===
+24-            <button
+25-              key={tab.label}
+26:              onClick={() => setMode(tab.mode)}
+27-              className={cn(
+28-                "flex flex-col items-center text-xs font-medium transition-all duration-300 ease-in-out",
+-- api refs --
+
+=== charly_ui/src/components/v2/PropertySearch.tsx ===
+43-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+44-          />
+45:          <Button onClick={handleSearch} variant="primary">
+46-            Search
+47-          </Button>
+-- api refs --
+
+=== charly_ui/src/components/BulkOperations.tsx ===
+223-
+224-              <Button 
+225:                onClick={handleSubmitAnalysis} 
+226-                disabled={loading || selectedProperties.length === 0}
+227-                className="w-full"
+--
+256-
+257-              <Button 
+258:                onClick={handleSubmitExport} 
+259-                disabled={loading || selectedProperties.length === 0}
+260-                className="w-full"
+--
+325-              variant="outline" 
+326-              className="mt-4"
+327:              onClick={() => window.location.href = '/portfolio'}
+328-            >
+329-              Go to Portfolio
+-- api refs --
+
+=== charly_ui/src/components/CommercialPropertyAnalysis.tsx ===
+175-        <Button
+176-          variant={activeTab === 'metrics' ? 'default' : 'outline'}
+177:          onClick={() => setActiveTab('metrics')}
+178-          className="flex items-center gap-2"
+179-        >
+--
+183-        <Button
+184-          variant={activeTab === 'comparables' ? 'default' : 'outline'}
+185:          onClick={() => setActiveTab('comparables')}
+186-          className="flex items-center gap-2"
+187-        >
+--
+191-        <Button
+192-          variant={activeTab === 'risks' ? 'default' : 'outline'}
+193:          onClick={() => setActiveTab('risks')}
+194-          className="flex items-center gap-2"
+195-        >
+-- api refs --
+
+=== charly_ui/src/components/TaxAttorneyWorkflow.tsx ===
+360-            <Button 
+361-              className="flex items-center gap-2"
+362:              onClick={() => setShowNewCaseModal(true)}
+363-            >
+364-              <Plus className="h-4 w-4" />
+--
+371-              key={legalCase.id} 
+372-              className="hover:shadow-md transition-shadow cursor-pointer"
+373:              onClick={() => setSelectedCase(legalCase)}
+374-            >
+375-              <CardContent className="p-6">
+--
+432-              <Button
+433-                variant="ghost"
+434:                onClick={() => setSelectedCase(null)}
+435-                className="flex items-center gap-2"
+436-              >
+--
+599-                      size="sm" 
+600-                      className="flex items-center gap-2"
+601:                      onClick={() => setShowNewTaskModal(true)}
+602-                    >
+603-                      <Plus className="h-4 w-4" />
+--
+771-            <Button
+772-              variant="outline"
+773:              onClick={() => setShowNewCaseModal(false)}
+774-              disabled={isCreatingCase}
+775-            >
+--
+777-            </Button>
+778-            <Button
+779:              onClick={handleCreateCase}
+780-              disabled={isCreatingCase}
+781-              className="flex items-center gap-2"
+--
+886-            <Button
+887-              variant="outline"
+888:              onClick={() => setShowNewTaskModal(false)}
+889-              disabled={isCreatingTask}
+890-            >
+--
+892-            </Button>
+893-            <Button
+894:              onClick={handleCreateTask}
+895-              disabled={isCreatingTask}
+896-              className="flex items-center gap-2"
+-- api refs --
+
+=== charly_ui/src/components/BusinessIntelligenceDashboard.tsx ===
+112-            <option value="year">Last Year</option>
+113-          </select>
+114:          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
+115-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+116-            Refresh
+117-          </Button>
+118:          <Button variant="outline" size="sm" onClick={handleExport}>
+119-            <Download className="w-4 h-4 mr-2" />
+120-            Export
+-- api refs --
+
+=== charly_ui/src/components/mobile/LongPressContextMenu.tsx ===
+205-                <h3 className="text-sm font-medium text-gray-900">Actions</h3>
+206-                <button
+207:                  onClick={hideMenu}
+208-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+209-                >
+--
+220-                <motion.button
+221-                  key={action.id}
+222:                  onClick={() => {
+223-                    action.onAction();
+224-                    hideMenu();
+-- api refs --
+
+=== charly_ui/src/components/mobile/TouchOptimizedButton.tsx ===
+191-      onTouchStart={handleTouchStart}
+192-      onTouchEnd={handleTouchEnd}
+193:      onClick={handleClick}
+194-      data-testid={testId}
+195-      whileTap={{ scale: 0.98 }}
+--
+320-      disabled={disabled}
+321-      loading={loading}
+322:      onClick={onClick}
+323-      onLongPress={onLongPress}
+324-      longPressEnabled={!!onLongPress}
+--
+379-        size="large"
+380-        disabled={disabled}
+381:        onClick={onClick}
+382-        className={`
+383-          ${sizeClasses[size]}
+-- api refs --
+
+=== charly_ui/src/components/mobile/MobileNavigation.tsx ===
+192-                <TouchOptimizedButton
+193-                  key={item.id}
+194:                  onClick={() => handleNavigation(item.path, item.id)}
+195-                  className={`flex-1 flex flex-col items-center py-2 px-1 relative ${
+196-                    isActive ? 'text-blue-600' : 'text-gray-500'
+--
+238-            {compactMode && displayItems.length > 4 && (
+239-              <TouchOptimizedButton
+240:                onClick={() => setIsExpanded(!isExpanded)}
+241-                className="flex-1 flex flex-col items-center py-2 px-1 text-gray-500"
+242-                hapticFeedback={true}
+--
+273-            initial="fadeOut"
+274-            animate="fadeIn"
+275:            onClick={() => setIsExpanded(false)}
+276-          >
+277-            <motion.div
+--
+279-              initial="slideOutDown"
+280-              animate="slideInUp"
+281:              onClick={(e) => e.stopPropagation()}
+282-            >
+283-                <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6" />
+--
+289-                    <TouchOptimizedButton
+290-                      key={item.id}
+291:                      onClick={() => handleNavigation(item.path, item.id)}
+292-                      className={`flex flex-col items-center p-4 rounded-xl border-2 ${
+293-                        activeTab === item.id
+--
+318-                          <TouchOptimizedButton
+319-                            key={`recent-${index}`}
+320:                            onClick={() => handleNavigation(path, item.id)}
+321-                            className="flex items-center px-3 py-2 bg-gray-100 rounded-lg"
+322-                            hapticFeedback={true}
+-- api refs --
+
+=== charly_ui/src/components/mobile/AdaptiveLayout.tsx ===
+281-    <div className={`border border-gray-200 rounded-lg overflow-hidden ${className}`}>
+282-      <button
+283:        onClick={() => shouldCollapse && setIsOpen(!isOpen)}
+284-        className={`w-full px-4 py-3 bg-gray-50 text-left flex items-center justify-between ${
+285-          shouldCollapse ? 'cursor-pointer hover:bg-gray-100' : 'cursor-default'
+-- api refs --
+
+=== charly_ui/src/components/mobile/GestureAccessibility.tsx ===
+323-          {/* Voice command toggle */}
+324-          <motion.button
+325:            onClick={isVoiceCommandActive ? stopVoiceCommand : startVoiceCommand}
+326-            className={`
+327-              p-2 rounded-full text-white transition-colors
+--
+348-          {/* Gesture alternatives toggle */}
+349-          <motion.button
+350:            onClick={() => setShowGestureAlternatives(!showGestureAlternatives)}
+351-            className={`
+352-              p-2 rounded-full text-white transition-colors
+--
+394-                <h3 className="text-lg font-semibold text-gray-900">Gesture Alternatives</h3>
+395-                <button
+396:                  onClick={() => setShowGestureAlternatives(false)}
+397-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+398-                  aria-label="Close gesture alternatives"
+--
+413-                      </div>
+414-                      <button
+415:                        onClick={action}
+416-                        className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors"
+417-                        aria-label={`Execute ${gesture}`}
+-- api refs --
+211:      newMap.delete(gesture);
+
+=== charly_ui/src/components/mobile/PinchZoomProvider.tsx ===
+371-              >
+372-                <motion.button
+373:                  onClick={zoomIn}
+374-                  className="bg-black bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-80 transition-colors"
+375-                  whileHover={{ scale: 1.1 }}
+--
+382-                
+383-                <motion.button
+384:                  onClick={zoomOut}
+385-                  className="bg-black bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-80 transition-colors"
+386-                  whileHover={{ scale: 1.1 }}
+--
+393-                
+394-                <motion.button
+395:                  onClick={resetZoom}
+396-                  className="bg-black bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-80 transition-colors"
+397-                  whileHover={{ scale: 1.1 }}
+-- api refs --
+
+=== charly_ui/src/components/mobile/GesturePerformanceOptimizer.tsx ===
+286-          <div className="fixed bottom-4 right-4 z-50 flex flex-col space-y-2">
+287-            <motion.button
+288:              onClick={() => setShowPerformanceOverlay(!showPerformanceOverlay)}
+289-              className={`
+290-                p-2 rounded-full text-white transition-colors
+--
+315-                <h3 className="text-sm font-bold">Gesture Performance</h3>
+316-                <button
+317:                  onClick={() => setShowPerformanceOverlay(false)}
+318-                  className="text-white hover:text-gray-300 transition-colors"
+319-                >
+-- api refs --
+
+=== charly_ui/src/components/NarrativeDisplay.tsx ===
+221-                variant="outline"
+222-                size="sm"
+223:                onClick={handleCopy}
+224-                className="text-xs"
+225-              >
+--
+236-                  variant="outline"
+237-                  size="sm"
+238:                  onClick={onExport}
+239-                  className="text-xs"
+240-                >
+--
+248-                  variant="outline"
+249-                  size="sm"
+250:                  onClick={onRegenerate}
+251-                  className="text-xs"
+252-                >
+-- api refs --
+
+=== charly_ui/src/components/ReportPreview.tsx ===
+620-          <Button 
+621-            variant="outline" 
+622:            onClick={() => setShowReportPreview(false)}
+623-            aria-label="Close report preview and return to portfolio"
+624-            className="focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+--
+629-            <Button 
+630-              variant="outline"
+631:              onClick={() => {
+632-                setShowReportPreview(false);
+633-                announce('Analysis preview closed, ready for editing');
+--
+648-            >
+649-              <Button
+650:                onClick={async () => {
+651-                  try {
+652-                    announce('Generating Enterprise PDF report');
+--
+678-              <Button
+679-                variant="outline"
+680:                onClick={async () => {
+681-                  try {
+682-                    announce('Generating Excel export');
+--
+706-              <Button
+707-                variant="outline"
+708:                onClick={async () => {
+709-                  try {
+710-                    announce('Generating Word document');
+-- api refs --
+
+=== charly_ui/src/components/typography/HighContrastMode.tsx ===
+220-        }}>
+221-          <button
+222:            onClick={toggleHighContrast}
+223-            style={{
+224-              background: 'none',
+-- api refs --
+
+=== charly_ui/src/components/portfolio/PropertyCard.tsx ===
+55-            <div className="flex items-start">
+56-              <button
+57:                onClick={(e) => {
+58-                  e.stopPropagation();
+59-                  onCompareToggle(property.id);
+--
+129-          <div className="flex flex-col justify-center space-y-2">
+130-            <Button
+131:              onClick={() => onPropertySelect(property.id)}
+132-              className="bg-blue-600 hover:bg-blue-700 w-full"
+133-              size="sm"
+-- api refs --
+
+=== charly_ui/src/components/portfolio/AnalyticsView.tsx ===
+40-        <Button 
+41-          variant="ghost" 
+42:          onClick={onBackToPortfolio}
+43-          className="flex items-center gap-2"
+44-          aria-label="Return to portfolio from analytics view"
+-- api refs --
+
+=== charly_ui/src/components/portfolio/PropertyFilters 2.tsx ===
+113-        <div className="flex flex-wrap gap-3">
+114-          <Button
+115:            onClick={() => setViewMode('analytics')}
+116-            variant="outline"
+117-            className="flex items-center gap-2"
+--
+122-          
+123-          <Button
+124:            onClick={() => setViewMode('multistate')}
+125-            variant="outline"
+126-            className="flex items-center gap-2"
+--
+132-          {compareProperties.length >= 2 && (
+133-            <Button
+134:              onClick={() => setViewMode('comparison')}
+135-              className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+136-            >
+--
+142-          {compareProperties.length > 0 && (
+143-            <Button
+144:              onClick={() => setShowBulkActionsModal(true)}
+145-              variant="outline"
+146-              className="flex items-center gap-2"
+--
+161-            <p className="text-sm text-gray-500 mb-4">CSV, Excel, XML files</p>
+162-            <Button 
+163:              onClick={() => document.getElementById('file-upload')?.click()}
+164-              variant="outline"
+165-              size="sm"
+--
+184-            <p className="text-sm text-blue-600 mb-4">Manual property entry</p>
+185-            <Button 
+186:              onClick={() => setShowAddPropertyModal(true)}
+187-              className="bg-blue-600 hover:bg-blue-700"
+188-              size="sm"
+--
+200-            <p className="text-sm text-green-600 mb-4">{displayProperties.length} properties loaded</p>
+201-            <Button 
+202:              onClick={() => setViewMode('analytics')}
+203-              variant="outline"
+204-              size="sm"
+--
+219-              variant="outline"
+220-              size="sm"
+221:              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+222-              className="text-blue-600 border-blue-600 hover:bg-blue-50"
+223-            >
+--
+267-            <Button
+268-              variant="outline"
+269:              onClick={clearFilters}
+270-              className="flex items-center justify-center"
+271-            >
+--
+338-                  variant="outline"
+339-                  size="sm"
+340:                  onClick={() => {
+341-                    setMinValue('1000000');
+342-                    setFilterStatus('all');
+--
+348-                  variant="outline"
+349-                  size="sm"
+350:                  onClick={() => {
+351-                    setFilterStatus('Under Review');
+352-                  }}
+--
+357-                  variant="outline"
+358-                  size="sm"
+359:                  onClick={() => {
+360-                    setSelectedJurisdiction('Harris County');
+361-                  }}
+--
+380-                    {filter.label}
+381-                    <button
+382:                      onClick={() => {
+383-                        switch (filter.key) {
+384-                          case 'search': setSearchQuery(''); break;
+-- api refs --
+
+=== charly_ui/src/components/portfolio/AddPropertyModal.tsx ===
+216-          <Button 
+217-            variant="outline" 
+218:            onClick={handleClose}
+219-            disabled={isAddingProperty}
+220-          >
+--
+222-          </Button>
+223-          <Button 
+224:            onClick={onAddProperty}
+225-            disabled={isAddingProperty}
+226-            className="bg-blue-600 hover:bg-blue-700"
+-- api refs --
+
+=== charly_ui/src/components/portfolio/PropertyAnalysisModal.tsx ===
+142-                        <p className="text-sm text-gray-500 mb-4">CSV, Excel, XML, PDF files</p>
+143-                        <Button 
+144:                          onClick={() => document.getElementById('workup-file-upload')?.click()}
+145-                          variant="outline"
+146-                          size="sm"
+--
+247-                <Button 
+248-                  variant="outline" 
+249:                  onClick={handleCloseAnalysisModal}
+250-                  aria-label="Close property analysis modal"
+251-                >
+--
+257-                    <>
+258-                      <Button 
+259:                        onClick={async () => {
+260-                          setIsGeneratingAppeal(true);
+261-                          try {
+--
+343-                      </Button>
+344-                      <Button 
+345:                        onClick={onFileAppeal}
+346-                        className="bg-green-600 hover:bg-green-700"
+347-                        aria-label="File appeal for this property"
+--
+357-                    disabled={isGeneratingReport}
+358-                    aria-label="Generate comprehensive property report"
+359:                    onClick={async () => {
+360-                      console.log('🌟 Supernova button clicked');
+361-                      console.log('🏠 Current property:', currentProperty);
+-- api refs --
+283:                            const response = await authenticatedRequest('/api/appeals/generate-packet', {
+304:                              const downloadResponse = await fetch(result.download_url);
+
+=== charly_ui/src/components/portfolio/BulkActionsModal.tsx ===
+37-              variant="outline"
+38-              className="w-full justify-start"
+39:              onClick={() => onBulkAction('update_status')}
+40-              disabled={isBulkProcessing}
+41-            >
+--
+47-              variant="outline"
+48-              className="w-full justify-start"
+49:              onClick={() => onBulkAction('flag_properties')}
+50-              disabled={isBulkProcessing}
+51-            >
+--
+57-              variant="outline"
+58-              className="w-full justify-start"
+59:              onClick={() => onBulkAction('bulk_analysis')}
+60-              disabled={isBulkProcessing}
+61-            >
+--
+67-              variant="outline"
+68-              className="w-full justify-start"
+69:              onClick={() => onBulkAction('export_selected')}
+70-              disabled={isBulkProcessing}
+71-            >
+--
+79-          <Button 
+80-            variant="outline" 
+81:            onClick={onClose}
+82-            disabled={isBulkProcessing}
+83-          >
+-- api refs --
+
+=== charly_ui/src/components/portfolio/ComparisonView.tsx ===
+41-        <Button 
+42-          variant="ghost" 
+43:          onClick={onBackToPortfolio}
+44-          className="flex items-center gap-2"
+45-          aria-label="Return to portfolio from comparison view"
+-- api refs --
+
+=== charly_ui/src/components/portfolio/PropertyFilters.tsx ===
+113-        <div className="flex flex-wrap gap-3">
+114-          <Button
+115:            onClick={() => setViewMode('analytics')}
+116-            variant="outline"
+117-            className="flex items-center gap-2"
+--
+122-          
+123-          <Button
+124:            onClick={() => setViewMode('multistate')}
+125-            variant="outline"
+126-            className="flex items-center gap-2"
+--
+132-          {compareProperties.length >= 2 && (
+133-            <Button
+134:              onClick={() => setViewMode('comparison')}
+135-              className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+136-            >
+--
+142-          {compareProperties.length > 0 && (
+143-            <Button
+144:              onClick={() => setShowBulkActionsModal(true)}
+145-              variant="outline"
+146-              className="flex items-center gap-2"
+--
+161-            <p className="text-sm text-gray-500 mb-4">CSV, Excel, XML files</p>
+162-            <Button 
+163:              onClick={() => document.getElementById('file-upload')?.click()}
+164-              variant="outline"
+165-              size="sm"
+--
+184-            <p className="text-sm text-blue-600 mb-4">Manual property entry</p>
+185-            <Button 
+186:              onClick={() => setShowAddPropertyModal(true)}
+187-              className="bg-blue-600 hover:bg-blue-700"
+188-              size="sm"
+--
+200-            <p className="text-sm text-green-600 mb-4">{displayProperties.length} properties loaded</p>
+201-            <Button 
+202:              onClick={() => setViewMode('analytics')}
+203-              variant="outline"
+204-              size="sm"
+--
+219-              variant="outline"
+220-              size="sm"
+221:              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+222-              className="text-blue-600 border-blue-600 hover:bg-blue-50"
+223-            >
+--
+267-            <Button
+268-              variant="outline"
+269:              onClick={clearFilters}
+270-              className="flex items-center justify-center"
+271-            >
+--
+338-                  variant="outline"
+339-                  size="sm"
+340:                  onClick={() => {
+341-                    setMinValue('1000000');
+342-                    setFilterStatus('all');
+--
+348-                  variant="outline"
+349-                  size="sm"
+350:                  onClick={() => {
+351-                    setFilterStatus('Under Review');
+352-                  }}
+--
+357-                  variant="outline"
+358-                  size="sm"
+359:                  onClick={() => {
+360-                    setSelectedJurisdiction('Harris County');
+361-                  }}
+--
+380-                    {filter.label}
+381-                    <button
+382:                      onClick={() => {
+383-                        switch (filter.key) {
+384-                          case 'search': setSearchQuery(''); break;
+-- api refs --
+
+=== charly_ui/src/components/MultiStateJurisdiction.tsx ===
+91-      <div className="flex gap-2 mb-6">
+92-        <button
+93:          onClick={() => setViewMode('overview')}
+94-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+95-            viewMode === 'overview'
+--
+101-        </button>
+102-        <button
+103:          onClick={() => setViewMode('details')}
+104-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+105-            viewMode === 'details'
+--
+111-        </button>
+112-        <button
+113:          onClick={() => setViewMode('compliance')}
+114-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+115-            viewMode === 'compliance'
+--
+131-                key={jurisdiction.code}
+132-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+133:                onClick={() => {
+134-                  setSelectedState(jurisdiction.code);
+135-                  setViewMode('details');
+-- api refs --
+
+=== charly_ui/src/components/PropertyFilters.tsx ===
+99-        <Button
+100-          variant="outline"
+101:          onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+102-          className="flex items-center gap-2"
+103-        >
+--
+110-          <Button
+111-            variant="outline"
+112:            onClick={clearFilters}
+113-            className="flex items-center gap-2 text-red-600 hover:text-red-700"
+114-          >
+-- api refs --
+
+=== charly_ui/src/components/valuation/Reconciliation.tsx ===
+148-              </div>
+149-              <div className="mt-4 flex gap-2">
+150:                <Button onClick={handleApplyAISuggestions} size="sm" variant="outline">
+151-                  Apply Suggestions
+152-                </Button>
+153:                <Button onClick={handleResetWeights} size="sm" variant="ghost">
+154-                  <RotateCcw className="w-4 h-4 mr-2" />
+155-                  Reset
+-- api refs --
+
+=== charly_ui/src/components/valuation/SalesComparisonApproach.tsx ===
+132-              className="flex-1"
+133-            />
+134:            <Button onClick={addNewComparable} disabled={!newCompAddress.trim()}>
+135-              <Plus className="w-4 h-4 mr-2" />
+136-              Add
+--
+169-                          variant="ghost"
+170-                          size="sm"
+171:                          onClick={() => removeComparable(comp.id)}
+172-                          className="text-red-600 hover:text-red-700"
+173-                        >
+--
+409-            <h3 className="text-lg font-medium text-gray-700 mb-2">No Comparable Sales</h3>
+410-            <p className="text-gray-500 mb-4">Add comparable sales to begin the sales comparison analysis</p>
+411:            <Button onClick={() => setNewCompAddress('')} variant="outline">
+412-              <Plus className="w-4 h-4 mr-2" />
+413-              Add First Comparable
+-- api refs --
+
+=== charly_ui/src/components/valuation/SalesComparisonComprehensive.tsx ===
+205-              onKeyPress={(e) => e.key === 'Enter' && addNewComparable()}
+206-            />
+207:            <Button onClick={addNewComparable} size="sm">
+208-              <Plus className="w-4 h-4 mr-2" />
+209-              Add Comparable
+--
+245-                        variant="outline"
+246-                        size="sm"
+247:                        onClick={(e) => {
+248-                          e.stopPropagation();
+249-                          removeComparable(comp.id);
+-- api refs --
+24:      newExpanded.delete(id);
+
+=== charly_ui/src/components/AIAnalysisProgress.tsx ===
+251-            </Badge>
+252-            {onCancel && (
+253:              <Button variant="outline" size="sm" onClick={onCancel}>
+254-                Cancel
+255-              </Button>
+-- api refs --
+
+=== charly_ui/src/components/ValuationTabs.tsx ===
+135-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Valuation</h3>
+136-          <p className="text-gray-600 mb-4">{error}</p>
+137:          <Button onClick={() => loadValuation(propertyId)} variant="outline">
+138-            Retry
+139-          </Button>
+--
+168-              <Button 
+169-                variant="outline" 
+170:                onClick={handleSaveDraft}
+171-                disabled={isDraft}
+172-              >
+--
+175-              </Button>
+176-              <Button 
+177:                onClick={handleFinalize}
+178-                disabled={weightedValue <= 0}
+179-                className="bg-green-600 hover:bg-green-700"
+-- api refs --
+
+=== charly_ui/src/components/ClientPortalWhiteLabel.tsx ===
+141-              <Button
+142-                variant="outline"
+143:                onClick={() => setPreviewMode(false)}
+144-                className="flex items-center gap-2"
+145-              >
+--
+243-            <Button 
+244-              className="flex items-center gap-2"
+245:              onClick={() => {
+246-                toast({
+247-                  title: "Create Portal",
+--
+259-              key={portal.id} 
+260-              className="hover:shadow-md transition-shadow cursor-pointer"
+261:              onClick={() => setSelectedPortal(portal)}
+262-            >
+263-              <CardContent className="p-6">
+--
+318-              <Button
+319-                variant="ghost"
+320:                onClick={() => setSelectedPortal(null)}
+321-                className="flex items-center gap-2"
+322-              >
+--
+332-              <Button
+333-                variant="outline"
+334:                onClick={() => setPreviewMode(true)}
+335-                className="flex items-center gap-2"
+336-              >
+-- api refs --
+
+=== charly_ui/src/components/CloudUploadButton.tsx ===
+32-  return (
+33-    <button
+34:      onClick={handleClick}
+35-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-300 text-sm font-medium text-zinc-700 ${color} hover:bg-zinc-200`}
+36-    >
+-- api refs --
+
+=== charly_ui/src/components/MonitoringDashboard.tsx ===
+111-            </h3>
+112-            <p className="text-red-600 mb-4">{error}</p>
+113:            <Button onClick={fetchDashboardData} variant="outline">
+114-              Retry
+115-            </Button>
+--
+163-          )}
+164-          <Button 
+165:            onClick={fetchDashboardData} 
+166-            disabled={loading}
+167-            variant="outline"
+-- api refs --
+64:      const response = await fetch('/api/metrics/dashboard');
+
+=== charly_ui/src/components/ErrorBoundary.tsx ===
+108-            <div className="flex gap-3 justify-center">
+109-              <button
+110:                onClick={this.handleReset}
+111-                className="px-4 py-2 bg-zinc-200 text-zinc-700 rounded-xl hover:bg-zinc-300 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2"
+112-              >
+--
+114-              </button>
+115-              <button
+116:                onClick={this.handleRefresh}
+117-                className="px-4 py-2 bg-zinc-900 text-white rounded-xl hover:bg-zinc-800 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2"
+118-              >
+-- api refs --
+
+=== charly_ui/src/pages/Settings.tsx ===
+673-      <div className="flex justify-end gap-3 pt-6">
+674-        <Button 
+675:          onClick={handleReset} 
+676-          variant="outline"
+677-          size="lg"
+--
+681-        </Button>
+682-        <Button 
+683:          onClick={handleSave} 
+684-          disabled={loading}
+685-          size="lg"
+-- api refs --
+
+=== charly_ui/src/pages/Reports.tsx ===
+159-                          size="sm"
+160-                          className="w-full justify-start bg-green-600 hover:bg-green-700"
+161:                          onClick={() => handleDownload(report.id, report.name)}
+162-                        >
+163-                          <Download className="w-4 h-4 mr-2" />
+--
+170-                            size="sm"
+171-                            className="w-full justify-start"
+172:                            onClick={() => handleUnlock(report.id, report.name)}
+173-                            disabled={loadingId === report.id}
+174-                          >
+-- api refs --
+
+=== charly_ui/src/pages/PortfolioV2.tsx ===
+343-                  : "border-gray-300 hover:border-blue-400"
+344-              )}
+345:              onClick={() => handlePropertySelect(property.id)}
+346-            >
+347-              {selectedProperties.includes(property.id) && (
+--
+405-                  variant="outline"
+406-                  size="sm"
+407:                  onClick={() => window.location.href = `/analysis/${property.id}`}
+408-                >
+409-                  <Calculator className="w-4 h-4 mr-2" />
+--
+414-                    variant="outline"
+415-                    size="sm"
+416:                    onClick={() => handleClaimProperty(property.id)}
+417-                  >
+418-                    Verify Ownership
+--
+532-            <Button
+533-              variant="outline"
+534:              onClick={() => {/* Bulk actions implementation */}}
+535-              className="flex items-center"
+536-            >
+--
+539-            </Button>
+540-          )}
+541:          <Button onClick={() => setShowAddProperty(true)}>
+542-            <Plus className="w-4 h-4 mr-2" />
+543-            Add Property
+--
+565-          <Button
+566-            variant="outline"
+567:            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+568-            className="flex items-center"
+569-          >
+--
+573-          <Button
+574-            variant="outline"
+575:            onClick={handleBulkSelectAll}
+576-            className="flex items-center"
+577-          >
+--
+608-              }
+609-            </p>
+610:            <Button onClick={() => setShowAddProperty(true)}>
+611-              <Plus className="w-4 h-4 mr-2" />
+612-              Add Your First Property
+--
+620-      {/* Floating Action Button for Quick Add */}
+621-      <FloatingActionButton
+622:        onClick={() => setShowAddProperty(true)}
+623-        className="fixed bottom-8 right-8"
+624-      >
+--
+713-            <Button 
+714-              variant="outline" 
+715:              onClick={() => setShowAddProperty(false)}
+716-            >
+717-              Cancel
+718-            </Button>
+719:            <Button onClick={handleAddProperty}>
+720-              <Plus className="w-4 h-4 mr-2" />
+721-              Add Property
+-- api refs --
+
+=== charly_ui/src/pages/AppealsV2.tsx ===
+316-            <div className="flex justify-center space-x-4">
+317-              <button 
+318:                onClick={() => navigate('/portfolio-v2')}
+319-                className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200"
+320-              >
+--
+322-              </button>
+323-              <button 
+324:                onClick={() => handleStepComplete(0)}
+325-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+326-              >
+--
+354-              <div className="pt-4">
+355-                <button 
+356:                  onClick={() => handleStepComplete(1)}
+357-                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+358-                >
+--
+386-            </div>
+387-            <button 
+388:              onClick={() => handleStepComplete(2)}
+389-              className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+390-            >
+--
+405-            <div className="flex space-x-4">
+406-              <button 
+407:                onClick={handleGenerateNarrative}
+408-                disabled={isGenerating}
+409-                className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 disabled:opacity-50"
+--
+412-              </button>
+413-              <button 
+414:                onClick={() => handleStepComplete(3)}
+415-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+416-              >
+--
+447-            </div>
+448-            <button 
+449:              onClick={() => handleStepComplete(4)}
+450-              className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+451-            >
+--
+480-              </button>
+481-              <button 
+482:                onClick={() => handleStepComplete(5)}
+483-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+484-              >
+--
+513-          <span>{overallConfidence}% Success Confidence</span>
+514-        </Badge>
+515:        <Button onClick={() => navigate('/portfolio-v2')} variant="outline">
+516-          ← Back to Portfolio
+517-        </Button>
+--
+568-          </div>
+569-          <button 
+570:            onClick={() => navigate('/portfolio-v2')}
+571-            className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200"
+572-          >
+-- api refs --
+
+=== charly_ui/src/pages/PropertyAnalysisV2.tsx ===
+313-          <span>{mockAnalysisData.confidence}% Confidence</span>
+314-        </Badge>
+315:        <Button onClick={() => navigate('/portfolio-v2')} variant="outline">
+316-          ← Back to Portfolio
+317-        </Button>
+--
+599-              Export Report
+600-            </Button>
+601:            <Button onClick={() => navigate(`/appeals-v2/${propertyId}`)}>
+602-              <Target className="w-4 h-4 mr-2" />
+603-              File Appeal
+-- api refs --
+
+=== charly_ui/src/pages/MarketIntelligenceV2.tsx ===
+272-            variant="outline"
+273-            size="sm"
+274:            onClick={handleRefreshData}
+275-            disabled={isLoading}
+276-          >
+--
+428-          variant="outline"
+429-          size="sm"
+430:          onClick={() => toast({ title: "Export functionality coming soon" })}
+431-        >
+432-          <Download className="w-4 h-4 mr-2" />
+--
+498-                  variant="outline"
+499-                  size="sm"
+500:                  onClick={() => handleShareInsight(insight.id)}
+501-                >
+502-                  <Share2 className="w-4 h-4 mr-2" />
+--
+506-                  variant="outline"
+507-                  size="sm"
+508:                  onClick={() => toast({ title: "Detailed view coming soon" })}
+509-                >
+510-                  <Eye className="w-4 h-4 mr-2" />
+--
+543-                Contribute your property data anonymously to help the community while maintaining privacy
+544-              </p>
+545:              <Button onClick={() => toast({ title: "Data sharing preferences updated" })}>
+546-                Configure Sharing
+547-              </Button>
+--
+560-                Get real-time insights from community-driven market analysis and trend identification
+561-              </p>
+562:              <Button onClick={() => toast({ title: "Subscribed to intelligence feed" })}>
+563-                Subscribe to Feed
+564-              </Button>
+--
+577-                Join forces with other professionals to analyze market patterns and assessment discrepancies
+578-              </p>
+579:              <Button onClick={() => toast({ title: "Joined collaborative analysis group" })}>
+580-                Join Analysis Group
+581-              </Button>
+--
+594-                Build your reputation through quality contributions and successful appeal outcomes
+595-              </p>
+596:              <Button onClick={() => toast({ title: "Reputation details coming soon" })}>
+597-                View Reputation
+598-              </Button>
+-- api refs --
+
+=== charly_ui/src/pages/Appeals 2.tsx ===
+656-            <Button 
+657-              variant="outline"
+658:              onClick={handleExportAppeals}
+659-              disabled={isExporting}
+660-            >
+--
+773-                  <Button 
+774-                    variant="outline"
+775:                    onClick={() => setShowBulkModal(true)}
+776-                    disabled={openAppeals.length === 0}
+777-                  >
+--
+779-                    Bulk Generate ({selectedAppeals.length})
+780-                  </Button>
+781:                  <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleOpenNewAppealModal}>
+782-                    <FileText className="w-4 h-4 mr-2" />
+783-                    Generate Appeal Packet
+--
+836-                                variant="outline" 
+837-                                size="sm"
+838:                                onClick={() => handleViewAppealDetails(appeal)}
+839-                              >
+840-                                View Details
+--
+908-                                variant="outline" 
+909-                                size="sm"
+910:                                onClick={() => handleViewAppealDetails(appeal)}
+911-                                className="w-full"
+912-                              >
+--
+916-                                variant="outline" 
+917-                                size="sm"
+918:                                onClick={() => handleManageAppeal(appeal)}
+919-                                className="w-full"
+920-                              >
+--
+1010-                                variant="outline" 
+1011-                                size="sm"
+1012:                                onClick={() => handleViewAppealDetails({...appeal, filedDate: ""})}
+1013-                                className="w-full"
+1014-                              >
+--
+1018-                                variant="outline" 
+1019-                                size="sm"
+1020:                                onClick={() => handleGenerateCertificate({...appeal, filedDate: ""})}
+1021-                                disabled={isGeneratingCertificate}
+1022-                                className="w-full"
+--
+1123-            <div className="flex justify-between">
+1124-              <Button
+1125:                onClick={handleGenerateNarrative}
+1126-                disabled={isGeneratingNarrative}
+1127-                className="bg-green-600 hover:bg-green-700"
+--
+1152-
+1153-          <DialogFooter>
+1154:            <Button variant="outline" onClick={() => setIsNewAppealModalOpen(false)}>
+1155-              Cancel
+1156-            </Button>
+1157-            <Button 
+1158:              onClick={handleSubmitAppeal} 
+1159-              disabled={!generatedNarrative || isGeneratingPacket}
+1160-              className="bg-green-600 hover:bg-green-700"
+--
+1188-                variant="ghost" 
+1189-                size="sm" 
+1190:                onClick={() => setShowAppealDetailsModal(false)}
+1191-                className="text-gray-500 hover:text-gray-700"
+1192-              >
+--
+1425-                variant="ghost" 
+1426-                size="sm" 
+1427:                onClick={() => setShowAppealManagementModal(false)}
+1428-                className="text-gray-500 hover:text-gray-700"
+1429-              >
+--
+1540-                              <button 
+1541-                                className="text-blue-600 hover:text-blue-500"
+1542:                                onClick={() => document.getElementById('documents-file-upload')?.click()}
+1543-                              >
+1544-                                browse
+--
+1697-                            />
+1698-                            <Button
+1699:                              onClick={() => {
+1700-                                toast({
+1701-                                  title: "Reminder Added",
+--
+1767-                            </div>
+1768-                            <Button
+1769:                              onClick={() => {
+1770-                                toast({
+1771-                                  title: "Communication Log Added",
+--
+1830-            <Button 
+1831-              variant="outline" 
+1832:              onClick={() => setShowBulkModal(false)}
+1833-              disabled={isBulkGenerating}
+1834-            >
+--
+1836-            </Button>
+1837-            <Button 
+1838:              onClick={handleBulkGenerate}
+1839-              disabled={isBulkGenerating || selectedAppeals.length === 0}
+1840-              className="bg-blue-600 hover:bg-blue-700"
+-- api refs --
+177:      const response = await authenticatedRequest('/api/appeals/generate-certificate-test', {
+394:        const statusResponse = await authenticatedRequest(`/api/appeals/packet-status/${packetId}`);
+403:          const downloadResponse = await fetch(downloadUrl);
+470:      const response = await authenticatedRequest('/api/appeals/generate-packet', {
+502:          const downloadResponse = await fetch(fullDownloadUrl);
+566:      const response = await authenticatedRequest('/api/bulk/generate-appeals', {
+605:      const response = await authenticatedRequest('/api/bulk/export-appeals', {
+
+=== charly_ui/src/pages/Dashboard.tsx ===
+588-            variant={autoRefresh ? "default" : "outline"}
+589-            size="sm"
+590:            onClick={() => setAutoRefresh(!autoRefresh)}
+591-            className={`transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 ${
+592-              autoRefresh 
+--
+601-            variant="outline"
+602-            size="sm"
+603:            onClick={handleRefreshAll}
+604-            disabled={loading}
+605-            className="transition-all duration-200 hover:scale-105 hover:bg-blue-50 hover:border-blue-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:hover:scale-100"
+--
+612-              variant="outline"
+613-              size="sm"
+614:              onClick={() => handleExportData(exportFormat)}
+615-              disabled={loading}
+616-              className="transition-all duration-200 hover:scale-105"
+--
+668-              variant="ghost" 
+669-              size="sm" 
+670:              onClick={() => setNotifications([])}
+671-              className="text-xs text-blue-600 hover:text-blue-800"
+672-            >
+--
+713-                selectedKPI === kpi.label ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+714-              }`}
+715:              onClick={() => handleKPIClick(kpi.label, kpi.value)}
+716-            >
+717-            <CardContent className="p-6">
+--
+733-                  size="sm" 
+734-                  className="h-6 px-2 text-xs"
+735:                  onClick={() => {
+736-                    setSelectedKPI('kpi-details');
+737-                    toast({
+--
+760-            variant="outline"
+761-            className="h-16 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+762:            onClick={() => handleGenerateReport('compliance')}
+763-            disabled={loading}
+764-          >
+--
+774-            variant="outline"
+775-            className="h-16 flex flex-col items-center justify-center gap-2 hover:bg-green-50 hover:border-green-300 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+776:            onClick={() => handleExportData('pdf')}
+777-            disabled={loading}
+778-          >
+--
+788-            variant="outline"
+789-            className="h-16 flex flex-col items-center justify-center gap-2 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+790:            onClick={() => handleQuickActions('run-flagging')}
+791-            disabled={isRunningFlaggingAnalysis || loading}
+792-          >
+--
+804-            variant="outline"
+805-            className="h-16 flex flex-col items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-300 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+806:            onClick={() => {
+807-              toast({
+808-                title: "Calendar View",
+--
+877-                  <Button 
+878-                    className="bg-green-600 hover:bg-green-700"
+879:                    onClick={handleRunFlaggingAnalysis}
+880-                    disabled={isRunningFlaggingAnalysis}
+881-                  >
+--
+917-                      size="sm" 
+918-                      className="w-full mt-3"
+919:                      onClick={() => {
+920-                        setSelectedKPI('priority-jurisdictions');
+921-                        toast({
+--
+956-                      size="sm" 
+957-                      className="w-full mt-3"
+958:                      onClick={() => {
+959-                        // Navigate to Appeals page to generate new appeals
+960-                        navigate('/appeals');
+--
+996-                      size="sm" 
+997-                      className="w-full mt-3"
+998:                      onClick={() => {
+999-                        // Navigate to Reports page
+1000-                        navigate('/reports');
+--
+1018-                      size="sm" 
+1019-                      className="h-8"
+1020:                      onClick={() => {
+1021-                        setFilterOptions({...filterOptions, propertyType: 'commercial'});
+1022-                        toast({
+--
+1033-                      size="sm" 
+1034-                      className="h-8"
+1035:                      onClick={() => {
+1036-                        setFilterOptions({...filterOptions, propertyType: 'residential'});
+1037-                        toast({
+--
+1048-                      size="sm" 
+1049-                      className="h-8"
+1050:                      onClick={() => {
+1051-                        setFilterOptions({...filterOptions, propertyType: 'industrial'});
+1052-                        toast({
+--
+1063-                      size="sm" 
+1064-                      className="h-8"
+1065:                      onClick={() => {
+1066-                        setFilterOptions({...filterOptions, propertyType: 'high-value'});
+1067-                        toast({
+--
+1078-                      size="sm" 
+1079-                      className="h-8"
+1080:                      onClick={() => {
+1081-                        navigate('/portfolio?jurisdiction=harris-county-tx');
+1082-                        toast({
+--
+1093-                      size="sm" 
+1094-                      className="h-8"
+1095:                      onClick={() => {
+1096-                        navigate('/portfolio?jurisdiction=los-angeles-county-ca');
+1097-                        toast({
+--
+1120-                        size="sm" 
+1121-                        className="bg-orange-600 hover:bg-orange-700"
+1122:                        onClick={() => {
+1123-                          navigate('/appeals');
+1124-                          toast({
+--
+1141-                        size="sm" 
+1142-                        className="bg-green-600 hover:bg-green-700"
+1143:                        onClick={() => {
+1144-                          navigate('/filing');
+1145-                          toast({
+--
+1162-                        size="sm" 
+1163-                        className="bg-blue-600 hover:bg-blue-700"
+1164:                        onClick={() => {
+1165-                          navigate('/portfolio');
+1166-                          toast({
+--
+1184-                    variant="outline" 
+1185-                    size="sm"
+1186:                    onClick={() => {
+1187-                      navigate('/portfolio');
+1188-                      toast({
+--
+1201-                      key={activity.id || index} 
+1202-                      className="cursor-pointer hover:shadow-md transition-shadow border"
+1203:                      onClick={() => handleActivityClick(activity)}
+1204-                    >
+1205-                      <CardContent className="p-4">
+--
+1229-                            size="sm" 
+1230-                            className="h-6 px-2 text-xs"
+1231:                            onClick={() => {
+1232-                              setSelectedKPI('activity-details');
+1233-                              toast({
+--
+1261-                              size="sm" 
+1262-                              className="h-6 px-2 text-xs"
+1263:                              onClick={() => {
+1264-                                navigate('/portfolio?filter=flagged');
+1265-                                toast({
+--
+1288-                              size="sm" 
+1289-                              className="h-6 px-2 text-xs"
+1290:                              onClick={() => {
+1291-                                navigate('/appeals?status=filed');
+1292-                                toast({
+--
+1315-                              size="sm" 
+1316-                              className="h-6 px-2 text-xs"
+1317:                              onClick={() => {
+1318-                                navigate('/filing?jurisdiction=king-county-wa');
+1319-                                toast({
+--
+1345-                      variant="outline"
+1346-                      size="sm"
+1347:                      onClick={() => handleExportData(exportFormat)}
+1348-                      disabled={loading}
+1349-                      className="transition-all duration-200 hover:scale-105"
+--
+1393-                    variant="outline" 
+1394-                    size="sm"
+1395:                    onClick={() => {
+1396-                      toast({
+1397-                        title: "AI Alerts",
+--
+1406-                    variant="outline" 
+1407-                    size="sm"
+1408:                    onClick={() => {
+1409-                      toast({
+1410-                        title: "AI Reports",
+--
+1440-                  variant="ghost" 
+1441-                  size="sm" 
+1442:                  onClick={() => setShowFlaggingResults(false)}
+1443-                  className="text-gray-500 hover:text-gray-700"
+1444-                >
+--
+1581-                {/* Action Buttons */}
+1582-                <div className="flex justify-end space-x-3">
+1583:                  <Button variant="outline" onClick={() => setShowFlaggingResults(false)}>
+1584-                    Close
+1585-                  </Button>
+-- api refs --
+255:      const response = await authenticatedRequest('/api/dashboard/export-enhanced', {
+310:      const response = await authenticatedRequest('/api/reports/generate', {
+350:        await authenticatedRequest('/api/flagging/analyze', {
+
+=== charly_ui/src/pages/TestAppeals.tsx ===
+13-      <div className="mt-4 space-y-4">
+14-        <button 
+15:          onClick={() => setShowAppeals(!showAppeals)}
+16-          className="bg-blue-500 text-white px-4 py-2 rounded"
+17-        >
+--
+20-        
+21-        <button 
+22:          onClick={() => {
+23-            import('../pages/Appeals').then(module => {
+24-              console.log('Appeals module loaded:', module);
+-- api refs --
+
+=== charly_ui/src/pages/Appeals.tsx ===
+763-            <Button 
+764-              variant="outline"
+765:              onClick={handleExportAppeals}
+766-              disabled={isExporting}
+767-            >
+--
+888-                variant="outline"
+889-                size="sm"
+890:                onClick={() => setJurisdictionFilter("")}
+891-              >
+892-                Clear Filter
+--
+902-                  <Button 
+903-                    variant="outline"
+904:                    onClick={() => setShowBulkModal(true)}
+905-                    disabled={openAppeals.length === 0}
+906-                  >
+--
+961-                                variant="outline" 
+962-                                size="sm"
+963:                                onClick={() => handleViewAppealDetails(appeal)}
+964-                              >
+965-                                View Details
+--
+1033-                                variant="outline" 
+1034-                                size="sm"
+1035:                                onClick={() => handleViewAppealDetails(appeal)}
+1036-                                className="w-full"
+1037-                              >
+--
+1041-                                variant="outline" 
+1042-                                size="sm"
+1043:                                onClick={() => handleManageAppeal(appeal)}
+1044-                                className="w-full"
+1045-                              >
+--
+1135-                                variant="outline" 
+1136-                                size="sm"
+1137:                                onClick={() => handleViewAppealDetails({...appeal, filedDate: ""})}
+1138-                                className="w-full"
+1139-                              >
+--
+1143-                                variant="outline" 
+1144-                                size="sm"
+1145:                                onClick={() => handleGenerateCertificate({...appeal, filedDate: ""})}
+1146-                                disabled={isGeneratingCertificate}
+1147-                                className="w-full"
+--
+1324-            <div className="flex justify-between items-center">
+1325-              <Button
+1326:                onClick={handleGenerateNarrative}
+1327-                disabled={isGeneratingNarrative || !isFormValid()}
+1328-                className={`transition-all duration-200 ${
+--
+1367-            <Button 
+1368-              variant="outline" 
+1369:              onClick={() => setIsNewAppealModalOpen(false)}
+1370-              className="transition-all duration-200 hover:scale-105"
+1371-            >
+--
+1373-            </Button>
+1374-            <Button 
+1375:              onClick={handleSubmitAppeal} 
+1376-              disabled={!generatedNarrative || isGeneratingPacket || !isFormValid()}
+1377-              className={`transition-all duration-200 ${
+--
+1409-                variant="ghost" 
+1410-                size="sm" 
+1411:                onClick={() => setShowAppealDetailsModal(false)}
+1412-                className="text-gray-500 hover:text-gray-700"
+1413-              >
+--
+1646-                variant="ghost" 
+1647-                size="sm" 
+1648:                onClick={() => setShowAppealManagementModal(false)}
+1649-                className="text-gray-500 hover:text-gray-700"
+1650-              >
+--
+1761-                              <button 
+1762-                                className="text-blue-600 hover:text-blue-500"
+1763:                                onClick={() => document.getElementById('documents-file-upload')?.click()}
+1764-                              >
+1765-                                browse
+--
+1918-                            />
+1919-                            <Button
+1920:                              onClick={() => {
+1921-                                toast({
+1922-                                  title: "Reminder Added",
+--
+1988-                            </div>
+1989-                            <Button
+1990:                              onClick={() => {
+1991-                                toast({
+1992-                                  title: "Communication Log Added",
+--
+2051-            <Button 
+2052-              variant="outline" 
+2053:              onClick={() => setShowBulkModal(false)}
+2054-              disabled={isBulkGenerating}
+2055-            >
+--
+2057-            </Button>
+2058-            <Button 
+2059:              onClick={handleBulkGenerate}
+2060-              disabled={isBulkGenerating || selectedAppeals.length === 0}
+2061-              className="bg-blue-600 hover:bg-blue-700"
+-- api refs --
+174:      const response = await authenticatedRequest('/api/appeals/packets');
+302:      const response = await authenticatedRequest('/api/appeals/generate-certificate-test', {
+483:        const statusResponse = await authenticatedRequest(`/api/appeals/packet-status/${packetId}`);
+492:          const downloadResponse = await fetch(downloadUrl);
+593:      const response = await authenticatedRequest('/api/appeals/generate-packet', {
+673:      const response = await authenticatedRequest('/api/bulk/generate-appeals', {
+712:      const response = await authenticatedRequest('/api/bulk/export-appeals', {
+
+=== charly_ui/src/pages/TestButton.tsx ===
+64-        <CardContent className="space-y-4">
+65-          <Button
+66:            onClick={handleTest}
+67-            disabled={isLoading}
+68-            className="w-full transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+-- api refs --
+27:      const response = await authenticatedRequest('/api/appeals/generate-packet', {
+
+=== charly_ui/src/pages/Portfolio.tsx ===
+875-          <Button 
+876-            variant="ghost" 
+877:            onClick={handleBackToList}
+878-            className="flex items-center gap-2"
+879-            aria-label="Return to portfolio list"
+--
+908-          <Button 
+909-            variant="ghost" 
+910:            onClick={() => {
+911-              setViewMode('list');
+912-              setCompareProperties([]);
+--
+1010-          <Button 
+1011-            variant="ghost" 
+1012:            onClick={() => setViewMode('list')}
+1013-            className="flex items-center gap-2"
+1014-            aria-label="Return to portfolio from analytics view"
+--
+1103-          <Button 
+1104-            variant="ghost" 
+1105:            onClick={() => setViewMode('list')}
+1106-            className="flex items-center gap-2"
+1107-            aria-label="Return to portfolio from multi-state view"
+--
+1146-          {compareProperties.length > 0 && (
+1147-            <Button 
+1148:              onClick={startComparison}
+1149-              className="bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+1150-              aria-label={`Compare ${compareProperties.length} selected properties`}
+--
+1156-          <Button 
+1157-            variant="outline"
+1158:            onClick={() => setViewMode('analytics')}
+1159-            aria-label="Switch to analytics view"
+1160-            className="focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+--
+1165-          <Button 
+1166-            variant="outline"
+1167:            onClick={() => setViewMode('multistate')}
+1168-            aria-label="Switch to multi-state jurisdiction view"
+1169-            className="focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+--
+1349-            {compareProperties.length > 0 && (
+1350-              <Button 
+1351:                onClick={startComparison}
+1352-                className="bg-blue-600 hover:bg-blue-700"
+1353-              >
+--
+1357-            <Button 
+1358-              variant="outline"
+1359:              onClick={handleExportPortfolio}
+1360-              disabled={isExporting}
+1361-            >
+--
+1374-            <Button 
+1375-              variant="outline"
+1376:              onClick={() => setShowBulkActionsModal(true)}
+1377-              disabled={compareProperties.length === 0}
+1378-            >
+--
+1382-            <Button 
+1383-              className="bg-blue-600 hover:bg-blue-700"
+1384:              onClick={() => {
+1385-                resetNewPropertyForm();
+1386-                setShowAddPropertyModal(true);
+--
+1412-                variant="ghost"
+1413-                size="sm"
+1414:                onClick={() => setSearchQuery('')}
+1415-                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+1416-                aria-label="Clear search"
+--
+1430-                variant="ghost"
+1431-                size="sm"
+1432:                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+1433-                className="text-blue-600 hover:text-blue-700"
+1434-                aria-expanded={showAdvancedFilters}
+--
+1442-                  variant="ghost"
+1443-                  size="sm"
+1444:                  onClick={clearAllFilters}
+1445-                  className="text-red-600 hover:text-red-700"
+1446-                  aria-label="Clear all filters"
+--
+1557-                      variant="outline"
+1558-                      size="sm"
+1559:                      onClick={() => {
+1560-                        setMinValue('1000000');
+1561-                        setMaxValue('');
+--
+1569-                      variant="outline"
+1570-                      size="sm"
+1571:                      onClick={() => setFilterStatus('Flagged')}
+1572-                      className="h-8"
+1573-                      aria-label="Show only flagged properties"
+--
+1578-                      variant="outline"
+1579-                      size="sm"
+1580:                      onClick={() => setSelectedJurisdiction('Harris County')}
+1581-                      className="h-8"
+1582-                      aria-label="Filter for Harris County properties"
+--
+1597-                <Badge variant="secondary" className="gap-1">
+1598-                  Search: "{searchQuery}"
+1599:                  <button onClick={() => clearFilter('search')} aria-label="Remove search filter" className="hover:bg-gray-200 rounded">
+1600-                    <X className="w-3 h-3" aria-hidden="true" />
+1601-                  </button>
+--
+1605-                <Badge variant="secondary" className="gap-1">
+1606-                  {selectedJurisdiction}
+1607:                  <button onClick={() => clearFilter('jurisdiction')} aria-label={`Remove ${selectedJurisdiction} filter`} className="hover:bg-gray-200 rounded">
+1608-                    <X className="w-3 h-3" aria-hidden="true" />
+1609-                  </button>
+--
+1613-                <Badge variant="secondary" className="gap-1">
+1614-                  {selectedPropertyType}
+1615:                  <button onClick={() => clearFilter('propertyType')} aria-label={`Remove ${selectedPropertyType} filter`} className="hover:bg-gray-200 rounded">
+1616-                    <X className="w-3 h-3" aria-hidden="true" />
+1617-                  </button>
+--
+1621-                <Badge variant="secondary" className="gap-1">
+1622-                  {filterStatus}
+1623:                  <button onClick={() => clearFilter('status')} aria-label={`Remove ${filterStatus} status filter`} className="hover:bg-gray-200 rounded">
+1624-                    <X className="w-3 h-3" aria-hidden="true" />
+1625-                  </button>
+--
+1629-                <Badge variant="secondary" className="gap-1">
+1630-                  ${minValue || '0'} - ${maxValue || '∞'}
+1631:                  <button onClick={() => clearFilter('valueRange')} aria-label="Remove value range filter" className="hover:bg-gray-200 rounded">
+1632-                    <X className="w-3 h-3" aria-hidden="true" />
+1633-                  </button>
+--
+1649-            <p className="text-gray-500 mb-4">Upload your property data files in the Appeals section to get started</p>
+1650-            <Button 
+1651:              onClick={() => navigate('/appeals')} 
+1652-              aria-label="Navigate to Appeals section to upload property data"
+1653-              className="transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+--
+1673-                      <div className="flex items-start">
+1674-                        <button
+1675:                          onClick={(e) => {
+1676-                            e.stopPropagation();
+1677-                            handleCompareToggle(property.id);
+--
+1747-                    <div className="flex flex-col justify-center space-y-2">
+1748-                      <Button
+1749:                        onClick={() => handlePropertySelect(property.id)}
+1750-                        className="bg-blue-600 hover:bg-blue-700 w-full"
+1751-                        size="sm"
+--
+1856-                        <p className="text-sm text-gray-500 mb-4">CSV, Excel, XML, PDF files</p>
+1857-                        <Button 
+1858:                          onClick={() => document.getElementById('workup-file-upload')?.click()}
+1859-                          variant="outline"
+1860-                          size="sm"
+--
+1961-                <Button 
+1962-                  variant="outline" 
+1963:                  onClick={handleCloseAnalysisModal}
+1964-                  aria-label="Close property analysis modal"
+1965-                >
+--
+1971-                    <>
+1972-                      <Button 
+1973:                        onClick={async () => {
+1974-                          if (!currentProperty || isGeneratingAppeal) return;
+1975-                          
+--
+2038-                      {appealPacketGenerated && (
+2039-                        <Button 
+2040:                          onClick={() => {
+2041-                            // Go to Filing page instead of Appeals page
+2042-                            navigate('/filing');
+--
+2061-                    disabled={isGeneratingReport}
+2062-                    aria-label="Generate comprehensive property report"
+2063:                    onClick={async () => {
+2064-                      console.log('🌟 Supernova button clicked');
+2065-                      console.log('🏠 Current property:', currentProperty);
+--
+2427-            <Button 
+2428-              variant="outline" 
+2429:              onClick={() => {
+2430-                resetNewPropertyForm();
+2431-                setShowAddPropertyModal(false);
+--
+2436-            </Button>
+2437-            <Button 
+2438:              onClick={handleAddProperty}
+2439-              disabled={isAddingProperty}
+2440-              className="bg-blue-600 hover:bg-blue-700"
+--
+2475-                variant="outline"
+2476-                className="w-full justify-start"
+2477:                onClick={() => handleBulkActions('update_status')}
+2478-                disabled={isBulkProcessing}
+2479-              >
+--
+2485-                variant="outline"
+2486-                className="w-full justify-start"
+2487:                onClick={() => handleBulkActions('flag_properties')}
+2488-                disabled={isBulkProcessing}
+2489-              >
+--
+2495-                variant="outline"
+2496-                className="w-full justify-start"
+2497:                onClick={() => handleBulkActions('bulk_analysis')}
+2498-                disabled={isBulkProcessing}
+2499-              >
+--
+2505-                variant="outline"
+2506-                className="w-full justify-start"
+2507:                onClick={() => handleBulkActions('export_selected')}
+2508-                disabled={isBulkProcessing}
+2509-              >
+--
+2517-            <Button 
+2518-              variant="outline" 
+2519:              onClick={() => setShowBulkActionsModal(false)}
+2520-              disabled={isBulkProcessing}
+2521-            >
+-- api refs --
+182:        fetch('/api/narrative/income-summary', {
+187:        fetch('/api/narrative/sales-comparison', {
+192:        fetch('/api/narrative/cost-approach', {
+733:      const response = await fetch('/api/portfolio/properties', {
+777:      const response = await fetch('/api/portfolio/export', {
+832:      const response = await fetch('/api/portfolio/bulk-actions', {
+1982:                            const response = await fetch('/api/appeals/generate-packet', {
+
+=== charly_ui/src/pages/V2Demo 2.tsx ===
+258-                  variant={canvasMode === mode ? 'primary' : 'secondary'}
+259-                  size="sm"
+260:                  onClick={() => setCanvasMode(mode)}
+261-                  className="capitalize"
+262-                >
+-- api refs --
+
+=== charly_ui/src/pages/V2Demo 3.tsx ===
+254-                  variant={canvasMode === mode ? 'primary' : 'secondary'}
+255-                  size="sm"
+256:                  onClick={() => setCanvasMode(mode)}
+257-                  className="capitalize"
+258-                >
+-- api refs --
+
+=== charly_ui/src/pages/Filing.tsx ===
+444-                          variant="outline" 
+445-                          className="flex-1"
+446:                          onClick={() => handleDownloadPacket(packet)}
+447-                        >
+448-                          <Download className="w-4 h-4 mr-1" />
+--
+452-                          size="sm" 
+453-                          className="flex-1 bg-blue-600 hover:bg-blue-700"
+454:                          onClick={() => handleUploadSigned(packet.id)}
+455-                          disabled={loading}
+456-                        >
+--
+464-                        size="sm" 
+465-                        className="w-full bg-green-600 hover:bg-green-700"
+466:                        onClick={() => handleFileAppeal(packet)}
+467-                        disabled={loading}
+468-                      >
+--
+476-                        variant="outline" 
+477-                        className="w-full"
+478:                        onClick={() => handleDownloadPacket(packet)}
+479-                      >
+480-                        <Download className="w-4 h-4 mr-1" />
+--
+496-          <Card 
+497-            className="border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors cursor-pointer"
+498:            onClick={() => {
+499-              // Trigger file input for bulk upload
+500-              const input = document.createElement('input');
+--
+529-          <Card 
+530-            className="border-2 border-dashed border-gray-300 hover:border-green-500 transition-colors cursor-pointer"
+531:            onClick={async () => {
+532-              try {
+533-                // File all packets that are ready to file
+--
+565-          <Card 
+566-            className={`border-2 border-dashed border-gray-300 hover:border-purple-500 transition-colors cursor-pointer ${isDownloadingBulk ? 'opacity-50 cursor-not-allowed' : ''}`}
+567:            onClick={isDownloadingBulk ? undefined : handleBulkDownload}
+568-          >
+569-            <CardContent className="p-6 text-center">
+-- api refs --
+128:      const response = await authenticatedRequest(`/api/filing/download/${packet.id}`, {
+
+=== charly_ui/src/pages/Billing.tsx ===
+86-          <UsageWarningBadge />
+87-          <Button 
+88:            onClick={() => usageActions.refreshUsage()}
+89-            variant="outline"
+90-            size="sm"
+--
+107-            <button
+108-              key={tab.id}
+109:              onClick={() => setActiveTab(tab.id as 'overview' | 'plans' | 'methods' | 'usage' | 'analytics')}
+110-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+111-                activeTab === tab.id
+--
+150-              
+151-              <Button 
+152:                onClick={() => setActiveTab('plans')}
+153-                variant="outline" 
+154-                className="w-full"
+--
+222-                    
+223-                    <Button 
+224:                      onClick={() => handlePlanSelect(planId as PlanTier)}
+225-                      disabled={subscription?.planId === planId}
+226-                      className="w-full"
+--
+237-              <div className="mb-4">
+238-                <Button 
+239:                  onClick={() => setShowCheckout(false)} 
+240-                  variant="ghost"
+241-                  className="mb-4"
+--
+278-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+279-              <Button
+280:                onClick={() => usageActions.refreshUsage()}
+281-                variant="outline"
+282-                className="w-full"
+--
+285-              </Button>
+286-              <Button
+287:                onClick={() => setActiveTab('plans')}
+288-                variant="outline"
+289-                className="w-full"
+--
+292-              </Button>
+293-              <Button
+294:                onClick={() => setActiveTab('analytics')}
+295-                variant="outline"
+296-                className="w-full"
+--
+434-                  
+435-                  <Button
+436:                    onClick={() => setActiveTab('plans')}
+437-                    variant="outline"
+438-                    className="w-full"
+-- api refs --
+34:    const sessionId = searchParams.get('session_id');
+
+=== charly_ui/src/pages/Dashboard 2.tsx ===
+588-            variant="outline"
+589-            size="sm"
+590:            onClick={() => setAutoRefresh(!autoRefresh)}
+591-            className={autoRefresh ? "bg-green-50 border-green-200" : ""}
+592-          >
+--
+597-            variant="outline"
+598-            size="sm"
+599:            onClick={handleRefreshAll}
+600-            disabled={loading}
+601-          >
+--
+607-              variant="outline" 
+608-              size="sm"
+609:              onClick={() => handleExportData(exportFormat)}
+610-            >
+611-              <Download className="w-4 h-4 mr-2" />
+--
+651-              variant="ghost" 
+652-              size="sm" 
+653:              onClick={() => setNotifications([])}
+654-              className="text-xs text-blue-600 hover:text-blue-800"
+655-            >
+--
+696-                selectedKPI === kpi.label ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+697-              }`}
+698:              onClick={() => handleKPIClick(kpi.label, kpi.value)}
+699-            >
+700-            <CardContent className="p-6">
+--
+716-                  size="sm" 
+717-                  className="h-6 px-2 text-xs"
+718:                  onClick={() => {
+719-                    setSelectedKPI('kpi-details');
+720-                    toast({
+--
+743-            variant="outline"
+744-            className="h-16 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 hover:border-blue-300"
+745:            onClick={() => handleGenerateReport('executive-summary')}
+746-          >
+747-            <FileText className="w-5 h-5" />
+--
+752-            variant="outline"
+753-            className="h-16 flex flex-col items-center justify-center gap-2 hover:bg-green-50 hover:border-green-300"
+754:            onClick={() => handleExportData('pdf')}
+755-          >
+756-            <Download className="w-5 h-5" />
+--
+761-            variant="outline"
+762-            className="h-16 flex flex-col items-center justify-center gap-2 hover:bg-purple-50 hover:border-purple-300"
+763:            onClick={() => handleQuickActions('run-flagging')}
+764-          >
+765-            <BarChart3 className="w-5 h-5" />
+--
+770-            variant="outline"
+771-            className="h-16 flex flex-col items-center justify-center gap-2 hover:bg-orange-50 hover:border-orange-300"
+772:            onClick={() => {
+773-              toast({
+774-                title: "Calendar View",
+--
+843-                  <Button 
+844-                    className="bg-green-600 hover:bg-green-700"
+845:                    onClick={handleRunFlaggingAnalysis}
+846-                    disabled={isRunningFlaggingAnalysis}
+847-                  >
+--
+883-                      size="sm" 
+884-                      className="w-full mt-3"
+885:                      onClick={() => {
+886-                        setSelectedKPI('priority-jurisdictions');
+887-                        toast({
+--
+922-                      size="sm" 
+923-                      className="w-full mt-3"
+924:                      onClick={() => {
+925-                        // Navigate to Appeals page to generate new appeals
+926-                        navigate('/appeals');
+--
+962-                      size="sm" 
+963-                      className="w-full mt-3"
+964:                      onClick={() => {
+965-                        // Navigate to Reports page
+966-                        navigate('/reports');
+--
+984-                      size="sm" 
+985-                      className="h-8"
+986:                      onClick={() => {
+987-                        setFilterOptions({...filterOptions, propertyType: 'commercial'});
+988-                        toast({
+--
+999-                      size="sm" 
+1000-                      className="h-8"
+1001:                      onClick={() => {
+1002-                        setFilterOptions({...filterOptions, propertyType: 'residential'});
+1003-                        toast({
+--
+1014-                      size="sm" 
+1015-                      className="h-8"
+1016:                      onClick={() => {
+1017-                        setFilterOptions({...filterOptions, propertyType: 'industrial'});
+1018-                        toast({
+--
+1029-                      size="sm" 
+1030-                      className="h-8"
+1031:                      onClick={() => {
+1032-                        setFilterOptions({...filterOptions, propertyType: 'high-value'});
+1033-                        toast({
+--
+1044-                      size="sm" 
+1045-                      className="h-8"
+1046:                      onClick={() => {
+1047-                        navigate('/portfolio?jurisdiction=harris-county-tx');
+1048-                        toast({
+--
+1059-                      size="sm" 
+1060-                      className="h-8"
+1061:                      onClick={() => {
+1062-                        navigate('/portfolio?jurisdiction=los-angeles-county-ca');
+1063-                        toast({
+--
+1086-                        size="sm" 
+1087-                        className="bg-orange-600 hover:bg-orange-700"
+1088:                        onClick={() => {
+1089-                          navigate('/appeals');
+1090-                          toast({
+--
+1107-                        size="sm" 
+1108-                        className="bg-green-600 hover:bg-green-700"
+1109:                        onClick={() => {
+1110-                          navigate('/filing');
+1111-                          toast({
+--
+1128-                        size="sm" 
+1129-                        className="bg-blue-600 hover:bg-blue-700"
+1130:                        onClick={() => {
+1131-                          navigate('/portfolio');
+1132-                          toast({
+--
+1150-                    variant="outline" 
+1151-                    size="sm"
+1152:                    onClick={() => {
+1153-                      navigate('/portfolio');
+1154-                      toast({
+--
+1167-                      key={activity.id || index} 
+1168-                      className="cursor-pointer hover:shadow-md transition-shadow border"
+1169:                      onClick={() => handleActivityClick(activity)}
+1170-                    >
+1171-                      <CardContent className="p-4">
+--
+1195-                            size="sm" 
+1196-                            className="h-6 px-2 text-xs"
+1197:                            onClick={() => {
+1198-                              setSelectedKPI('activity-details');
+1199-                              toast({
+--
+1227-                              size="sm" 
+1228-                              className="h-6 px-2 text-xs"
+1229:                              onClick={() => {
+1230-                                navigate('/portfolio?filter=flagged');
+1231-                                toast({
+--
+1254-                              size="sm" 
+1255-                              className="h-6 px-2 text-xs"
+1256:                              onClick={() => {
+1257-                                navigate('/appeals?status=filed');
+1258-                                toast({
+--
+1281-                              size="sm" 
+1282-                              className="h-6 px-2 text-xs"
+1283:                              onClick={() => {
+1284-                                navigate('/filing?jurisdiction=king-county-wa');
+1285-                                toast({
+--
+1311-                      variant="outline" 
+1312-                      size="sm"
+1313:                      onClick={() => handleExportData(exportFormat)}
+1314-                    >
+1315-                      <Download className="w-4 h-4 mr-2" />
+--
+1357-                    variant="outline" 
+1358-                    size="sm"
+1359:                    onClick={() => {
+1360-                      toast({
+1361-                        title: "AI Alerts",
+--
+1370-                    variant="outline" 
+1371-                    size="sm"
+1372:                    onClick={() => {
+1373-                      toast({
+1374-                        title: "AI Reports",
+--
+1404-                  variant="ghost" 
+1405-                  size="sm" 
+1406:                  onClick={() => setShowFlaggingResults(false)}
+1407-                  className="text-gray-500 hover:text-gray-700"
+1408-                >
+--
+1545-                {/* Action Buttons */}
+1546-                <div className="flex justify-end space-x-3">
+1547:                  <Button variant="outline" onClick={() => setShowFlaggingResults(false)}>
+1548-                    Close
+1549-                  </Button>
+-- api refs --
+255:      const response = await authenticatedRequest('/api/dashboard/export-enhanced', {
+310:      const response = await authenticatedRequest('/api/reports/generate', {
+350:        await authenticatedRequest('/api/flagging/analyze', {
+
+=== charly_ui/src/pages/TestAuth.tsx ===
+75-          )}
+76-          
+77:          <Button onClick={testAuth} className="w-full">
+78-            🔄 Test Authentication Again
+79-          </Button>
+-- api refs --
+
+=== charly_ui/src/pages/AdvancedAnalyticsDashboard.tsx ===
+266-        ${isSelected ? 'ring-2 ring-blue-500 shadow-lg' : 'hover:shadow-lg border border-gray-200'}
+267-      `}
+268:      onClick={() => setSelectedMetric(selectedMetric === metric.id ? null : metric.id)}
+269-      whileHover="scaleIn"
+270-      whileTap="scaleOut"
+--
+423-            
+424-            <button
+425:              onClick={handleRefresh}
+426-              disabled={refreshing}
+427-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+--
+433-            <div className="flex items-center space-x-2">
+434-              <button
+435:                onClick={() => handleExport('pdf')}
+436-                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+437-                title="Export as PDF"
+--
+440-              </button>
+441-              <button
+442:                onClick={() => handleExport('excel')}
+443-                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+444-                title="Export as Excel"
+-- api refs --
+
+=== charly_ui/src/pages/DashboardV2.tsx ===
+464-          variant="outline"
+465-          size="sm"
+466:          onClick={() => toast({ title: "Analysis running in background" })}
+467-        >
+468-          <Brain className="w-4 h-4 mr-2" />
+--
+528-                    variant="outline"
+529-                    size="sm"
+530:                    onClick={() => toast({ title: "Action initiated" })}
+531-                  >
+532-                    <Target className="w-4 h-4 mr-2" />
+--
+537-                  variant="outline"
+538-                  size="sm"
+539:                  onClick={() => toast({ title: "Detailed analysis coming soon" })}
+540-                >
+541-                  <Eye className="w-4 h-4 mr-2" />
+--
+582-            variant="outline"
+583-            size="sm"
+584:            onClick={() => toast({ title: "All alerts marked as read" })}
+585-          >
+586-            Mark All Read
+--
+636-                    variant="outline"
+637-                    size="sm"
+638:                    onClick={() => handleAlertAction(alert.id, alert.actionUrl)}
+639-                  >
+640-                    <Target className="w-4 h-4 mr-2" />
+--
+645-                  variant="outline"
+646-                  size="sm"
+647:                  onClick={() => handleAlertAction(alert.id)}
+648-                >
+649-                  <CheckCircle className="w-4 h-4 mr-2" />
+--
+693-                variant="outline"
+694-                size="sm"
+695:                onClick={handleRefresh}
+696-                disabled={isRefreshing}
+697-              >
+-- api refs --
+
+=== charly_ui/src/engine/AdaptiveArchitecture.tsx ===
+146-        <div 
+147-          className="flex items-center justify-between p-3 cursor-pointer"
+148:          onClick={() => setIsExpanded(!isExpanded)}
+149-        >
+150-          <span className="text-sm font-medium">Adaptive Debug</span>
+--
+204-              <div className="ml-2 mt-2 space-y-1">
+205-                <button
+206:                  onClick={() => emotionalIntelligence.forceEmotionalState('stressed')}
+207-                  className="block w-full text-left px-2 py-1 bg-red-600 rounded text-xs hover:bg-red-700"
+208-                >
+--
+210-                </button>
+211-                <button
+212:                  onClick={() => emotionalIntelligence.forceEmotionalState('confident')}
+213-                  className="block w-full text-left px-2 py-1 bg-green-600 rounded text-xs hover:bg-green-700"
+214-                >
+--
+216-                </button>
+217-                <button
+218:                  onClick={() => contextEngine.forceContext({ context: 'analysis', intent: 'analyze' })}
+219-                  className="block w-full text-left px-2 py-1 bg-blue-600 rounded text-xs hover:bg-blue-700"
+220-                >
+--
+222-                </button>
+223-                <button
+224:                  onClick={() => userBehaviorAnalytics.flush()}
+225-                  className="block w-full text-left px-2 py-1 bg-purple-600 rounded text-xs hover:bg-purple-700"
+226-                >
+-- api refs --
+
+=== charly_ui/src/engine/SearchDrivenInterface.tsx ===
+775-              {voice.isSupported && (
+776-                <button
+777:                  onClick={voice.isListening ? voice.stopListening : voice.startListening}
+778-                  className={`p-2 rounded-lg transition-all duration-200 ${
+779-                    voice.isListening 
+--
+822-                <button
+823-                  key={index}
+824:                  onClick={() => selectSuggestion(suggestion)}
+825-                  className="w-full px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 border-b border-gray-100"
+826-                >
+--
+857-                <button
+858-                  key={`smart-${index}`}
+859:                  onClick={() => selectSuggestion(suggestion)}
+860-                  className="w-full px-4 py-3 text-left text-purple-700 hover:bg-purple-50 hover:text-purple-800 transition-colors duration-150 border-b border-gray-100 last:border-b-0"
+861-                >
+-- api refs --
+191:    this.behavioralPatterns.set(key, (this.behavioralPatterns.get(key) || 0) + 1);
+202:        intentCounts.set(q.intent, (intentCounts.get(q.intent) || 0) + 1);
+231:          frequentEntities.set(entity.value, (frequentEntities.get(entity.value) || 0) + 1);
+303:          contextScores.set('filing', (contextScores.get('filing') || 0) + weight);
+306:          contextScores.set('analysis', (contextScores.get('analysis') || 0) + weight);
+309:          contextScores.set('discovery', (contextScores.get('discovery') || 0) + weight);
+312:          contextScores.set('preparation', (contextScores.get('preparation') || 0) + weight);
+315:          contextScores.set('monitoring', (contextScores.get('monitoring') || 0) + weight);
+323:        contextScores.set('analysis', (contextScores.get('analysis') || 0) + 1.5);
+326:        contextScores.set('discovery', (contextScores.get('discovery') || 0) + 1.2);
+329:        contextScores.set('filing', (contextScores.get('filing') || 0) + 1.3);
+337:        contextScores.set(context, (contextScores.get(context) || 0) + 0.3);
+385:      intentScores.set(intent as AttorneyIntent, (intentScores.get(intent as AttorneyIntent) || 0) + weight);
+392:      intentScores.set(intent, (intentScores.get(intent) || 0) + boost);
+417:    const contextPatterns = this.contextPatterns.get(context) || [];
+418:    const intentPatterns = this.intentPatterns.get(intent) || [];
+521:    const contextPatterns = this.contextPatterns.get(context) || [];
+522:    const intentPatterns = this.intentPatterns.get(intent) || [];
+
+=== charly_ui/src/engine/SearchResultTransformer.tsx ===
+497-          <button
+498-            key={action.id}
+499:            onClick={() => onAction(action.action, result)}
+500-            className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+501-              action.primary 
+--
+539-          <button
+540-            key={action.id}
+541:            onClick={() => onAction(action.action, result)}
+542-            className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+543-              action.primary 
+--
+585-                    <button
+586-                      key={action.id}
+587:                      onClick={() => onAction(action.action, result)}
+588-                      className="text-blue-600 hover:text-blue-800 text-sm"
+589-                    >
+-- api refs --
+178:      ...this.transformationRules.get('discovery_explore')!,
+204:    const rule = this.transformationRules.get(ruleKey) || 
+205:               this.transformationRules.get(`${parse.context}_${parse.intent}`) ||
+

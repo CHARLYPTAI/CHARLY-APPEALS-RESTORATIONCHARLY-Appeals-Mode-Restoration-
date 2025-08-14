@@ -1,0 +1,6 @@
+[bandit]
+exclude_dirs = tests,venv,build,dist,.git,__pycache__,pdf_output,narratives,packets,logs,rule_backups,data
+exclude = */test_*.py,*/*\ 2.py,*/*\ 2/*,*/.*,*.pdf,*.csv,*.json,*.xml,*.xlsx,*.zip,*.md,*.txt,*.log,*.html
+skips = B101,B601,B602,B603,B104,B311,B324
+assert_used = false
+hardcoded_password_string = false

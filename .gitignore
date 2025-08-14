@@ -1,0 +1,62 @@
+# Node
+node_modules/
+dist/
+build/
+.pnpm-store/
+.vite/
+.parcel-cache/
+
+# Build artifacts and large files
+*.js.map
+*.d.ts.map
+fastapi_backend/
+simple-deploy/
+interactive_deploy/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+
+# Env
+.env
+.env.*
+*.log
+
+# MacOS / VS Code
+.DS_Store
+.vscode/
+
+# Test & Coverage
+.coverage
+pytest_cache/
+
+# Backup files
+*.bak
+*.backup
+
+# Temporary and backup directories
+temp_perfect_version/
+CHARLY_ATOMIC_BACKUP_*/
+CHARLY_archived/
+CHARLY_Corrected_*/
+all_packets*/
+appeal_packets*/
+*_backup/
+*_BACKUP/
+*.backup/
+
+# Generated files
+generated_packets/
+pdf_output/
+htmlcov/
+
+# Environment files
+.env.local
+.env.*.local
+CHARLY_COMPLETE_BACKUP_*.tar.gz
+*.tgz
+*.zip
+*.tar.gz

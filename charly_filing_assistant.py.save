@@ -1,0 +1,18 @@
+nano ~/Desktop/CHARLY_TEST/charly_filing_assistant.py
+print("🔥 CHARLY 
+Filing Assistant is running...")
+
+import pandas as pd
+import os
+from datetime import datetime
+from jinja2 import Environment, FileSystemLoader
+from weasyprint import HTML
+from PyPDF2 import PdfMerger
+
+try:
+    base_dir = "/Users/georgewohlleb/Desktop/CHARLY_TEST"
+    csv_path = os.path.join(base_dir, "charly_flagged_output.csv")
+    output_dir = os.path.join(base_dir, "pdf_output")
+
+    
+

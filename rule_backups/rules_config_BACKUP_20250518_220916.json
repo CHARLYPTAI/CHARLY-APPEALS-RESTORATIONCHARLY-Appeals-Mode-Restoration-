@@ -1,0 +1,20 @@
+{
+  "Jackson County": {
+    "max_value_to_rent_ratio": 12,
+    "flags": {
+      "value_to_rent_exceeds_ratio": {
+        "condition": "assessed_value > (monthly_rent * 12)",
+        "message": "Assessed value exceeds 12x annual rent"
+      }
+    }
+  },
+  "Dallas County": {
+    "max_value_to_rent_ratio": 12.0,
+    "flags": {
+      "default_flag": {
+        "condition": "assessed_value > (monthly_rent * 12)",
+        "message": "Assessed value exceeds 12x rent"
+      }
+    }
+  }
+}

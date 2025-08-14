@@ -1,0 +1,23 @@
+{
+  "id": "TEST003",
+  "address": "456 Residential Lane, San Francisco County, CA",
+  "assessed_value": 1200000,
+  "market_value": 1100000,
+  "property_type": "Single Family Residence", 
+  "market_comps": [
+    {"sale_price": 1125000, "address": "111 Neighbor St", "sale_date": "2023-06-20"},
+    {"sale_price": 1075000, "address": "222 Similar Ave", "sale_date": "2023-08-30"}
+  ],
+  "expenses": {
+    "taxes": 18000,
+    "repairs": 12000,
+    "utilities": 9000,
+    "landscaping": 3000
+  },
+  "flags": ["overassessment"],
+  "jurisdiction": "san_francisco_ca",
+  "prior_narrative": null,
+  "square_footage": 2400,
+  "year_built": 1975,
+  "lot_size": 0.25
+}

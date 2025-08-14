@@ -1,0 +1,296 @@
+/* Additional CSS for WeasyPrint PDF generation */
+
+@page {
+    size: A4;
+    margin: 1in;
+    
+    @top-left {
+        content: "CHARLY Tax Appeal Packet";
+        font-size: 9px;
+        color: #666;
+        font-family: Arial, sans-serif;
+    }
+    
+    @top-right {
+        content: "Confidential & Privileged";
+        font-size: 9px;
+        color: #666;
+        font-family: Arial, sans-serif;
+    }
+    
+    @bottom-center {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size: 9px;
+        color: #666;
+        font-family: Arial, sans-serif;
+    }
+}
+
+/* Bookmark styles for PDF navigation */
+.section-title {
+    bookmark-level: 1;
+    bookmark-label: attr(data-bookmark-label);
+}
+
+.narrative-content h2 {
+    bookmark-level: 2;
+}
+
+.narrative-content h3 {
+    bookmark-level: 3;
+}
+
+/* Enhanced table styling */
+.property-details-table,
+.metrics-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 2px solid #333;
+}
+
+.property-details-table th,
+.property-details-table td,
+.metrics-table th,
+.metrics-table td {
+    border-right: 1px solid #333;
+    border-bottom: 1px solid #333;
+}
+
+.property-details-table th:last-child,
+.property-details-table td:last-child,
+.metrics-table th:last-child,
+.metrics-table td:last-child {
+    border-right: none;
+}
+
+.property-details-table tr:last-child td,
+.metrics-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Enhanced signature block */
+.signature-block {
+    margin-top: 40px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+}
+
+.signature-line {
+    border-bottom: 1px solid #333;
+    width: 300px;
+    height: 20px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+/* Professional styling for currency and percentages */
+.currency {
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    color: #006400;
+}
+
+.percentage {
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    color: #1e90ff;
+}
+
+/* Print optimization */
+@media print {
+    .page-break {
+        page-break-before: always;
+    }
+    
+    .no-print {
+        display: none;
+    }
+    
+    a {
+        color: #333;
+        text-decoration: none;
+    }
+    
+    .header {
+        break-inside: avoid;
+    }
+    
+    .section {
+        break-inside: avoid-page;
+    }
+    
+    .property-details-table,
+    .metrics-table {
+        break-inside: avoid;
+    }
+}
+
+/* Accessibility improvements */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Enhanced narrative styling */
+.narrative-content {
+    text-align: justify;
+    hyphens: auto;
+}
+
+.narrative-content blockquote {
+    margin: 20px 0;
+    padding: 10px 20px;
+    border-left: 3px solid #333;
+    background-color: #f5f5f5;
+    font-style: italic;
+}
+
+.narrative-content ul,
+.narrative-content ol {
+    margin: 10px 0;
+    padding-left: 30px;
+}
+
+.narrative-content li {
+    margin-bottom: 5px;
+}
+
+/* County form styling */
+.county-form {
+    border: 2px solid #333;
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #fafafa;
+    break-inside: avoid;
+}
+
+.county-form h3 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+/* Exhibit styling */
+.exhibit-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    break-inside: avoid;
+}
+
+.exhibit-item strong {
+    color: #333;
+}
+
+.exhibit-item em {
+    color: #666;
+}
+
+/* Footer styling */
+.footer-info {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #333;
+    font-size: 10px;
+    color: #666;
+    break-inside: avoid;
+}
+
+/* Highlight classes for important information */
+.highlight-yellow {
+    background-color: #ffff99;
+    padding: 2px 4px;
+}
+
+.highlight-blue {
+    background-color: #e6f3ff;
+    padding: 2px 4px;
+}
+
+.highlight-green {
+    background-color: #e6ffe6;
+    padding: 2px 4px;
+}
+
+.highlight-red {
+    background-color: #ffe6e6;
+    padding: 2px 4px;
+}
+
+/* Status indicators */
+.status-pending {
+    color: #ff8c00;
+    font-weight: bold;
+}
+
+.status-approved {
+    color: #008000;
+    font-weight: bold;
+}
+
+.status-rejected {
+    color: #dc143c;
+    font-weight: bold;
+}
+
+/* Professional letterhead styling */
+.letterhead {
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 2px solid #333;
+    margin-bottom: 30px;
+}
+
+.letterhead .firm-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.letterhead .firm-address {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* Table of contents styling (if needed) */
+.toc {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.toc h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.toc ul {
+    list-style: none;
+    padding: 0;
+}
+
+.toc li {
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.toc li:before {
+    content: "• ";
+    position: absolute;
+    left: 0;
+    color: #666;
+}

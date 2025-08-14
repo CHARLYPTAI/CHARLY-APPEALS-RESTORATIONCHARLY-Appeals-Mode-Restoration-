@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="3" failures="0" errors="0" time="1.798">
+  <testsuite name="CHARLY Mathematical Accuracy - Production Deployment Test" errors="0" failures="0" skipped="0" timestamp="2025-06-27T02:09:51" time="1.552" tests="3">
+    <testcase classname="CHARLY Mathematical Accuracy - Production Deployment Test Critical Test Scenario: $18,200,000 Expected Result" name="CHARLY Mathematical Accuracy - Production Deployment Test Critical Test Scenario: $18,200,000 Expected Result" time="0.053">
+    </testcase>
+    <testcase classname="CHARLY Mathematical Accuracy - Production Deployment Test Mathematical Precision and Professional Standards" name="CHARLY Mathematical Accuracy - Production Deployment Test Mathematical Precision and Professional Standards" time="0.001">
+    </testcase>
+    <testcase classname="CHARLY Mathematical Accuracy - Production Deployment Test Professional Standards: Professional Standards Compliance" name="CHARLY Mathematical Accuracy - Production Deployment Test Professional Standards: Professional Standards Compliance" time="0.001">
+    </testcase>
+  </testsuite>
+</testsuites>

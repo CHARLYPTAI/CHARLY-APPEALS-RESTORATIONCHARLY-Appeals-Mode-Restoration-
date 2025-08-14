@@ -1,0 +1,36 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import { HashRouter } from "react-router-dom";
+import { App } from "./App";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { performanceOptimizer } from "./engine/PerformanceOptimizer";
+
+// Initialize performance optimization
+performanceOptimizer.optimizeBundle();
+
+// Register service worker for offline support
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(registration => {
+        console.log('Service Worker registered:', registration.scope);
+      })
+      .catch(error => {
+        console.warn('Service Worker registration failed:', error);
+      });
+  });
+}
+
+// Force fresh bundle with timestamp
+console.log("CHARLY Platform loading at:", new Date().toISOString());
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <ErrorBoundary>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </ErrorBoundary>
+  </React.StrictMode>
+);

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<property_data xmlns="http://example.com/properties" version="2.0">
+  <metadata>
+    <created_date>2023-12-01</created_date>
+    <source>Enhanced Property System</source>
+    <record_count>3</record_count>
+  </metadata>
+  <records>
+    <property id="XML001" type="Commercial" jurisdiction="Jackson County">
+      <identification>
+        <parcel_id>XML001</parcel_id>
+        <address>123 XML Drive, Kansas City, MO</address>
+        <zoning>C-2</zoning>
+      </identification>
+      <valuation currency="USD">
+        <assessment_value>800000</assessment_value>
+        <market_value>775000</market_value>
+        <last_sale_price>750000</last_sale_price>
+        <last_sale_date>2023-05-30</last_sale_date>
+      </valuation>
+      <physical_characteristics>
+        <building_size units="sq_ft">15000</building_size>
+        <lot_size units="acres">3.0</lot_size>
+        <age years="8"></age>
+        <construction_type>Steel Frame</construction_type>
+      </physical_characteristics>
+      <financial_data>
+        <gross_income>120000</gross_income>
+        <operating_expenses>48000</operating_expenses>
+        <net_operating_income>72000</net_operating_income>
+        <vacancy_rate>0.04</vacancy_rate>
+        <expense_ratio>0.40</expense_ratio>
+        <cap_rate>0.09</cap_rate>
+      </financial_data>
+    </property>
+    
+    <property id="XML002" type="Residential" jurisdiction="Platte County">
+      <identification>
+        <parcel_id>XML002</parcel_id>
+        <address>456 Parser Place, Platte City, MO</address>
+        <zoning>R-1</zoning>
+      </identification>
+      <valuation currency="USD">
+        <assessment_value>350000</assessment_value>
+        <market_value>340000</market_value>
+        <last_sale_price>330000</last_sale_price>
+        <last_sale_date>2023-09-12</last_sale_date>
+      </valuation>
+      <physical_characteristics>
+        <building_size units="sq_ft">2800</building_size>
+        <lot_size units="acres">0.75</lot_size>
+        <age years="12"></age>
+        <bedrooms>4</bedrooms>
+        <bathrooms>3</bathrooms>
+      </physical_characteristics>
+      <financial_data>
+        <gross_income>28000</gross_income>
+        <operating_expenses>7000</operating_expenses>
+        <net_operating_income>21000</net_operating_income>
+        <vacancy_rate>0.02</vacancy_rate>
+        <expense_ratio>0.25</expense_ratio>
+        <cap_rate>0.06</cap_rate>
+      </financial_data>
+    </property>
+    
+    <property id="XML003" type="Industrial" jurisdiction="Cass County">
+      <identification>
+        <parcel_id>XML003</parcel_id>
+        <address>789 Element Road, Belton, MO</address>
+        <zoning>I-1</zoning>
+      </identification>
+      <valuation currency="USD">
+        <assessment_value>1200000</assessment_value>
+        <market_value>1150000</market_value>
+        <last_sale_price>1100000</last_sale_price>
+        <last_sale_date>2023-02-28</last_sale_date>
+      </valuation>
+      <physical_characteristics>
+        <building_size units="sq_ft">25000</building_size>
+        <lot_size units="acres">5.5</lot_size>
+        <age years="6"></age>
+        <construction_type>Concrete Tilt-Up</construction_type>
+      </physical_characteristics>
+      <financial_data>
+        <gross_income>180000</gross_income>
+        <operating_expenses>63000</operating_expenses>
+        <net_operating_income>117000</net_operating_income>
+        <vacancy_rate>0.03</vacancy_rate>
+        <expense_ratio>0.35</expense_ratio>
+        <cap_rate>0.095</cap_rate>
+      </financial_data>
+    </property>
+  </records>
+</property_data>

@@ -1,0 +1,40 @@
+# CHARLY Development Dependencies - Series A Quality Infrastructure
+# Tested compatibility matrix for test infrastructure restoration
+# Issue: numpy.core.* import failures blocking pandas operations
+# Solution: Pin numpy 1.26.4 + pandas 2.2.1 (verified compatibility)
+
+# Core Data Processing (Business Logic Dependencies)
+numpy==1.26.4          # Stable, numpy.core.* compatible
+pandas==2.2.1          # Compatible with numpy 1.26.x  
+pydantic==2.7.1        # Business logic validation
+
+# Test Infrastructure (Quality Assurance)
+pytest==8.2.0          # Test execution engine
+pytest-cov==5.0.0      # Coverage measurement
+pytest-xdist==3.6.0    # Parallel execution
+pytest-mock==3.14.0    # Mocking framework
+pytest-asyncio==0.24.0 # Async test support
+
+# Code Quality Tools
+black==24.4.2          # Code formatting
+ruff==0.4.8            # Fast linting
+mypy==1.10.0           # Type checking
+
+# Development Utilities
+ipython==8.24.0        # Enhanced REPL
+jupyter==1.0.0         # Notebook development
+requests==2.32.3       # HTTP client for testing
+
+# Optional AI/RAG Dependencies (imported conditionally)
+# openai==1.30.5       # GPT integration (optional)
+# langchain==0.2.1     # RAG framework (optional)
+
+# Web Framework (FastAPI backend)
+fastapi==0.111.0       # API framework
+uvicorn==0.30.1        # ASGI server
+httpx==0.27.0          # Async HTTP client
+
+# Documentation
+sphinx==7.3.7          # Documentation generation
+sphinx-rtd-theme==2.0.0 # Documentation theme
+sqlalchemy==2.0.23          # Database ORM for security tests
