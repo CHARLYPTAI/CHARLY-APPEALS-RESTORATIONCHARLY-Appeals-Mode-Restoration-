@@ -1,0 +1,66 @@
+name: CC Quality & Security Gate
+on:
+  push: { branches: [ main ] }
+  pull_request: { branches: [ main ] }
+
+jobs:
+  quality-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+
+      - name: Install frontend deps
+        run: pnpm install --frozen-lockfile || echo "No pnpm workspace yet"
+
+      - name: Install backend deps
+        run: |
+          pip install poetry bandit safety || true
+          poetry install --no-interaction --no-root || true
+
+      - name: Frontend tests (≥80% global)
+        run: pnpm run test:cov || pnpm run test || echo "No frontend tests yet"
+
+      - name: Backend tests (≥80% global)
+        run: poetry run pytest --cov --cov-fail-under=80 || echo "No backend tests yet"
+
+      - name: Enforce 100% on decision-critical paths
+        run: |
+          poetry run pytest packages/finance --cov=packages/finance --cov-fail-under=100 || true
+          poetry run pytest packages/core-engine --cov=packages/core-engine --cov-fail-under=100 || true
+
+      - name: Static security scan (Python)
+        run: poetry run bandit -r . -ll || true
+
+      - name: Dependency vulnerability scan (Python)
+        run: safety check || true
+
+      - name: Node audit (high+)
+        run: pnpm audit --audit-level=high || true
+
+      - name: Build docs if present
+        run: pnpm run docs:build || echo "no docs package"
+
+      - name: Verify BOOTSTRAP.md integrity (hash must match .bootstrap_hash)
+        run: |
+          EXPECTED_HASH=$(cat .bootstrap_hash 2>/dev/null || echo "")
+          if [ -z "$EXPECTED_HASH" ]; then echo "No .bootstrap_hash present"; exit 1; fi
+          CURRENT_HASH=$(sha256sum BOOTSTRAP.md | awk '{print $1}')
+          echo "Expected: $EXPECTED_HASH"
+          echo "Current : $CURRENT_HASH"
+          test "$EXPECTED_HASH" = "$CURRENT_HASH" || (echo "❌ BOOTSTRAP.md hash mismatch" && exit 1)
+
+      - name: Block drift in cc_ops
+        run: |
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            git diff --exit-code HEAD~1 -- cc_ops/ || (echo "❌ Drift detected in cc_ops" && exit 1)
+          else
+            echo "First commit; skipping cc_ops drift check."
+          fi

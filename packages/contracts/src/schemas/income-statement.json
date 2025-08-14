@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.charlyapp.com/income-statement",
+  "title": "Income Statement Metadata",
+  "type": "object",
+  "required": ["uploadId", "extractionDate", "periodStart", "periodEnd"],
+  "properties": {
+    "uploadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Reference to uploaded income statement file"
+    },
+    "extractionDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the data was extracted from the file"
+    },
+    "periodStart": {
+      "type": "string",
+      "format": "date",
+      "description": "Start date of the reporting period"
+    },
+    "periodEnd": {
+      "type": "string",
+      "format": "date",
+      "description": "End date of the reporting period"
+    },
+    "revenue": {
+      "$ref": "#/$defs/Revenue"
+    },
+    "expenses": {
+      "$ref": "#/$defs/Expenses"
+    },
+    "netOperatingIncome": {
+      "type": "number",
+      "description": "Calculated NOI"
+    }
+  },
+  "$defs": {
+    "Revenue": {
+      "type": "object",
+      "properties": {
+        "rentalIncome": { "type": "number", "minimum": 0 },
+        "parkingIncome": { "type": "number", "minimum": 0 },
+        "laundryIncome": { "type": "number", "minimum": 0 },
+        "otherIncome": { "type": "number", "minimum": 0 },
+        "totalRevenue": { "type": "number", "minimum": 0 }
+      }
+    },
+    "Expenses": {
+      "type": "object",
+      "properties": {
+        "propertyManagement": { "type": "number", "minimum": 0 },
+        "utilities": { "type": "number", "minimum": 0 },
+        "maintenance": { "type": "number", "minimum": 0 },
+        "insurance": { "type": "number", "minimum": 0 },
+        "propertyTaxes": { "type": "number", "minimum": 0 },
+        "advertising": { "type": "number", "minimum": 0 },
+        "legal": { "type": "number", "minimum": 0 },
+        "otherExpenses": { "type": "number", "minimum": 0 },
+        "totalExpenses": { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}

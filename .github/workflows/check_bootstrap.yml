@@ -1,0 +1,18 @@
+name: Check CC Bootstrap Integrity
+on:
+  push: { branches: [ main ] }
+  pull_request:
+
+jobs:
+  check-bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify BOOTSTRAP.md SHA256 equals .bootstrap_hash
+        run: |
+          EXPECTED_HASH=$(cat .bootstrap_hash 2>/dev/null || echo "")
+          if [ -z "$EXPECTED_HASH" ]; then echo "No .bootstrap_hash file present"; exit 1; fi
+          CURRENT_HASH=$(sha256sum BOOTSTRAP.md | awk '{print $1}')
+          echo "Expected: $EXPECTED_HASH"
+          echo "Current : $CURRENT_HASH"
+          test "$EXPECTED_HASH" = "$CURRENT_HASH" || (echo "❌ BOOTSTRAP.md hash mismatch" && exit 1)

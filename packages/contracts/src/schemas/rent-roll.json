@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.charlyapp.com/rent-roll",
+  "title": "Rent Roll Metadata",
+  "type": "object",
+  "required": ["uploadId", "extractionDate", "units"],
+  "properties": {
+    "uploadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Reference to uploaded rent roll file"
+    },
+    "extractionDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the data was extracted from the file"
+    },
+    "reportDate": {
+      "type": "string",
+      "format": "date",
+      "description": "As-of date for the rent roll"
+    },
+    "totalUnits": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of units in the property"
+    },
+    "occupiedUnits": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of occupied units"
+    },
+    "totalGrossRent": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total gross rental income from all units"
+    },
+    "units": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/RentRollUnit" }
+    }
+  },
+  "$defs": {
+    "RentRollUnit": {
+      "type": "object",
+      "required": ["unitNumber", "status"],
+      "properties": {
+        "unitNumber": { "type": "string", "minLength": 1 },
+        "status": {
+          "type": "string",
+          "enum": ["occupied", "vacant", "notice", "maintenance"]
+        },
+        "tenantName": { "type": "string" },
+        "leaseStart": { "type": "string", "format": "date" },
+        "leaseEnd": { "type": "string", "format": "date" },
+        "monthlyRent": { "type": "number", "minimum": 0 },
+        "securityDeposit": { "type": "number", "minimum": 0 },
+        "squareFootage": { "type": "number", "minimum": 0 },
+        "rentPerSqft": { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}

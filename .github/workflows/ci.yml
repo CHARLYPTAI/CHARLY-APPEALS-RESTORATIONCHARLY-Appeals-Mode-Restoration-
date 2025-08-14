@@ -1,0 +1,145 @@
+name: CI — Charly Monorepo Guardrails
+
+on:
+  push:
+    branches: [ main, trunk, master ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  node-tests:
+    name: TS/Node — build + test + coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Install (pnpm)
+        run: pnpm install --frozen-lockfile
+      - name: Build (pnpm)
+        run: pnpm -r run build
+      - name: Test with coverage (pnpm)
+        run: |
+          pnpm -r run test:cov || pnpm -r run test -- --coverage
+          FAIL=0
+          # Global ≥80%
+          while IFS= read -r f; do
+            LINES=$(jq -r '.total.lines.pct // 0' "$f")
+            if [ "$(printf "%.0f" "$LINES")" -lt 80 ]; then
+              echo "❌ Coverage below 80% in $f ($LINES%)"
+              FAIL=1
+            fi
+          done < <(git ls-files | grep -E 'coverage/coverage-summary.json$' || true)
+          # Decision/Finance 100%
+          for pkg in packages/core-engine packages/finance; do
+            if [ -f "$pkg/coverage/coverage-summary.json" ]; then
+              PCT=$(jq -r '.total.lines.pct // 0' "$pkg/coverage/coverage-summary.json")
+              if [ "$(printf "%.0f" "$PCT")" -lt 100 ]; then
+                echo "❌ $pkg coverage must be 100% (is $PCT%)"
+                FAIL=1
+              fi
+            fi
+          done
+          if [ "$FAIL" -ne 0 ]; then exit 1; fi
+
+  python-tests:
+    name: Python — build + test + coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Poetry
+        run: pipx install poetry
+      - name: Install (Poetry)
+        run: poetry install --no-root
+      - name: Lint (ruff optional)
+        run: |
+          if poetry run ruff --version >/dev/null 2>&1; then poetry run ruff check .; else echo "ruff not found, skipping."; fi
+      - name: Test with coverage (pytest)
+        run: poetry run pytest
+
+  docs:
+    name: Docs — build (if present)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build mkdocs (conditional)
+        if: ${{ hashFiles('mkdocs.yml') != '' }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install mkdocs mkdocs-material
+          mkdocs build --strict
+      - name: Build typedoc (conditional)
+        if: ${{ hashFiles('typedoc.json') != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install deps for typedoc (conditional)
+        if: ${{ hashFiles('typedoc.json') != '' }}
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm typedoc
+
+  governance:
+    name: Governance — block drift (CC Ops + guardrails)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify CC Ops kit presence
+        run: |
+          REQUIRED=( 
+            cc_ops/README.md 
+            cc_ops/WORKING_AGREEMENT.md 
+            cc_ops/ROLE_STANDARDS.md 
+            cc_ops/TASK_QUEUE.md 
+            cc_ops/OUTPUT_SPEC.md 
+            cc_ops/DECISION_LOG.md 
+            cc_ops/RESEARCH_INDEX.md 
+            cc_ops/CONTEXT_PACK.md 
+            cc_ops/PROMPT_KIT.md 
+            cc_ops/CHECKLISTS.md 
+            SYSTEM_NFRS.md 
+            API_CONTRACT.md 
+            DATA_STORE_SPEC.md 
+            FILE_HANDLING_SPEC.md 
+            JURISDICTIONS_RULES.md 
+            DECISION_ENGINE_SPEC.md 
+            FRONTEND_SPEC.md 
+            SECURITY_POLICY.md 
+            OBSERVABILITY.md 
+          )
+          for f in "${REQUIRED[@]}"; do
+            if [ ! -f "$f" ]; then echo "❌ Missing required file: $f"; exit 1; fi
+          done
+          echo "✅ All required CC Ops & spec files present."
+      - name: Enforce invariants
+        run: |
+          grep -q "We **never** distribute comps" cc_ops/OUTPUT_SPEC.md || (echo "❌ Missing no-comps invariant" && exit 1)
+          grep -q "No contingency services" cc_ops/OUTPUT_SPEC.md || (echo "❌ Missing no-contingency invariant" && exit 1)
+          grep -q "Decision Engine" DECISION_ENGINE_SPEC.md || (echo "❌ Missing decision engine spec" && exit 1)
+          grep -q "WCAG AA" FRONTEND_SPEC.md || (echo "❌ Missing accessibility bar" && exit 1)
+          grep -q "Idempotency-Key" API_CONTRACT.md || (echo "❌ Missing idempotency spec" && exit 1)
+          grep -q "RBAC" SECURITY_POLICY.md || (echo "❌ Missing RBAC" && exit 1)
+          grep -qE "OpenTelemetry|tracecontext" FRONTEND_SPEC.md OBSERVABILITY.md || (echo "❌ Missing telemetry requirement" && exit 1)
+      - name: Validate TASK_QUEUE statuses
+        run: |
+          if grep -n "^- \$.*\$" cc_ops/TASK_QUEUE.md | grep -vE "\$(BACKLOG|READY|IN_PROGRESS|BLOCKED|DONE)\$"; then
+            echo "❌ TASK_QUEUE contains invalid status tag"; exit 1
+          fi
+          echo "✅ TASK_QUEUE status tags valid."
+      - name: Prevent forbidden phrases
+        run: |
+          if grep -RniE "provide comps to users|resell comps|contingency fee" cc_ops/; then
+            echo "❌ Found forbidden phrase indicating policy regression"; exit 1
+          fi
+          echo "✅ No forbidden phrases found."

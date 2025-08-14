@@ -1,0 +1,11 @@
+{
+  "name": "charly-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "test:cov": "pnpm -r run test:cov",
+    "typedoc": "typedoc"
+  }
+}

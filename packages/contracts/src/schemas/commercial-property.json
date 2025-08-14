@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.charlyapp.com/commercial-property",
+  "title": "Commercial Property Core",
+  "type": "object",
+  "required": [
+    "propertyId",
+    "address",
+    "propertyType",
+    "assessedValue",
+    "taxRate",
+    "ownershipInfo"
+  ],
+  "properties": {
+    "propertyId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the property"
+    },
+    "address": {
+      "$ref": "#/$defs/Address"
+    },
+    "propertyType": {
+      "type": "string",
+      "enum": ["office", "retail", "industrial", "multifamily", "mixed_use", "land", "other"],
+      "description": "Type of commercial property"
+    },
+    "assessedValue": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Current assessed value for tax purposes"
+    },
+    "marketValue": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Estimated market value"
+    },
+    "taxRate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Effective tax rate as decimal (e.g., 0.0125 for 1.25%)"
+    },
+    "currentTaxes": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Annual property taxes currently paid"
+    },
+    "assessmentDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of current assessment"
+    },
+    "ownershipInfo": {
+      "$ref": "#/$defs/OwnershipInfo"
+    },
+    "financials": {
+      "$ref": "#/$defs/PropertyFinancials"
+    },
+    "jurisdiction": {
+      "$ref": "#/$defs/Jurisdiction"
+    }
+  },
+  "$defs": {
+    "Address": {
+      "type": "object",
+      "required": ["street", "city", "state", "zipCode"],
+      "properties": {
+        "street": { "type": "string", "minLength": 1 },
+        "unit": { "type": "string" },
+        "city": { "type": "string", "minLength": 1 },
+        "state": { "type": "string", "pattern": "^[A-Z]{2}$" },
+        "zipCode": { "type": "string", "pattern": "^\\d{5}(-\\d{4})?$" },
+        "county": { "type": "string" }
+      }
+    },
+    "OwnershipInfo": {
+      "type": "object",
+      "required": ["ownerName", "ownerType"],
+      "properties": {
+        "ownerName": { "type": "string", "minLength": 1 },
+        "ownerType": {
+          "type": "string",
+          "enum": ["individual", "corporation", "llc", "partnership", "trust", "other"]
+        },
+        "taxId": { "type": "string" },
+        "contactEmail": { "type": "string", "format": "email" },
+        "contactPhone": { "type": "string" }
+      }
+    },
+    "PropertyFinancials": {
+      "type": "object",
+      "properties": {
+        "grossRentalIncome": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Annual gross rental income"
+        },
+        "operatingExpenses": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Annual operating expenses"
+        },
+        "vacancyRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Vacancy rate as decimal"
+        },
+        "capRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Capitalization rate as decimal"
+        }
+      }
+    },
+    "Jurisdiction": {
+      "type": "object",
+      "required": ["jurisdictionId", "name", "state"],
+      "properties": {
+        "jurisdictionId": { "type": "string" },
+        "name": { "type": "string", "minLength": 1 },
+        "state": { "type": "string", "pattern": "^[A-Z]{2}$" },
+        "appealDeadline": { "type": "string", "format": "date" },
+        "appealFee": { "type": "number", "minimum": 0 },
+        "efileAvailable": { "type": "boolean" }
+      }
+    }
+  }
+}

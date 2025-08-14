@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "charly-finance"
+version = "0.1.0"
+description = "Financial calculations for property tax appeals"
+authors = ["CHARLY <dev@charly.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pydantic = "^2.0"
+pytest = "^7.0"
+pytest-cov = "^4.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0"
+pytest-cov = "^4.0"
+hypothesis = "^6.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "--cov=charly_finance --cov-report=term --cov-report=json-summary:coverage/coverage-summary.json --cov-fail-under=100"
+testpaths = ["tests"]
