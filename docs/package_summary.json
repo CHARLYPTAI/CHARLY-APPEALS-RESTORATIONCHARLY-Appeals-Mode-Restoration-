@@ -1,9 +1,0 @@
-{
-  "deps": {
-    "@radix-ui/react-toggle-group": "^1.1.10"
-  },
-  "devDeps": {
-    "husky": "^9.1.7",
-    "typescript": "^5.8.3"
-  }
-}

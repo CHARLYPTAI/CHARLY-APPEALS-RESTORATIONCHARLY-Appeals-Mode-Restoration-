@@ -1,3 +1,0 @@
-e84ff9e6fe5349dabd5fe1956251d7a2282bb43ec9b8db937562c37b310aa2c0  charly_v0.9.6-nuke-drift.zip
-218b2edc1caf302b4f454fa2c3ad301010129dbf931c3d69a632c1635c2a5742  charly_v0.9.7-pruned.zip
-fb9ffb644dc826588e870dec94c1a91aca6e7f9c8eefb56298147e8f83d0d88c  charly_v0.9.8-pruned-hotfix.zip

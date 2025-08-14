@@ -1,8 +1,0 @@
-{"timestamp": "2025-06-10T08:49:11.782902+00:00", "interaction_type": "hover", "field_key": "test_field", "placement": "right", "user_agent_type": "mobile", "duration": 2.5, "user_agent": "Mozilla/5.0 (iPhone)"}
-{"timestamp": "2025-06-10T08:49:11.785937+00:00", "interaction_type": "tap", "field_key": "test_field", "action": "tap_open", "placement": "top", "user_agent_type": "desktop", "duration": 1.0, "user_agent": "Mozilla/5.0 (Windows)"}
-{"timestamp": "2025-06-10T08:49:11.786967+00:00", "interaction_type": "keyboard", "field_key": "test_field", "key_pressed": "Enter", "user_agent_type": "desktop", "user_agent": "Mozilla/5.0 (Macintosh)"}
-{"timestamp": "2025-06-10T08:49:11.787512+00:00", "interaction_type": "error", "error_type": "test_error", "field_key": "test_field", "error_message": "Test error message"}
-{"timestamp": "2025-06-10T08:51:24.475669+00:00", "interaction_type": "hover", "field_key": "test_field", "placement": "right", "user_agent_type": "mobile", "duration": 2.5, "user_agent": "Mozilla/5.0 (iPhone)"}
-{"timestamp": "2025-06-10T08:51:24.476448+00:00", "interaction_type": "tap", "field_key": "test_field", "action": "tap_open", "placement": "top", "user_agent_type": "desktop", "duration": 1.0, "user_agent": "Mozilla/5.0 (Windows)"}
-{"timestamp": "2025-06-10T08:51:24.476728+00:00", "interaction_type": "keyboard", "field_key": "test_field", "key_pressed": "Enter", "user_agent_type": "desktop", "user_agent": "Mozilla/5.0 (Macintosh)"}
-{"timestamp": "2025-06-10T08:51:24.477045+00:00", "interaction_type": "error", "error_type": "test_error", "field_key": "test_field", "error_message": "Test error message"}

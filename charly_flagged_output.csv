@@ -1,5 +1,0 @@
-property_name,address,unit_count,Rent($),OpEx,Revenue,VacRate,property_type
-Skyline Apartments,123 Main St,10,850,8000,15000,0.25,Retail
-456 Market Ave,456 Market Ave,15,1000,12000,275000,0.12,Retail
-789 Commercial Dr,789 Commercial Dr,20,5000,18000,300000,0.08,Retail
-1011 Example Blvd,1011 Example Blvd,30,2000,20000,1000000,0.1,Retail

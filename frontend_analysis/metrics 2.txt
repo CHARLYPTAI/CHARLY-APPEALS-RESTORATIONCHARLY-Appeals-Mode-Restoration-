@@ -1,5 +1,0 @@
-📊 Frontend Metrics:
-Total TSX files:       22
-Total TS files:        7
-Total test files:       25
-Total source lines: 6591

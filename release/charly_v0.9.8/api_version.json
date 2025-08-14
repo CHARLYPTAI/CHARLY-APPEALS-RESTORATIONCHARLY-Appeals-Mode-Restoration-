@@ -1,1 +1,0 @@
-{"git_sha":"426b6b5985313ca231f8a691813113dca9168d49","build_time":"2025-08-12T00:44:13.168614Z","routers_loaded":["auth:/api/auth","websocket:/ws","kpis:/api/kpis","portfolio:/api/portfolio","ai:/api/ai","payments:/api","usage:/api","security:/api","appeals:/api/appeals","reports:/api/reports","filing:/api/filing"],"jwt_secret_source":"ENV"}

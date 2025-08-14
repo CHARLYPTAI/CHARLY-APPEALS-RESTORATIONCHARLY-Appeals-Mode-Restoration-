@@ -1,7 +1,0 @@
- D .github/workflows-all-disabled/simple-ci.yml
- M tasks.md
-?? ".github/workflows 2/"
-?? APPLE_FINAL_EXECUTION_PLAN.md
-?? APPLE_FINAL_TASK_LIST.md
-?? STEVE_JOBS_HANDOFF_PROMPT.md
-?? docs/
