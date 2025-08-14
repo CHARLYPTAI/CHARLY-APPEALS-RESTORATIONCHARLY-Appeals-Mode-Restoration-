@@ -1,6 +1,0 @@
-{
-  "preset": "desktop",
-  "chromeFlags": "--no-sandbox --headless --disable-gpu --disable-dev-shm-usage --headless=new --headless=new --headless=new --headless=new --headless=new --headless=new --headless=new",
-  "outputDir": "./lighthouse-reports/desktop",
-  "onlyCategories": ["performance", "accessibility", "best-practices", "seo"]
-}
