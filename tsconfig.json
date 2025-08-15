@@ -21,7 +21,8 @@
       "@charly/finance": ["./packages/finance/src"],
       "@charly/core-engine": ["./packages/core-engine/src"],
       "@charly/contracts": ["./packages/contracts/src"],
-      "@charly/file-processor": ["./packages/file-processor/src"]
+      "@charly/file-processor": ["./packages/file-processor/src"],
+      "@charly/llm-router": ["./packages/llm-router/src"]
     }
   },
   "include": ["packages/*/src/**/*", "apps/*/src/**/*"],
