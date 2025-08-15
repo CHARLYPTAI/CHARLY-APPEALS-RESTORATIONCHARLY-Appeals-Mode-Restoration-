@@ -1,4 +1,5 @@
 import type { LLMRequest } from '@charly/llm-router';
+import { getRouter } from '@charly/llm-router';
 import { createErrorBuilder, formatServiceError } from '../utils/error-handler.js';
 import { sanitizeForLogging } from '../utils/log-sanitizer.js';
 import type { ApproachData } from './appeal-service.js';
@@ -33,14 +34,11 @@ export class AINewNarrativeService {
   
   constructor() {
     try {
-      // Dynamic import to handle cases where router isn't available
-      import('@charly/llm-router').then(({ getRouter }) => {
-        this.router = getRouter();
-      }).catch(() => {
-        console.warn('LLM Router not available');
-      });
+      // Use the centralized LLM Router with all security features
+      this.router = getRouter();
     } catch (error) {
-      console.warn('LLM Router initialization failed');
+      console.error('LLM Router initialization failed:', sanitizeForLogging(error));
+      throw new Error('AI Narrative Service requires LLM Router to be available');
     }
   }
 
@@ -103,10 +101,10 @@ export class AINewNarrativeService {
         errorBuilder.add('Residential narrative service only handles residential properties');
       }
 
-      // Residential properties typically use sales comparison approach primarily
-      const salesApproach = request.approaches.find(a => a.approach === 'sales');
-      if (!salesApproach || !salesApproach.completed) {
-        errorBuilder.add('Residential properties require a completed sales comparison approach');
+      // Residential properties can use multiple approaches
+      const completedApproaches = request.approaches.filter(a => a.completed);
+      if (completedApproaches.length === 0) {
+        errorBuilder.add('Residential properties require at least one completed valuation approach');
       }
 
       if (errorBuilder.hasErrors()) {
@@ -118,9 +116,24 @@ export class AINewNarrativeService {
 
       const sections: NarrativeSection[] = [];
 
-      // Generate sales comparison narrative
-      if (salesApproach) {
-        const narrativeSection = await this.generateResidentialSalesNarrative(request, salesApproach);
+      // Generate approach-specific narratives
+      for (const approach of completedApproaches) {
+        let narrativeSection: NarrativeSection | null = null;
+        
+        switch (approach.approach) {
+          case 'sales':
+            narrativeSection = await this.generateResidentialSalesNarrative(request, approach);
+            break;
+          case 'income':
+            // For rental residential properties
+            narrativeSection = await this.generateResidentialIncomeNarrative(request, approach);
+            break;
+          case 'cost':
+            // For newer residential properties or when improvements are significant
+            narrativeSection = await this.generateResidentialCostNarrative(request, approach);
+            break;
+        }
+        
         if (narrativeSection) {
           sections.push(narrativeSection);
         }
@@ -165,7 +178,7 @@ export class AINewNarrativeService {
       };
 
       if (!this.router) {
-        throw new Error('LLM Router not available');
+        throw new Error('LLM Router not available - ensure router is properly initialized');
       }
       
       const response = await this.router.generateCompletion(llmRequest);
@@ -211,7 +224,7 @@ export class AINewNarrativeService {
       };
 
       if (!this.router) {
-        throw new Error('LLM Router not available');
+        throw new Error('LLM Router not available - ensure router is properly initialized');
       }
       
       const response = await this.router.generateCompletion(llmRequest);
@@ -253,7 +266,7 @@ export class AINewNarrativeService {
       };
 
       if (!this.router) {
-        throw new Error('LLM Router not available');
+        throw new Error('LLM Router not available - ensure router is properly initialized');
       }
       
       const response = await this.router.generateCompletion(llmRequest);
@@ -289,6 +302,90 @@ export class AINewNarrativeService {
       content: `Based on our market analysis, the property at ${request.propertyData.address} has an estimated market value of $${salesApproach.indicatedValue.toLocaleString()}. The current assessed value is $${request.propertyData.assessedValue.toLocaleString()}, representing ${overassessment ? 'an overassessment' : 'an underassessment'} of ${Math.abs((assessmentRatio - 1) * 100).toFixed(1)}%. ${overassessment ? 'We recommend proceeding with a formal appeal to achieve tax savings.' : 'The current assessment appears reasonable relative to market value.'}`,
       approach: 'summary'
     };
+  }
+
+  private async generateResidentialIncomeNarrative(request: NarrativeRequest, incomeApproach: ApproachData): Promise<NarrativeSection | null> {
+    try {
+      const llmRequest: LLMRequest = {
+        prompt: this.buildResidentialIncomePrompt(request, incomeApproach),
+        model: 'gpt-3.5-turbo',
+        maxTokens: 600,
+        temperature: 0.3,
+        schema: {
+          type: 'object',
+          properties: {
+            content: { type: 'string' },
+            rentalAnalysis: { type: 'string' },
+            marketComparison: { type: 'string' }
+          },
+          required: ['content']
+        }
+      };
+
+      if (!this.router) {
+        throw new Error('LLM Router not available - ensure router is properly initialized');
+      }
+      
+      const response = await this.router.generateCompletion(llmRequest);
+      
+      if (response.validated && response.content) {
+        const parsed = JSON.parse(response.content);
+        return {
+          id: `narrative-residential-income-${Date.now()}`,
+          title: 'Income Approach Analysis',
+          content: parsed.content || 'Income analysis could not be generated.',
+          approach: 'income'
+        };
+      }
+
+      return this.generateResidentialFallback(request, incomeApproach);
+
+    } catch (error) {
+      console.error('Residential income narrative generation failed:', error);
+      return this.generateResidentialFallback(request, incomeApproach);
+    }
+  }
+
+  private async generateResidentialCostNarrative(request: NarrativeRequest, costApproach: ApproachData): Promise<NarrativeSection | null> {
+    try {
+      const llmRequest: LLMRequest = {
+        prompt: this.buildResidentialCostPrompt(request, costApproach),
+        model: 'gpt-3.5-turbo',
+        maxTokens: 600,
+        temperature: 0.3,
+        schema: {
+          type: 'object',
+          properties: {
+            content: { type: 'string' },
+            costAnalysis: { type: 'string' },
+            depreciationFactors: { type: 'string' }
+          },
+          required: ['content']
+        }
+      };
+
+      if (!this.router) {
+        throw new Error('LLM Router not available - ensure router is properly initialized');
+      }
+      
+      const response = await this.router.generateCompletion(llmRequest);
+      
+      if (response.validated && response.content) {
+        const parsed = JSON.parse(response.content);
+        return {
+          id: `narrative-residential-cost-${Date.now()}`,
+          title: 'Cost Approach Analysis',
+          content: parsed.content || 'Cost analysis could not be generated.',
+          approach: 'cost'
+        };
+      }
+
+      return this.generateResidentialFallback(request, costApproach);
+
+    } catch (error) {
+      console.error('Residential cost narrative generation failed:', error);
+      return this.generateResidentialFallback(request, costApproach);
+    }
   }
 
   private buildApproachPrompt(request: NarrativeRequest, approach: ApproachData): string {
@@ -358,6 +455,52 @@ Please provide a narrative that:
 2. Discusses market conditions and trends
 3. Justifies any adjustments made to comparables
 4. Concludes with the market value opinion
+
+Return as JSON with "content" field containing the narrative.`;
+  }
+
+  private buildResidentialIncomePrompt(request: NarrativeRequest, incomeApproach: ApproachData): string {
+    return `Generate an income approach analysis narrative for a residential rental property tax appeal.
+
+Property: ${request.propertyData.address}
+Current Assessed Value: $${request.propertyData.assessedValue.toLocaleString()}
+Income Approach Indicated Value: $${incomeApproach.indicatedValue.toLocaleString()}
+Confidence: ${(incomeApproach.confidence * 100).toFixed(0)}%
+
+Analysis factors:
+${incomeApproach.rationale.map(r => `- ${r}`).join('\n')}
+
+Please provide a narrative that:
+1. Explains the rental income analysis methodology
+2. Discusses market rents and vacancy factors for residential properties
+3. Details operating expenses typical for residential rental properties
+4. Justifies the capitalization rate used
+5. Concludes with the income approach value opinion
+
+Focus on residential rental property considerations such as market rent comparisons, typical residential operating expenses (property taxes, insurance, maintenance, property management), and residential cap rates.
+
+Return as JSON with "content" field containing the narrative.`;
+  }
+
+  private buildResidentialCostPrompt(request: NarrativeRequest, costApproach: ApproachData): string {
+    return `Generate a cost approach analysis narrative for a residential property tax appeal.
+
+Property: ${request.propertyData.address}
+Current Assessed Value: $${request.propertyData.assessedValue.toLocaleString()}
+Cost Approach Indicated Value: $${costApproach.indicatedValue.toLocaleString()}
+Confidence: ${(costApproach.confidence * 100).toFixed(0)}%
+
+Analysis factors:
+${costApproach.rationale.map(r => `- ${r}`).join('\n')}
+
+Please provide a narrative that:
+1. Explains how replacement cost was estimated for the residential property
+2. Discusses land value estimation methods for residential sites
+3. Details depreciation factors affecting residential properties (physical, functional, external)
+4. Addresses any unique characteristics of the home
+5. Concludes with the cost approach value opinion
+
+Focus on residential property considerations such as home construction costs, residential land values, typical home depreciation patterns, and neighborhood factors affecting residential values.
 
 Return as JSON with "content" field containing the narrative.`;
   }

@@ -1,0 +1,256 @@
+{
+  "id": "perf-report-1755230982968",
+  "timestamp": "2025-08-15T04:09:42.968Z",
+  "testSuite": "G4-Test-Suite",
+  "summary": {
+    "totalTests": 2,
+    "passedTests": 0,
+    "failedTests": 2,
+    "totalDuration": 19998,
+    "totalRequests": 610,
+    "overallErrorRate": 0.21311475409836064,
+    "performanceScore": 50
+  },
+  "testResults": [
+    {
+      "testId": "heavy-residential-b69e2213-798e-4536-9cf6-877d332836ac",
+      "scenario": "heavy-residential",
+      "startTime": "2025-08-15T04:09:22.970Z",
+      "endTime": "2025-08-15T04:09:26.001Z",
+      "duration": 3031,
+      "totalRequests": 600,
+      "successfulRequests": 480,
+      "failedRequests": 120,
+      "errorRate": 0,
+      "metrics": {
+        "responseTime": {
+          "min": 1024.3338369999983,
+          "max": 1540.1846839999998,
+          "mean": 1256.3256635876533,
+          "p50": 1255.7992509999967,
+          "p95": 1401.0709580000039,
+          "p99": 1465.7442410000003
+        },
+        "throughput": {
+          "requestsPerSecond": 6.75,
+          "bytesPerSecond": 0
+        },
+        "resources": {
+          "cpuUsage": [],
+          "memoryUsage": [],
+          "networkIO": []
+        }
+      },
+      "errors": [
+        "Property RES-00000028: Property workflow failed: Step property_validation failed: Property address not found in tax records",
+        "Property RES-00000035: Property workflow failed: Step property_validation failed: Property address not found in tax records",
+        "Property RES-00000042: Property workflow failed: Step property_validation failed: Property address not found in tax records",
+        "Property RES-00000017: Property workflow failed: Step property_validation failed: Property address not found in tax records",
+        "Property RES-00000083: Property workflow failed: Step property_validation failed: Property address not found in tax records",
+        "Property RES-00000148: Property workflow failed: Step property_validation failed: Property address not found in tax records",
+        "Property RES-00000172: Property workflow failed: Step property_validation failed: Property address not found in tax records",
+        "Property RES-00000097: Property workflow failed: Step ownership_verification failed: Ownership documentation incomplete",
+        "Property RES-00000174: Property workflow failed: Step ownership_verification failed: Ownership documentation incomplete",
+        "Property RES-00000002: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000101: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000155: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000197: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000036: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000041: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000082: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000113: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000128: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000086: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000071: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000046: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000194: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000027: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step property_condition_assessment failed: Property inspection data incomplete, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000038: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000048: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000076: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000134: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000176: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000102: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000077: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000164: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000045: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000009: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000039: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000124: Property workflow failed: Step property_condition_assessment failed: Property inspection data incomplete, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000056: Property workflow failed: Step property_condition_assessment failed: Property inspection data incomplete, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000052: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000184: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000089: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000093: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000024: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000168: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000192: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000023: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000091: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000163: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000116: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000004: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000119: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000182: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000044: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000007: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000080: Property workflow failed: Step document_generation failed: Document template rendering failed, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000187: Property workflow failed: Step document_generation failed: Document template rendering failed, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000195: Property workflow failed: Step document_generation failed: Document template rendering failed, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000094: Property workflow failed: Step final_review failed: Unexpected error in final_review",
+        "Property RES-00000002: Property workflow failed: Step final_review failed: Unexpected error in final_review",
+        "Property RES-00000019: Property workflow failed: Step final_review failed: Unexpected error in final_review",
+        "Property RES-00000029: Property workflow failed: Step compliance_check failed: Unexpected error in compliance_check, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000064: Property workflow failed: Step compliance_check failed: Unexpected error in compliance_check, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000118: Property workflow failed: Step final_review failed: Unexpected error in final_review",
+        "Property RES-00000040: Property workflow failed: Step compliance_check failed: Unexpected error in compliance_check, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000021: Property workflow failed: Step property_validation failed: Property address not found in tax records",
+        "Property RES-00000114: Property workflow failed: Step property_validation failed: Property address not found in tax records",
+        "Property RES-00000107: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000164: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000153: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000002: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000134: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000147: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000150: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000092: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000032: Property workflow failed: Step property_condition_assessment failed: Property inspection data incomplete, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000030: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000087: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000179: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000117: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000083: Property workflow failed: Step property_condition_assessment failed: Property inspection data incomplete, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000182: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000136: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000011: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000199: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000022: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000111: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000187: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000197: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000193: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000036: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000109: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000159: Property workflow failed: Step document_generation failed: Document template rendering failed, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000095: Property workflow failed: Step document_generation failed: Document template rendering failed, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000115: Property workflow failed: Step final_review failed: Unexpected error in final_review",
+        "Property RES-00000091: Property workflow failed: Step final_review failed: Unexpected error in final_review",
+        "Property RES-00000063: Property workflow failed: Step compliance_check failed: Unexpected error in compliance_check, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000003: Property workflow failed: Step final_review failed: Unexpected error in final_review",
+        "Property RES-00000061: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000032: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000030: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000004: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000014: Property workflow failed: Step assessment_data_retrieval failed: Tax assessment database temporarily unavailable",
+        "Property RES-00000077: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000080: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000064: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000073: Property workflow failed: Step property_condition_assessment failed: Property inspection data incomplete, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000047: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000048: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000066: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000018: Property workflow failed: Step comparable_sales_analysis failed: Insufficient comparable sales data, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000026: Property workflow failed: Step property_condition_assessment failed: Property inspection data incomplete, Step valuation_calculation dependencies not met: comparable_sales_analysis, property_condition_assessment, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000000: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000019: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000051: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000053: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000065: Property workflow failed: Step valuation_calculation failed: Valuation algorithm encountered calculation error, Step appeal_strength_analysis dependencies not met: valuation_calculation, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000079: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000081: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000096: Property workflow failed: Step appeal_strength_analysis failed: Appeal viability analysis inconclusive, Step document_generation dependencies not met: appeal_strength_analysis, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000007: Property workflow failed: Step document_generation failed: Document template rendering failed, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000044: Property workflow failed: Step document_generation failed: Document template rendering failed, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check",
+        "Property RES-00000055: Property workflow failed: Step document_generation failed: Document template rendering failed, Step compliance_check dependencies not met: document_generation, Step final_review dependencies not met: compliance_check"
+      ],
+      "warnings": [
+        "API p99 latency (1465.7442410000003ms) exceeds target (50ms)"
+      ]
+    },
+    {
+      "testId": "moderate-commercial-8297fcd3-e1fe-4399-a60b-8b323c11009d",
+      "scenario": "moderate-commercial",
+      "startTime": "2025-08-15T04:09:26.001Z",
+      "endTime": "2025-08-15T04:09:42.968Z",
+      "duration": 16967,
+      "totalRequests": 10,
+      "successfulRequests": 0,
+      "failedRequests": 10,
+      "errorRate": 0,
+      "metrics": {
+        "responseTime": {
+          "min": 1093.2141770000017,
+          "max": 1469.330654999998,
+          "mean": 1265.9260835066666,
+          "p50": 1265.2106150000036,
+          "p95": 1415.5799010000046,
+          "p99": 1469.330654999998
+        },
+        "throughput": {
+          "requestsPerSecond": 1.25,
+          "bytesPerSecond": 0
+        },
+        "resources": {
+          "cpuUsage": [
+            37.16929325376997,
+            62.48116261909843,
+            11.752356624263903
+          ],
+          "memoryUsage": [
+            23.93169403076172,
+            24.0167236328125,
+            24.093215942382812
+          ],
+          "networkIO": [
+            670.5853373229107,
+            841.4484199870395,
+            432.62784268907353
+          ]
+        }
+      },
+      "errors": [
+        "Portfolio 0: Property workflow failed: Step reconciliation_analysis failed: Valuation approaches show excessive variance, Step appeal_strength_analysis dependencies not met: reconciliation_analysis, market_trend_analysis, Step narrative_report_generation dependencies not met: appeal_strength_analysis, Step supporting_documentation dependencies not met: narrative_report_generation, Step legal_compliance_review dependencies not met: supporting_documentation, Step final_review_and_approval dependencies not met: legal_compliance_review",
+        "Portfolio 1: Property workflow failed: Step reconciliation_analysis failed: Valuation approaches show excessive variance, Step appeal_strength_analysis dependencies not met: reconciliation_analysis, market_trend_analysis, Step narrative_report_generation dependencies not met: appeal_strength_analysis, Step supporting_documentation dependencies not met: narrative_report_generation, Step legal_compliance_review dependencies not met: supporting_documentation, Step final_review_and_approval dependencies not met: legal_compliance_review"
+      ],
+      "warnings": [
+        "API p99 latency (1469.330654999998ms) exceeds target (50ms)"
+      ]
+    }
+  ],
+  "compliance": {
+    "performanceTargets": {
+      "uiP99Met": false,
+      "apiP99Met": false,
+      "errorRateAcceptable": true,
+      "resourceUsageAcceptable": true
+    },
+    "aiRouter": {
+      "budgetCompliance": true,
+      "schemaCompliance": true,
+      "stabilityUnderLoad": true
+    },
+    "database": {
+      "connectionStability": true,
+      "queryPerformance": true,
+      "noDeadlocks": true
+    },
+    "security": {
+      "piiRedactionActive": true,
+      "noSensitiveDataLeaks": true
+    }
+  },
+  "recommendations": [
+    "Consider optimizing API performance for 2 slow test(s). Current p99 latency exceeds 50ms target.",
+    "Implement continuous performance monitoring in production environment.",
+    "Consider setting up automated alerts for performance regression detection.",
+    "Regularly review and update performance benchmarks based on usage patterns."
+  ],
+  "systemInfo": {
+    "nodeVersion": "v24.1.0",
+    "platform": "darwin",
+    "architecture": "x64",
+    "cpuCount": 4,
+    "totalMemory": 8192,
+    "testEnvironment": "test"
+  }
+}

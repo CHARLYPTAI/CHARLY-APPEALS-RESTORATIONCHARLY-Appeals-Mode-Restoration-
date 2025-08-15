@@ -1,42 +1,20 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import multipart from '@fastify/multipart';
-import { uploadsRoutes } from './routes/uploads.js';
-import { validateRoutes } from './routes/validate.js';
-import { appealPacketRoutes } from './routes/appeal-packet.js';
-import { onboardingRoutes } from './routes/onboarding.js';
-import { jurisdictionsRoutes } from './routes/jurisdictions.js';
-import { valuationRoutes } from './routes/valuation.js';
-import { resultsRoutes } from './routes/results.js';
-import { aiSwartzRoutes } from './routes/ai-swartz.js';
+import jwt from '@fastify/jwt';
+import { authRoutes } from './routes/auth.js';
+import { adminRoutes } from './routes/admin.js';
+import { commercialRoutes } from './routes/commercial/commercial-router.js';
+import { residentialRoutes } from './routes/residential/residential-router.js';
 import { sanitizeForLogging } from './utils/log-sanitizer.js';
 import securityHeaders from './plugins/security-headers.js';
+import { registerAuditHooks } from './middleware/audit-logger.js';
 import { loadConfig } from './config/index.js';
 import { v4 as uuidv4 } from 'uuid';
 import { startTimer } from './utils/timing.js';
 
 // Load and validate configuration
 const config = loadConfig();
-
-const fastify = Fastify({
-  logger: {
-    level: config.logLevel,
-    redact: ['req.headers.authorization', 'req.headers.cookie'],
-    serializers: {
-      req: (req) => sanitizeForLogging({
-        method: req.method,
-        url: req.url,
-        headers: req.headers,
-        correlationId: req.correlationId
-      }),
-      res: (res) => sanitizeForLogging({
-        statusCode: res.statusCode,
-        headers: res.headers
-      }),
-      err: (err) => sanitizeForLogging(err)
-    }
-  }
-});
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -48,9 +26,34 @@ declare module 'fastify' {
   }
 }
 
-async function start() {
-  try {
-    await fastify.register(securityHeaders);
+export async function build(opts = {}) {
+  const fastify = Fastify({
+    logger: opts.logger !== false ? {
+      level: config.logLevel,
+      redact: ['req.headers.authorization', 'req.headers.cookie'],
+      serializers: {
+        req: (req) => sanitizeForLogging({
+          method: req.method,
+          url: req.url,
+          headers: req.headers,
+          correlationId: req.correlationId
+        }),
+        res: (res) => sanitizeForLogging({
+          statusCode: res.statusCode,
+          headers: res.headers
+        }),
+        err: (err) => sanitizeForLogging(err)
+      }
+    } : false,
+    ...opts
+  });
+
+  // Register JWT plugin
+  await fastify.register(jwt, {
+    secret: process.env.JWT_SECRET || 'supersecretkey-change-in-production'
+  });
+
+  await fastify.register(securityHeaders);
     
     await fastify.register(cors, {
       origin: config.corsOrigins,
@@ -88,16 +91,23 @@ async function start() {
       return { status: 'healthy', timestamp: new Date().toISOString() };
     });
 
+    // Register audit hooks
+    registerAuditHooks(fastify);
+
+    // Register authentication routes (no tenant restrictions)
+    await fastify.register(authRoutes, { prefix: '/api/v1' });
+
+    // Register admin routes with admin permissions
+    await fastify.register(adminRoutes, { prefix: '/api/v1' });
+
+    // Register tenant-specific routes with realm-based prefixes
     await fastify.register(async function(fastify) {
-      await fastify.register(uploadsRoutes, { prefix: '/api/v1' });
-      await fastify.register(validateRoutes, { prefix: '/api/v1' });
-      await fastify.register(appealPacketRoutes, { prefix: '/api/v1' });
-      await fastify.register(onboardingRoutes, { prefix: '/api/v1' });
-      await fastify.register(jurisdictionsRoutes, { prefix: '/api/v1' });
-      await fastify.register(valuationRoutes, { prefix: '/api/v1' });
-      await fastify.register(resultsRoutes, { prefix: '/api/v1' });
-      await fastify.register(aiSwartzRoutes, { prefix: '/api/v1' });
-    });
+      // Commercial routes under /api/v1/c/*
+      await fastify.register(commercialRoutes, { prefix: '/c' });
+      
+      // Residential routes under /api/v1/r/*
+      await fastify.register(residentialRoutes, { prefix: '/r' });
+    }, { prefix: '/api/v1' });
 
     // RFC7807 compliant 404 handler
     fastify.setNotFoundHandler((request, reply) => {
@@ -187,15 +197,23 @@ async function start() {
       reply.status(problemDetails.status).send(problemDetails);
     });
 
+    return fastify;
+}
+
+async function start() {
+  try {
+    const fastify = await build();
     const { port, host } = config;
     
     await fastify.listen({ port, host });
     fastify.log.info(`CHARLY API server listening on ${host}:${port}`);
     
   } catch (err) {
-    fastify.log.error(sanitizeForLogging(err));
+    console.error('Failed to start server:', err);
     process.exit(1);
   }
 }
 
-start();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  start();
+}

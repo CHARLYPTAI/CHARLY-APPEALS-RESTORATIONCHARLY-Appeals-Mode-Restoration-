@@ -19,15 +19,42 @@ export interface ValidationResponse {
   };
 }
 
+export interface CommercialProperty {
+  property_address: string;
+  assessed_value?: number;
+  market_value?: number;
+  jurisdiction?: string;
+  tax_year?: number;
+  property_data?: Record<string, any>;
+}
+
+export interface ResidentialProperty {
+  property_address: string;
+  assessed_value?: number;
+  market_value?: number;
+  jurisdiction?: string;
+  tax_year?: number;
+  homestead_exemption?: boolean;
+  square_footage?: number;
+  lot_size?: number;
+  year_built?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  property_type?: 'single_family' | 'condo' | 'townhome' | 'duplex' | 'other';
+  garage_spaces?: number;
+  property_data?: Record<string, any>;
+}
+
 export interface CommercialValidationRequest {
-  property: unknown;
+  property: CommercialProperty;
   rent_roll_ref?: string;
   income_stmt_ref?: string;
 }
 
 export interface ResidentialValidationRequest {
-  property: unknown;
+  property: ResidentialProperty;
   comp_refs?: string[];
+  neighborhood_analysis?: boolean;
 }
 
 export interface ApiError {

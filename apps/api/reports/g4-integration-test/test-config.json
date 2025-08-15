@@ -1,0 +1,49 @@
+{
+  "enabled": true,
+  "scenarios": {
+    "heavyResidential": {
+      "enabled": true,
+      "batchSize": 50,
+      "totalParcels": 500,
+      "concurrentBatches": 2,
+      "rampUpDurationMs": 500,
+      "sustainedDurationMs": 1000,
+      "rampDownDurationMs": 500
+    },
+    "moderateCommercial": {
+      "enabled": true,
+      "portfolioSize": 5,
+      "totalPortfolios": 2,
+      "concurrentPortfolios": 1,
+      "complexityLevel": "medium",
+      "includeAI": true
+    }
+  },
+  "metrics": {
+    "uiP99TargetMs": 100,
+    "apiP99TargetMs": 50,
+    "errorRateThreshold": 0.01,
+    "memoryThresholdMB": 512,
+    "cpuThresholdPercent": 80,
+    "collectIntervalMs": 5000
+  },
+  "aiRouter": {
+    "testBudgetLimits": true,
+    "testSchemaCompliance": true,
+    "testConcurrentLoad": true,
+    "maxConcurrentRequests": 50,
+    "budgetTestAmount": 1000
+  },
+  "database": {
+    "testConnectionLimits": true,
+    "testQueryPerformance": true,
+    "maxConnections": 100,
+    "queryTimeoutMs": 5000
+  },
+  "reporting": {
+    "generateHtml": true,
+    "generateJson": true,
+    "includeCharts": true,
+    "outputPath": "./reports/g4-integration-test"
+  }
+}

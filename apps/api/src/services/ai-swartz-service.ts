@@ -1,11 +1,12 @@
 import type { LLMRequest } from '@charly/llm-router';
+import { getRouter } from '@charly/llm-router';
 import { createErrorBuilder, formatServiceError } from '../utils/error-handler.js';
 import { sanitizeForLogging } from '../utils/log-sanitizer.js';
 
 export interface SwartzDocument {
   id: string;
   filename: string;
-  type: 'income_statement' | 'rent_roll' | 'profit_loss' | 'cash_flow' | 'other';
+  type: 'income_statement' | 'rent_roll' | 'profit_loss' | 'cash_flow' | 'property_tax_record' | 'comparable_sales' | 'building_records' | 'assessor_data' | 'other';
   content: string;
   uploadDate: string;
 }
@@ -15,6 +16,7 @@ export interface SwartzParseRequest {
   documents: SwartzDocument[];
   approach: 'income' | 'sales' | 'cost';
   targetYear?: number;
+  residential?: boolean;
 }
 
 export interface IncomeApproachData {
@@ -73,14 +75,11 @@ export class AISwartzService {
   
   constructor() {
     try {
-      // Dynamic import to handle cases where router isn't available
-      import('@charly/llm-router').then(({ getRouter }) => {
-        this.router = getRouter();
-      }).catch(() => {
-        console.warn('LLM Router not available');
-      });
+      // Use the centralized LLM Router with all security features
+      this.router = getRouter();
     } catch (error) {
-      console.warn('LLM Router initialization failed');
+      console.error('LLM Router initialization failed:', sanitizeForLogging(error));
+      throw new Error('AI SWARTZ Service requires LLM Router to be available');
     }
   }
 
@@ -114,7 +113,7 @@ export class AISwartzService {
 
       // Parse each document using AI
       const parseResults = await Promise.all(
-        incomeDocuments.map(doc => this.parseIncomeDocument(doc, request.targetYear || new Date().getFullYear()))
+        incomeDocuments.map(doc => this.parseIncomeDocument(doc, request.targetYear || new Date().getFullYear(), request.residential))
       );
 
       // Consolidate results
@@ -175,7 +174,7 @@ export class AISwartzService {
       }
 
       const parseResults = await Promise.all(
-        salesDocuments.map(doc => this.parseSalesDocument(doc))
+        salesDocuments.map(doc => this.parseSalesDocument(doc, request.residential))
       );
 
       const consolidatedData = await this.consolidateSalesData(parseResults, requestId);
@@ -235,7 +234,7 @@ export class AISwartzService {
       }
 
       const parseResults = await Promise.all(
-        costDocuments.map(doc => this.parseCostDocument(doc))
+        costDocuments.map(doc => this.parseCostDocument(doc, request.residential))
       );
 
       const consolidatedData = await this.consolidateCostData(parseResults, requestId);
@@ -263,10 +262,10 @@ export class AISwartzService {
     }
   }
 
-  private async parseIncomeDocument(document: SwartzDocument, targetYear: number): Promise<any> {
+  private async parseIncomeDocument(document: SwartzDocument, targetYear: number, residential?: boolean): Promise<any> {
     try {
       const llmRequest: LLMRequest = {
-        prompt: this.buildIncomeParsingPrompt(document, targetYear),
+        prompt: this.buildIncomeParsingPrompt(document, targetYear, residential),
         model: 'gpt-4',
         maxTokens: 1200,
         temperature: 0.1, // Low temperature for precise extraction
@@ -287,7 +286,7 @@ export class AISwartzService {
       };
 
       if (!this.router) {
-        throw new Error('LLM Router not available');
+        throw new Error('LLM Router not available - ensure router is properly initialized');
       }
       
       const response = await this.router.generateCompletion(llmRequest);
@@ -304,10 +303,10 @@ export class AISwartzService {
     }
   }
 
-  private async parseSalesDocument(document: SwartzDocument): Promise<any> {
+  private async parseSalesDocument(document: SwartzDocument, residential?: boolean): Promise<any> {
     try {
       const llmRequest: LLMRequest = {
-        prompt: this.buildSalesParsingPrompt(document),
+        prompt: this.buildSalesParsingPrompt(document, residential),
         model: 'gpt-4',
         maxTokens: 1000,
         temperature: 0.1,
@@ -337,7 +336,7 @@ export class AISwartzService {
       };
 
       if (!this.router) {
-        throw new Error('LLM Router not available');
+        throw new Error('LLM Router not available - ensure router is properly initialized');
       }
       
       const response = await this.router.generateCompletion(llmRequest);
@@ -354,10 +353,10 @@ export class AISwartzService {
     }
   }
 
-  private async parseCostDocument(document: SwartzDocument): Promise<any> {
+  private async parseCostDocument(document: SwartzDocument, residential?: boolean): Promise<any> {
     try {
       const llmRequest: LLMRequest = {
-        prompt: this.buildCostParsingPrompt(document),
+        prompt: this.buildCostParsingPrompt(document, residential),
         model: 'gpt-4',
         maxTokens: 800,
         temperature: 0.1,
@@ -377,7 +376,7 @@ export class AISwartzService {
       };
 
       if (!this.router) {
-        throw new Error('LLM Router not available');
+        throw new Error('LLM Router not available - ensure router is properly initialized');
       }
       
       const response = await this.router.generateCompletion(llmRequest);
@@ -394,31 +393,45 @@ export class AISwartzService {
     }
   }
 
-  private buildIncomeParsingPrompt(document: SwartzDocument, targetYear: number): string {
-    return `Extract financial data from this ${document.type} document for income approach valuation.
+  private buildIncomeParsingPrompt(document: SwartzDocument, targetYear: number, residential?: boolean): string {
+    const propertyType = residential ? 'residential rental property' : 'commercial property';
+    const incomeContext = residential 
+      ? 'rental income from single-family homes, condos, or small multi-family properties'
+      : 'rental income from commercial properties like office buildings, retail, or industrial properties';
+    
+    return `Extract financial data from this ${document.type} document for ${propertyType} income approach valuation.
 
 Document: ${document.filename}
 Target Year: ${targetYear}
+Property Type: ${propertyType.toUpperCase()}
 
 Document Content:
 ${document.content}
 
-Please extract the following financial data:
-1. Gross Rental Income (annual)
-2. Vacancy Rate (as decimal, e.g., 0.05 for 5%)
+Please extract the following financial data for ${incomeContext}:
+1. Gross Rental Income (annual) - ${residential ? 'market rent for residential units' : 'commercial lease income'}
+2. Vacancy Rate (as decimal, e.g., 0.05 for 5%) - ${residential ? 'typical residential vacancy' : 'commercial vacancy'}
 3. Effective Gross Income (gross income - vacancy)
-4. Operating Expenses (annual total)
+4. Operating Expenses (annual total) - ${residential ? 'property taxes, insurance, maintenance, management' : 'all operating costs including CAM, utilities, management'}
 5. Net Operating Income (effective gross income - operating expenses)
+
+${residential ? 'For residential properties, focus on market rents, property taxes, insurance, and typical landlord expenses.' : 'For commercial properties, focus on lease terms, operating expense recoveries, and triple net considerations.'}
 
 Focus on data for ${targetYear} if available, otherwise use the most recent complete year.
 
 Return as JSON with numeric values and confidence score (0-1). Include any warnings about data quality or assumptions made.`;
   }
 
-  private buildSalesParsingPrompt(document: SwartzDocument): string {
-    return `Extract comparable sales data from this document for sales comparison analysis.
+  private buildSalesParsingPrompt(document: SwartzDocument, residential?: boolean): string {
+    const propertyType = residential ? 'residential properties (single-family homes, condos, townhomes)' : 'commercial properties';
+    const saleFactors = residential 
+      ? 'square footage, lot size, bedrooms/bathrooms, age, condition, location within neighborhood'
+      : 'square footage, cap rates, tenant quality, lease terms, location, condition';
+    
+    return `Extract comparable sales data from this document for ${propertyType} sales comparison analysis.
 
 Document: ${document.filename}
+Property Type: ${propertyType.toUpperCase()}
 
 Document Content:
 ${document.content}
@@ -428,26 +441,41 @@ Please extract information about comparable property sales including:
 2. Sale dates
 3. Sale prices
 4. Price per square foot (if available)
-5. Any adjustments mentioned
-6. Similarity factors to subject property
+5. ${residential ? 'Key property features (bedrooms, bathrooms, lot size, age)' : 'Commercial property details (tenant info, lease terms, cap rates)'}
+6. Any adjustments mentioned
+7. Similarity factors to subject property
+
+${residential 
+  ? 'For residential properties, focus on recent home sales in the same neighborhood or similar areas. Consider factors like square footage, lot size, condition, and age.'
+  : 'For commercial properties, focus on properties with similar use, size, and tenant profiles. Consider location, condition, and income potential.'}
 
 Return as JSON with an array of comparables and confidence score. Focus on recent sales (within last 2 years preferred).`;
   }
 
-  private buildCostParsingPrompt(document: SwartzDocument): string {
-    return `Extract cost approach data from this document for property valuation.
+  private buildCostParsingPrompt(document: SwartzDocument, residential?: boolean): string {
+    const propertyType = residential ? 'residential property' : 'commercial property';
+    const costFactors = residential 
+      ? 'construction costs for homes, garage, landscaping, and typical residential improvements'
+      : 'construction costs for commercial buildings, tenant improvements, parking, and commercial infrastructure';
+    
+    return `Extract cost approach data from this document for ${propertyType} valuation.
 
 Document: ${document.filename}
+Property Type: ${propertyType.toUpperCase()}
 
 Document Content:
 ${document.content}
 
-Please extract:
+Please extract cost approach data relevant to ${costFactors}:
 1. Land Value (if separately stated)
-2. Improvement/Replacement Cost
-3. Physical Depreciation (wear and tear)
-4. Functional Obsolescence (design issues)
-5. External Obsolescence (location/market factors)
+2. Improvement/Replacement Cost - ${residential ? 'residential construction costs' : 'commercial building costs'}
+3. Physical Depreciation (wear and tear) - ${residential ? 'home maintenance issues, roof, HVAC, etc.' : 'building systems, structure, equipment'}
+4. Functional Obsolescence (design issues) - ${residential ? 'outdated layouts, small rooms, poor flow' : 'inefficient layouts, outdated systems, poor accessibility'}
+5. External Obsolescence (location/market factors) - ${residential ? 'neighborhood decline, traffic, nearby nuisances' : 'market changes, competition, location disadvantages'}
+
+${residential 
+  ? 'For residential properties, focus on current home construction costs, typical depreciation patterns for houses, and neighborhood factors.'
+  : 'For commercial properties, focus on commercial construction costs, tenant improvement allowances, and market-specific factors.'}
 
 Return as JSON with numeric values and confidence score. Note any assumptions or calculations made.`;
   }

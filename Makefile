@@ -3,7 +3,7 @@ test-golden:
 pytest -q tests/golden
 
 update-golden:
-@echo "Using BACKEND_BASE_URL=$${BACKEND_BASE_URL:-http://localhost:8000}"
+@echo "Using BACKEND_BASE_URL=${BACKEND_BASE_URL:-http://localhost:8000}"
 python3 tests/golden/update_baselines.py
 
 test-schema:

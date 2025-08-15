@@ -1,6 +1,9 @@
 import type { CommercialPropertyCore } from '@charly/contracts';
+import type { LLMRequest } from '@charly/llm-router';
+import { getRouter } from '@charly/llm-router';
 import { generateWorkfileId } from '../utils/id-generator.js';
 import { createErrorBuilder, formatServiceError } from '../utils/error-handler.js';
+import { sanitizeForLogging } from '../utils/log-sanitizer.js';
 import { AINewNarrativeService } from './ai-narrative-service.js';
 import type { NarrativeRequest } from './ai-narrative-service.js';
 
@@ -21,6 +24,7 @@ export interface NarrativeSection {
 
 export interface AppealPacketRequest {
   propertyId: string;
+  propertyType?: 'commercial' | 'residential';
   approaches: ApproachData[];
   reconciliation: {
     finalValue: number;
@@ -29,6 +33,11 @@ export interface AppealPacketRequest {
     savingsEstimate: number;
   };
   narrativeSections: NarrativeSection[];
+  propertyData?: {
+    address: string;
+    assessedValue: number;
+    jurisdiction: string;
+  };
 }
 
 export interface AppealPacketResponse {
@@ -50,6 +59,17 @@ export interface AppealPacketStatus {
 
 export class AppealService {
   private narrativeService = new AINewNarrativeService();
+  private router: any = null;
+
+  constructor() {
+    try {
+      // Initialize LLM Router for enhanced appeal packet generation
+      this.router = getRouter();
+    } catch (error) {
+      console.error('LLM Router initialization failed in AppealService:', sanitizeForLogging(error));
+      // Appeal service can still work without AI enhancements
+    }
+  }
 
   async generateAppealPacket(workfileId: string): Promise<Buffer> {
     const mockProperty: Partial<CommercialPropertyCore> = {
@@ -107,30 +127,49 @@ export class AppealService {
       let narrativeSections = request.narrativeSections || [];
       
       if (narrativeSections.length === 0) {
+        // Determine property type - default to commercial if not specified
+        const propertyType = request.propertyType || 'commercial';
+        
         const narrativeRequest: NarrativeRequest = {
           propertyId: request.propertyId,
-          propertyType: 'commercial', // Default - in production this would be determined from property data
+          propertyType,
           approaches: request.approaches,
           propertyData: {
-            address: '123 Business Ave, Anytown, CA', // Placeholder - get from property service
-            assessedValue: 2500000, // Placeholder
+            address: request.propertyData?.address || '123 Property St, Anytown, CA',
+            assessedValue: request.propertyData?.assessedValue || 500000,
             estimatedMarketValue: request.reconciliation.finalValue,
-            jurisdiction: 'Sample County'
+            jurisdiction: request.propertyData?.jurisdiction || 'Sample County'
           }
         };
 
-        const narrativeResponse = await this.narrativeService.generateCommercialNarrative(narrativeRequest);
+        // Use appropriate narrative service based on property type
+        const narrativeResponse = propertyType === 'residential' 
+          ? await this.narrativeService.generateResidentialNarrative(narrativeRequest)
+          : await this.narrativeService.generateCommercialNarrative(narrativeRequest);
+          
         narrativeSections = narrativeResponse.sections;
         
         if (narrativeResponse.errors.length > 0) {
-          console.warn('AI narrative generation warnings:', narrativeResponse.errors);
+          console.warn(`AI ${propertyType} narrative generation warnings:`, narrativeResponse.errors);
+        }
+      }
+
+      // Generate AI-enhanced appeal summary if router is available
+      let aiEnhancedSummary = '';
+      if (this.router) {
+        try {
+          aiEnhancedSummary = await this.generateAIAppealSummary(request, narrativeSections);
+        } catch (error) {
+          console.warn('AI appeal summary generation failed:', sanitizeForLogging(error));
+          // Continue without AI enhancement
         }
       }
 
       // Generate enhanced PDF content with AI narratives
       const pdfContent = this.generateEnhancedPDF({
         ...request,
-        narrativeSections
+        narrativeSections,
+        aiEnhancedSummary
       }, packetId);
       
       // In a real implementation, this would save the PDF and return a download URL
@@ -179,7 +218,69 @@ export class AppealService {
     };
   }
 
-  private generateEnhancedPDF(request: AppealPacketRequest, packetId: string): string {
+  private async generateAIAppealSummary(request: AppealPacketRequest, narrativeSections: NarrativeSection[]): Promise<string> {
+    try {
+      const llmRequest: LLMRequest = {
+        prompt: this.buildAppealSummaryPrompt(request, narrativeSections),
+        model: 'gpt-4',
+        maxTokens: 800,
+        temperature: 0.2,
+        schema: {
+          type: 'object',
+          properties: {
+            executiveSummary: { type: 'string' },
+            keyStrengths: { type: 'array', items: { type: 'string' } },
+            recommendedStrategy: { type: 'string' },
+            appealProbability: { type: 'string', enum: ['high', 'moderate', 'low'] }
+          },
+          required: ['executiveSummary', 'keyStrengths', 'recommendedStrategy']
+        }
+      };
+
+      const response = await this.router.generateCompletion(llmRequest);
+      
+      if (response.validated && response.content) {
+        const parsed = JSON.parse(response.content);
+        return `${parsed.executiveSummary}\n\nKey Strengths:\n${parsed.keyStrengths.map((s: string) => `• ${s}`).join('\n')}\n\nRecommended Strategy: ${parsed.recommendedStrategy}`;
+      }
+
+      return '';
+    } catch (error) {
+      console.error('AI appeal summary generation failed:', sanitizeForLogging(error));
+      return '';
+    }
+  }
+
+  private buildAppealSummaryPrompt(request: AppealPacketRequest, narrativeSections: NarrativeSection[]): string {
+    const approachSummary = request.approaches.map(app => 
+      `${app.approach.toUpperCase()}: $${app.indicatedValue.toLocaleString()} (${(app.confidence * 100).toFixed(0)}% confidence, ${(app.weight * 100).toFixed(0)}% weight)`
+    ).join('\n');
+
+    const narrativeText = narrativeSections.map(section => section.content).join(' ');
+
+    return `Generate a compelling executive summary for a property tax appeal based on the following analysis:
+
+Property ID: ${request.propertyId}
+Final Market Value: $${request.reconciliation.finalValue.toLocaleString()}
+Recommendation: ${request.reconciliation.recommendation}
+Estimated Savings: $${request.reconciliation.savingsEstimate.toLocaleString()}
+
+Valuation Approaches:
+${approachSummary}
+
+Detailed Analysis:
+${narrativeText.substring(0, 2000)}...
+
+Please provide:
+1. An executive summary that clearly states the case for appeal
+2. Key strengths of the valuation analysis
+3. Recommended strategy for presenting the appeal
+4. Assessment of appeal probability
+
+Focus on making a professional, fact-based case that would be compelling to a tax assessor or review board.`;
+  }
+
+  private generateEnhancedPDF(request: AppealPacketRequest & { aiEnhancedSummary?: string }, packetId: string): string {
     const currentDate = new Date().toLocaleDateString();
     
     // Create comprehensive PDF content with all approach data
@@ -190,6 +291,9 @@ export class AppealService {
     const narrativeContent = request.narrativeSections.map(section =>
       `${section.title.toUpperCase()}:\\n${section.content}`
     ).join('\\n\\n');
+
+    const aiSummarySection = request.aiEnhancedSummary ? 
+      `\\n\\nAI-ENHANCED APPEAL STRATEGY:\\n${request.aiEnhancedSummary}` : '';
 
     return `%PDF-1.4
 1 0 obj
@@ -257,6 +361,9 @@ BT
 (DETAILED ANALYSIS) Tj
 0 -20 Td
 (${narrativeContent}) Tj
+
+0 -30 Td
+(${aiSummarySection}) Tj
 
 0 -50 Td
 (This comprehensive appeal dossier was generated using) Tj

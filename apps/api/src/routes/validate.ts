@@ -68,8 +68,57 @@ export async function validateRoutes(fastify: FastifyInstance) {
         type: 'object',
         required: ['property'],
         properties: {
-          property: { type: 'object' },
-          comp_refs: { type: 'array', items: { type: 'string' } }
+          property: {
+            type: 'object',
+            required: ['property_address'],
+            properties: {
+              property_address: { type: 'string', minLength: 5 },
+              assessed_value: { type: 'number', minimum: 0 },
+              market_value: { type: 'number', minimum: 0 },
+              jurisdiction: { type: 'string' },
+              tax_year: { type: 'number', minimum: 2000, maximum: 2030 },
+              homestead_exemption: { type: 'boolean' },
+              square_footage: { type: 'number', minimum: 100 },
+              lot_size: { type: 'number', minimum: 0 },
+              year_built: { type: 'number', minimum: 1800, maximum: 2030 },
+              bedrooms: { type: 'number', minimum: 0, maximum: 20 },
+              bathrooms: { type: 'number', minimum: 0, maximum: 20 },
+              property_type: { 
+                type: 'string', 
+                enum: ['single_family', 'condo', 'townhome', 'duplex', 'other'] 
+              },
+              garage_spaces: { type: 'number', minimum: 0, maximum: 10 },
+              property_data: { type: 'object' }
+            }
+          },
+          comp_refs: { type: 'array', items: { type: 'string' } },
+          neighborhood_analysis: { type: 'boolean' }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            workfile_id: { type: 'string' },
+            normalized: { type: 'object' },
+            errors: { type: 'array', items: { type: 'string' } },
+            decision_preview: {
+              type: 'object',
+              properties: {
+                label: { type: 'string', enum: ['OVER', 'FAIR', 'UNDER'] },
+                confidence: { type: 'number' },
+                savings_estimate: { type: 'number' }
+              }
+            },
+            residential_analysis: {
+              type: 'object',
+              properties: {
+                neighborhood_stats: { type: 'object' },
+                property_features: { type: 'object' },
+                market_trends: { type: 'object' }
+              }
+            }
+          }
         }
       }
     }

@@ -5,7 +5,15 @@ const nextConfig = {
   },
   typescript: {
     tsconfigPath: './tsconfig.json'
-  }
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:3000/api/:path*', // Proxy to API server
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
