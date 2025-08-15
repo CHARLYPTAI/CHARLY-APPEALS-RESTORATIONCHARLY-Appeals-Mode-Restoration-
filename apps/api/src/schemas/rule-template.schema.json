@@ -1,0 +1,457 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://charly.ai/schemas/rule-template/v1",
+  "title": "Rule Template Schema",
+  "description": "Schema for valuation rule templates in Charly system",
+  "type": "object",
+  "required": ["name", "version", "tenantType", "rules"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[A-Za-z0-9_\\-\\s]+$",
+      "description": "Human-readable name for the rule template"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version (e.g., 1.0.0)"
+    },
+    "tenantType": {
+      "type": "string",
+      "enum": ["RESIDENTIAL", "COMMERCIAL"],
+      "description": "Target tenant type for this template"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description of what this template does"
+    },
+    "jurisdiction": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Optional jurisdiction this template applies to"
+    },
+    "effectiveDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when this template becomes effective"
+    },
+    "expirationDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional expiration date for this template"
+    },
+    "rules": {
+      "type": "object",
+      "required": ["valuation", "appeal"],
+      "properties": {
+        "valuation": {
+          "type": "object",
+          "required": ["approaches"],
+          "properties": {
+            "approaches": {
+              "type": "object",
+              "properties": {
+                "income": {
+                  "$ref": "#/definitions/incomeApproach"
+                },
+                "sales": {
+                  "$ref": "#/definitions/salesApproach"
+                },
+                "cost": {
+                  "$ref": "#/definitions/costApproach"
+                }
+              },
+              "additionalProperties": false,
+              "minProperties": 1
+            },
+            "weightings": {
+              "type": "object",
+              "properties": {
+                "income": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "sales": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "cost": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "appeal": {
+          "type": "object",
+          "required": ["filingDeadline", "evidenceRequirements"],
+          "properties": {
+            "filingDeadline": {
+              "type": "object",
+              "required": ["daysFromNotice"],
+              "properties": {
+                "daysFromNotice": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 365
+                },
+                "businessDaysOnly": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            },
+            "evidenceRequirements": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["type", "required"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "property_photos",
+                      "comparable_sales",
+                      "income_statements",
+                      "expense_records",
+                      "inspection_reports",
+                      "appraisal_reports",
+                      "market_analysis",
+                      "repair_estimates"
+                    ]
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": ["pdf", "image", "spreadsheet", "document"]
+                  }
+                }
+              },
+              "minItems": 1
+            },
+            "narrative": {
+              "type": "object",
+              "properties": {
+                "requiredSections": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "property_description",
+                      "market_conditions",
+                      "valuation_methodology",
+                      "comparable_analysis",
+                      "income_analysis",
+                      "cost_analysis",
+                      "conclusion"
+                    ]
+                  }
+                },
+                "wordLimits": {
+                  "type": "object",
+                  "properties": {
+                    "minimum": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "maximum": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "compliance": {
+          "type": "object",
+          "properties": {
+            "requiredDisclosures": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "certifications": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "required"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "createdBy": {
+          "type": "string",
+          "description": "User ID who created this template"
+        },
+        "reviewedBy": {
+          "type": "string",
+          "description": "User ID who last reviewed this template"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "maxItems": 10
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "default": "medium"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "incomeApproach": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "capitalizationRate": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "enum": ["market_survey", "band_of_investment", "built_up"]
+            },
+            "range": {
+              "type": "object",
+              "properties": {
+                "min": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "max": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        },
+        "expenseRatio": {
+          "type": "object",
+          "properties": {
+            "typical": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "range": {
+              "type": "object",
+              "properties": {
+                "min": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "max": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "salesApproach": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "comparableRequirements": {
+          "type": "object",
+          "properties": {
+            "minimumCount": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            },
+            "timeframe": {
+              "type": "object",
+              "properties": {
+                "months": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 60
+                }
+              }
+            },
+            "distance": {
+              "type": "object",
+              "properties": {
+                "miles": {
+                  "type": "number",
+                  "minimum": 0.1,
+                  "maximum": 50
+                }
+              }
+            },
+            "sizeTolerance": {
+              "type": "object",
+              "properties": {
+                "percentage": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        },
+        "adjustments": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "maxAdjustment": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "size": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "maxAdjustment": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "condition": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "maxAdjustment": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "costApproach": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "costSources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["marshall_swift", "rsmeans", "local_contractors", "historical_data"]
+          }
+        },
+        "depreciation": {
+          "type": "object",
+          "properties": {
+            "physical": {
+              "type": "object",
+              "properties": {
+                "method": {
+                  "type": "string",
+                  "enum": ["straight_line", "age_life", "condition_rating"]
+                },
+                "effectiveAge": {
+                  "type": "object",
+                  "properties": {
+                    "typical": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  }
+                }
+              }
+            },
+            "functional": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "typicalPercentage": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            "external": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "typicalPercentage": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

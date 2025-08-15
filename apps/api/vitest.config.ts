@@ -11,6 +11,10 @@ export default defineConfig({
         branches: 80,
         statements: 80
       }
+    },
+    alias: {
+      '@charly/llm-router': new URL('./src/test/__mocks__/@charly/llm-router.ts', import.meta.url).pathname,
+      '@charly/contracts': new URL('./src/test/__mocks__/@charly/contracts.ts', import.meta.url).pathname
     }
   }
 });
