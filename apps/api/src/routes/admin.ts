@@ -1,5 +1,6 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { requirePermission, requireRole, requireTenantScope, AdminUser } from '../core/auth.js';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { requirePermission, requireRole, requireTenantScope } from '../core/auth.js';
+import type { AdminUser } from '../core/auth.js';
 import { db } from '../db/connection.js';
 
 interface TenantInfo {
@@ -52,12 +53,22 @@ interface CreateUserRequest {
   email: string;
   password: string;
   tenantType: 'RESIDENTIAL' | 'COMMERCIAL';
-  role?: 'tenant_admin' | 'auditor';
+  role?: 'superadmin' | 'tenant_admin' | 'auditor';
+  sendInvite?: boolean;
 }
 
 interface UpdateUserRequest {
-  role?: 'tenant_admin' | 'auditor' | null;
+  role?: 'superadmin' | 'tenant_admin' | 'auditor' | null;
   isActive?: boolean;
+}
+
+interface RoleAssignment {
+  id: string;
+  role: 'superadmin' | 'tenant_admin' | 'auditor';
+  tenantType?: 'RESIDENTIAL' | 'COMMERCIAL';
+  assignedBy: string;
+  assignedAt: string;
+  revokedAt?: string;
 }
 
 interface ImportTemplatesRequest {
@@ -88,7 +99,11 @@ const userListSchema = {
     properties: {
       tenant: { type: 'string', enum: ['RESIDENTIAL', 'COMMERCIAL'] },
       limit: { type: 'number', minimum: 1, maximum: 100, default: 20 },
-      offset: { type: 'number', minimum: 0, default: 0 }
+      offset: { type: 'number', minimum: 0, default: 0 },
+      search: { type: 'string' },
+      role: { type: 'string' },
+      status: { type: 'string', enum: ['active', 'inactive'] },
+      sort: { type: 'string' }
     }
   },
   response: {
@@ -126,7 +141,8 @@ const createUserSchema = {
       email: { type: 'string', format: 'email' },
       password: { type: 'string', minLength: 8 },
       tenantType: { type: 'string', enum: ['RESIDENTIAL', 'COMMERCIAL'] },
-      role: { type: 'string', enum: ['tenant_admin', 'auditor'] }
+      role: { type: 'string', enum: ['superadmin', 'tenant_admin', 'auditor'] },
+      sendInvite: { type: 'boolean' }
     }
   }
 };
@@ -142,8 +158,39 @@ const updateUserSchema = {
   body: {
     type: 'object',
     properties: {
-      role: { type: 'string', enum: ['tenant_admin', 'auditor'], nullable: true },
+      role: { type: 'string', enum: ['superadmin', 'tenant_admin', 'auditor'], nullable: true },
       isActive: { type: 'boolean' }
+    }
+  }
+};
+
+const userRolesSchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: { type: 'string', format: 'uuid' }
+    }
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        roleAssignments: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              role: { type: 'string' },
+              tenantType: { type: 'string' },
+              assignedBy: { type: 'string' },
+              assignedAt: { type: 'string', format: 'date-time' },
+              revokedAt: { type: 'string', format: 'date-time' }
+            }
+          }
+        }
+      }
     }
   }
 };
@@ -217,9 +264,17 @@ export async function adminRoutes(fastify: FastifyInstance) {
     preHandler: [requirePermission('admin:users:read'), requireTenantScope()],
     schema: userListSchema
   }, async (request: FastifyRequest<{
-    Querystring: { tenant?: 'RESIDENTIAL' | 'COMMERCIAL'; limit?: number; offset?: number; }
+    Querystring: { 
+      tenant?: 'RESIDENTIAL' | 'COMMERCIAL'; 
+      limit?: number; 
+      offset?: number;
+      search?: string;
+      role?: string;
+      status?: 'active' | 'inactive';
+      sort?: string;
+    }
   }>, reply: FastifyReply) => {
-    const { tenant, limit = 20, offset = 0 } = request.query;
+    const { tenant, limit = 20, offset = 0, search, role, status, sort } = request.query;
     const admin = request.admin!;
     
     const client = await db.getClient();
@@ -237,10 +292,63 @@ export async function adminRoutes(fastify: FastifyInstance) {
         params.push(tenant);
       }
       
+      // Build dynamic WHERE clauses for search and filters
+      let additionalFilters = '';
+      let additionalParams: any[] = [];
+      let paramIndex = tenantFilter ? 4 : 3; // Account for limit, offset, and optional tenant
+      
+      if (search) {
+        additionalFilters += ` AND (u.email ILIKE $${paramIndex} OR u.id::text ILIKE $${paramIndex})`;
+        additionalParams.push(`%${search}%`);
+        paramIndex++;
+      }
+      
+      if (role && role !== 'ALL') {
+        if (role === 'none') {
+          additionalFilters += ` AND ra.role IS NULL`;
+        } else {
+          additionalFilters += ` AND ra.role = $${paramIndex}`;
+          additionalParams.push(role);
+          paramIndex++;
+        }
+      }
+      
+      if (status && status !== 'ALL') {
+        // For now, we'll assume all users are active unless explicitly marked inactive
+        // This can be enhanced with a proper is_active column
+        if (status === 'inactive') {
+          additionalFilters += ` AND u.updated_at < NOW() - INTERVAL '90 days'`;
+        }
+      }
+      
+      // Parse sort parameter
+      let orderBy = 'u.created_at DESC';
+      if (sort) {
+        const [field, direction] = sort.split(':');
+        const validFields = ['email', 'tenantType', 'role', 'createdAt', 'lastLogin', 'isActive'];
+        const validDirections = ['asc', 'desc'];
+        
+        if (validFields.includes(field) && validDirections.includes(direction)) {
+          const dbField = {
+            email: 'u.email',
+            tenantType: 'u.tenant_type',
+            role: 'ra.role',
+            createdAt: 'u.created_at',
+            lastLogin: 'u.updated_at',
+            isActive: 'u.created_at' // Placeholder since we don't have is_active column yet
+          }[field] || 'u.created_at';
+          
+          orderBy = `${dbField} ${direction.toUpperCase()}`;
+        }
+      }
+      
+      const allParams = [...params, ...additionalParams];
+      
       const countQuery = `
         SELECT COUNT(*) as total
         FROM users u
-        ${tenantFilter}
+        LEFT JOIN role_assignments ra ON u.id = ra.user_id AND ra.revoked_at IS NULL
+        ${tenantFilter}${additionalFilters}
       `;
       
       const dataQuery = `
@@ -254,14 +362,14 @@ export async function adminRoutes(fastify: FastifyInstance) {
           true as is_active
         FROM users u
         LEFT JOIN role_assignments ra ON u.id = ra.user_id AND ra.revoked_at IS NULL
-        ${tenantFilter}
-        ORDER BY u.created_at DESC
+        ${tenantFilter}${additionalFilters}
+        ORDER BY ${orderBy}
         LIMIT $1 OFFSET $2
       `;
       
       const [countResult, dataResult] = await Promise.all([
-        client.query(countQuery, tenantFilter ? [params[2]] : []),
-        client.query(dataQuery, params)
+        client.query(countQuery, tenantFilter ? [params[2], ...additionalParams] : additionalParams),
+        client.query(dataQuery, allParams)
       ]);
       
       const users: UserInfo[] = dataResult.rows.map(row => ({
@@ -306,10 +414,42 @@ export async function adminRoutes(fastify: FastifyInstance) {
       });
     }
     
+    // Only superadmin can create superadmin users
+    if (role === 'superadmin' && admin.role !== 'superadmin') {
+      return reply.status(403).send({
+        type: 'about:blank',
+        title: 'Forbidden',
+        status: 403,
+        detail: 'Only superadmin can create superadmin users',
+        instance: request.url,
+        correlationId: request.correlationId || 'unknown',
+        code: 'INSUFFICIENT_PRIVILEGES'
+      });
+    }
+    
     const client = await db.getClient();
     
     try {
       await client.query('BEGIN');
+      
+      // Check for existing user
+      const existingUser = await client.query(
+        'SELECT id FROM users WHERE email = $1',
+        [email]
+      );
+      
+      if (existingUser.rows.length > 0) {
+        await client.query('ROLLBACK');
+        return reply.status(409).send({
+          type: 'about:blank',
+          title: 'Conflict',
+          status: 409,
+          detail: 'A user with this email already exists',
+          instance: request.url,
+          correlationId: request.correlationId || 'unknown',
+          code: 'USER_EMAIL_EXISTS'
+        });
+      }
       
       // Create user (mock password hashing for now)
       const userResult = await client.query(
@@ -323,9 +463,23 @@ export async function adminRoutes(fastify: FastifyInstance) {
       if (role) {
         await client.query(
           'INSERT INTO role_assignments (user_id, role, tenant_type, assigned_by) VALUES ($1, $2, $3, $4)',
-          [userId, role, tenantType, admin.id]
+          [userId, role, role === 'superadmin' ? null : tenantType, admin.id]
         );
       }
+      
+      // Log user creation
+      await client.query(
+        'INSERT INTO audit_logs (user_id, action, resource_type, resource_id, tenant_type, details, correlation_id) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+        [
+          admin.id,
+          'create',
+          'user',
+          userId,
+          tenantType,
+          JSON.stringify({ email, role, tenantType }),
+          request.correlationId || 'unknown'
+        ]
+      );
       
       await client.query('COMMIT');
       
@@ -339,6 +493,70 @@ export async function adminRoutes(fastify: FastifyInstance) {
     } catch (error) {
       await client.query('ROLLBACK');
       throw error;
+    } finally {
+      client.release();
+    }
+  });
+
+  // GET /api/admin/users/:id/roles - Get user role assignments
+  fastify.get('/admin/users/:id/roles', {
+    preHandler: [requirePermission('admin:users:read'), requireTenantScope()],
+    schema: userRolesSchema
+  }, async (request: FastifyRequest<{
+    Params: { id: string };
+  }>, reply: FastifyReply) => {
+    const { id } = request.params;
+    const admin = request.admin!;
+    
+    const client = await db.getClient();
+    
+    try {
+      // Check if user exists and admin has access
+      const userCheck = await client.query(
+        `SELECT u.id, u.tenant_type 
+         FROM users u 
+         WHERE u.id = $1 ${admin.role === 'tenant_admin' ? 'AND u.tenant_type = $2' : ''}`,
+        admin.role === 'tenant_admin' ? [id, admin.tenant_type] : [id]
+      );
+      
+      if (userCheck.rows.length === 0) {
+        return reply.status(404).send({
+          type: 'about:blank',
+          title: 'Not Found',
+          status: 404,
+          detail: 'User not found or access denied',
+          instance: request.url,
+          correlationId: request.correlationId || 'unknown',
+          code: 'USER_NOT_FOUND'
+        });
+      }
+      
+      // Get role assignments history
+      const rolesResult = await client.query(`
+        SELECT 
+          ra.id,
+          ra.role,
+          ra.tenant_type,
+          ra.assigned_by,
+          ra.assigned_at,
+          ra.revoked_at,
+          u.email as assigned_by_email
+        FROM role_assignments ra
+        LEFT JOIN users u ON ra.assigned_by = u.id
+        WHERE ra.user_id = $1
+        ORDER BY ra.assigned_at DESC
+      `, [id]);
+      
+      const roleAssignments: RoleAssignment[] = rolesResult.rows.map(row => ({
+        id: row.id,
+        role: row.role,
+        tenantType: row.tenant_type,
+        assignedBy: row.assigned_by_email || row.assigned_by,
+        assignedAt: row.assigned_at.toISOString(),
+        revokedAt: row.revoked_at?.toISOString()
+      }));
+      
+      return { roleAssignments };
     } finally {
       client.release();
     }
@@ -385,6 +603,20 @@ export async function adminRoutes(fastify: FastifyInstance) {
       
       // Update role if provided
       if (role !== undefined) {
+        // Check permissions for role assignment
+        if (role === 'superadmin' && admin.role !== 'superadmin') {
+          await client.query('ROLLBACK');
+          return reply.status(403).send({
+            type: 'about:blank',
+            title: 'Forbidden',
+            status: 403,
+            detail: 'Only superadmin can assign superadmin role',
+            instance: request.url,
+            correlationId: request.correlationId || 'unknown',
+            code: 'INSUFFICIENT_PRIVILEGES'
+          });
+        }
+        
         if (role === null) {
           // Revoke existing roles
           await client.query(
@@ -400,10 +632,24 @@ export async function adminRoutes(fastify: FastifyInstance) {
           
           await client.query(
             'INSERT INTO role_assignments (user_id, role, tenant_type, assigned_by) VALUES ($1, $2, $3, $4)',
-            [id, role, userTenantType, admin.id]
+            [id, role, role === 'superadmin' ? null : userTenantType, admin.id]
           );
         }
       }
+      
+      // Log user update
+      await client.query(
+        'INSERT INTO audit_logs (user_id, action, resource_type, resource_id, tenant_type, details, correlation_id) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+        [
+          admin.id,
+          'update',
+          'user',
+          id,
+          userTenantType,
+          JSON.stringify({ role, isActive }),
+          request.correlationId || 'unknown'
+        ]
+      );
       
       await client.query('COMMIT');
       
