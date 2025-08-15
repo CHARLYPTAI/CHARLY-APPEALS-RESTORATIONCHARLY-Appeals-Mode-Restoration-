@@ -1,0 +1,14 @@
+# Agent logs (sensitive operational data)
+logs/
+*.log
+
+# Agent configuration (may contain secrets)
+config.json
+
+# Agent runtime artifacts
+.agent-*
+runtime-*
+
+# Temporary files
+*.tmp
+.DS_Store

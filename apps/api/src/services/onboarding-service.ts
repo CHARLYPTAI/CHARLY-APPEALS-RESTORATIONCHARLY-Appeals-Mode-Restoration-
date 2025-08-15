@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import crypto from 'crypto';
 import type { 
   CustomerRegistrationRequest,
@@ -8,6 +7,7 @@ import type {
   OnboardingStatusResponse,
   KPITrackingData
 } from '../types/onboarding.js';
+import { generateCustomerId, generateOrganizationId, generateStepId } from '../utils/id-generator.js';
 
 interface CustomerRecord {
   customer_id: string;
@@ -30,8 +30,8 @@ export class OnboardingService {
   private organizations = new Map<string, string>();
 
   async registerCustomer(request: CustomerRegistrationRequest): Promise<CustomerRegistrationResponse> {
-    const customerId = uuidv4();
-    const organizationId = uuidv4();
+    const customerId = generateCustomerId();
+    const organizationId = generateOrganizationId();
     const apiKey = this.generateApiKey();
 
     const customer: CustomerRecord = {
@@ -138,7 +138,7 @@ export class OnboardingService {
       throw new Error(`Step ${request.step_type} already completed`);
     }
 
-    const stepId = uuidv4();
+    const stepId = generateStepId();
     step.status = 'in_progress';
 
     try {

@@ -1,0 +1,24 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:eb2a9e5e-e946-435f-ac01-29b04ab06e10",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-08-14T23:59:14.699Z",
+    "tools": [
+      {
+        "vendor": "CHARLY",
+        "name": "custom-sbom-generator",
+        "version": "1.0.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "bom-ref": "charly-app",
+      "name": "charly-monorepo",
+      "version": "0.1.0",
+      "description": "CHARLY property tax appeal application"
+    }
+  },
+  "components": []
+}

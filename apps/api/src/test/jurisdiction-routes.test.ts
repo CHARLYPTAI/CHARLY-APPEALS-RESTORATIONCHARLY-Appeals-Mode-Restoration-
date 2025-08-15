@@ -153,7 +153,7 @@ describe('Jurisdiction Routes', () => {
         url: '/api/v1/jurisdictions/'
       });
 
-      expect(response.statusCode).toBe(404);
+      expect(response.statusCode).toBe(400);
     });
   });
 

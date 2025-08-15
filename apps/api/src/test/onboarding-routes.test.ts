@@ -315,10 +315,10 @@ describe('Onboarding Routes', () => {
         url: '/api/v1/onboarding/customers/non-existent-id/status'
       });
 
-      expect(response.statusCode).toBe(404);
+      expect(response.statusCode).toBe(400);
       
       const error = JSON.parse(response.body);
-      expect(error.code).toBe('CUSTOMER_NOT_FOUND');
+      expect(error.code).toBe('INVALID_CUSTOMER_ID');
     });
 
     it('should include rate limit headers', async () => {
@@ -517,10 +517,10 @@ describe('Onboarding Routes', () => {
         }
       });
 
-      expect(response.statusCode).toBe(422);
+      expect(response.statusCode).toBe(400);
       
       const error = JSON.parse(response.body);
-      expect(error.code).toBe('STEP_PROCESSING_ERROR');
+      expect(error.code).toBe('INVALID_CUSTOMER_ID');
     });
   });
 
@@ -588,10 +588,10 @@ describe('Onboarding Routes', () => {
         url: '/api/v1/onboarding/customers/non-existent-id/kpis'
       });
 
-      expect(response.statusCode).toBe(404);
+      expect(response.statusCode).toBe(400);
       
       const error = JSON.parse(response.body);
-      expect(error.code).toBe('KPI_NOT_FOUND');
+      expect(error.code).toBe('INVALID_CUSTOMER_ID');
     });
 
     it('should track KPI events after onboarding steps', async () => {

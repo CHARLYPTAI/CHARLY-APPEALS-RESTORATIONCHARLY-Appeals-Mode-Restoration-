@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { 
   validateCommercialPropertySafe,
   makeAssessmentDecision,
@@ -6,22 +5,24 @@ import {
   type DecisionInput
 } from '../mocks/charly-packages.js';
 import type { ValidationResponse, CommercialValidationRequest } from '../types/api.js';
+import { generateWorkfileId } from '../utils/id-generator.js';
+import { createErrorBuilder, formatServiceError } from '../utils/error-handler.js';
 
 export class ValidationService {
   async validateCommercial(request: CommercialValidationRequest): Promise<ValidationResponse> {
-    const workfileId = uuidv4();
-    const errors: string[] = [];
+    const workfileId = generateWorkfileId();
+    const errorBuilder = createErrorBuilder();
 
     const propertyValidation = validateCommercialPropertySafe(request.property);
     if (!propertyValidation.valid) {
-      errors.push(...(propertyValidation.errors || []));
+      errorBuilder.addFromArray(propertyValidation.errors || []);
     }
 
-    if (errors.length > 0) {
+    if (errorBuilder.hasErrors()) {
       return {
         workfile_id: workfileId,
         normalized: request.property,
-        errors
+        errors: errorBuilder.getErrors()
       };
     }
 
@@ -50,20 +51,20 @@ export class ValidationService {
           savings_estimate: decision.savingsEstimate
         };
       } catch (error) {
-        errors.push(`Decision preview failed: ${error}`);
+        errorBuilder.add(formatServiceError(error, 'Decision preview failed'));
       }
     }
 
     return {
       workfile_id: workfileId,
       normalized: property,
-      errors,
+      errors: errorBuilder.getErrors(),
       decision_preview: decisionPreview
     };
   }
 
   async validateResidential(property: unknown): Promise<ValidationResponse> {
-    const workfileId = uuidv4();
+    const workfileId = generateWorkfileId();
     
     return {
       workfile_id: workfileId,

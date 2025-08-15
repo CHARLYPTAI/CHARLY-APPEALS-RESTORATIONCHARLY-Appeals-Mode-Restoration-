@@ -138,11 +138,13 @@ jobs:
             echo "Safety not available, skipping vulnerability scan"
           fi
           
-          # Node audit if applicable
+          # Node security audit (fail on high/critical)
           if [ -f "package.json" ]; then
             if command -v pnpm >/dev/null 2>&1 && [ -f "pnpm-workspace.yaml" ]; then
-              echo "Running pnpm audit..."
-              pnpm audit --audit-level=high 2>/dev/null || echo "pnpm audit completed (findings may exist)"
+              echo "Running enhanced security scan..."
+              pnpm run security:scan
+              echo "Generating SBOM artifact..."
+              pnpm run security:sbom 2>/dev/null || echo "SBOM generation failed"
             elif command -v npm >/dev/null 2>&1; then
               echo "Running npm audit..."
               npm audit --audit-level=high 2>/dev/null || echo "npm audit completed (findings may exist)"

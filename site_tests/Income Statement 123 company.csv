@@ -1,0 +1,23 @@
+Property,123 Company Headquarters
+Address,7890 Corporate Boulevard Austin TX 78731
+Assessment Year,2023
+Item,2022,2021,2020
+Gross Rental Income,425000,410000,395000
+Vacancy Allowance,-21250,-20500,-19750
+Effective Gross Income,403750,389500,375250
+Operating Expenses:
+Property Management,-17000,-16400,-15810
+Maintenance & Repairs,-25000,-24000,-23000
+Insurance,-18000,-17500,-17000
+Property Taxes,-72000,-69600,-67200
+Utilities,-8500,-8200,-7900
+Professional Services,-5500,-5300,-5100
+Other Operating Expenses,-4000,-3800,-3600
+Total Operating Expenses,-150000,-145800,-140610
+Net Operating Income,253750,243700,234640
+Property Value Estimate,2900000
+Capitalization Rate,10.3%
+Assessed Value,3200000
+Market Value,2900000
+Over Assessment Amount,300000
+Potential Tax Savings,6750

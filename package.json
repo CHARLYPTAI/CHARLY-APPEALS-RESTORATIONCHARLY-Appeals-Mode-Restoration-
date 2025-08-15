@@ -1,11 +1,36 @@
 {
   "name": "charly-monorepo",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@9",
   "scripts": {
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
     "test:cov": "pnpm -r run test:cov",
-    "typedoc": "typedoc"
+    "typedoc": "typedoc",
+    "security:scan": "pnpm -r run security:scan",
+    "security:sbom": "node scripts/generate-sbom.js",
+    "agent:check": "node tools/agent/tasks/checkSuite.js",
+    "agent:report": "node tools/agent/tasks/report.js",
+    "agent:test": "node tools/agent/tasks/tests/simple-contract-test.js",
+    "agent:ui": "node tools/agent/tasks/ui-helper.js",
+    "agent:seed": "node tools/agent/tasks/seed-swartz.js",
+    "agent:integrations": "node tools/agent/tasks/integration-audit.js",
+    "agent:load": "node tools/agent/tasks/load-sim.js",
+    "agent:tests": "node tools/agent/tasks/tests-enforcer.js",
+    "perf:health": "autocannon -c 8 -d 30 http://localhost:3000/health",
+    "perf:read": "autocannon -c 10 -d 30 http://localhost:3000/api/v1/jurisdictions",
+    "perf:write": "autocannon -c 8 -d 30 -m POST -H 'content-type=application/json' -b '{\"property\":{\"address\":\"123 Test St\",\"city\":\"Test City\",\"state\":\"CA\",\"zip\":\"90210\"}}' http://localhost:3000/api/v1/validate/commercial"
+  },
+  "devDependencies": {
+    "@cyclonedx/cyclonedx-npm": "^4.0.0",
+    "@tanstack/react-query": "^5.85.3",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.7.0",
+    "@testing-library/react": "^16.3.0",
+    "autocannon": "^8.0.0",
+    "jsdom": "^26.1.0",
+    "ts-prune": "^0.10.3",
+    "vitest": "^1.6.1"
   }
 }

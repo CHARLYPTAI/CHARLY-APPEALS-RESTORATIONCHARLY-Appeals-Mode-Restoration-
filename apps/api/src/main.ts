@@ -6,11 +6,34 @@ import { validateRoutes } from './routes/validate.js';
 import { appealPacketRoutes } from './routes/appeal-packet.js';
 import { onboardingRoutes } from './routes/onboarding.js';
 import { jurisdictionsRoutes } from './routes/jurisdictions.js';
+import { valuationRoutes } from './routes/valuation.js';
+import { resultsRoutes } from './routes/results.js';
+import { sanitizeForLogging } from './utils/log-sanitizer.js';
+import securityHeaders from './plugins/security-headers.js';
+import { loadConfig } from './config/index.js';
+import { v4 as uuidv4 } from 'uuid';
+import { startTimer } from './utils/timing.js';
+
+// Load and validate configuration
+const config = loadConfig();
 
 const fastify = Fastify({
   logger: {
-    level: process.env.LOG_LEVEL || 'info',
-    redact: ['req.headers.authorization', 'req.headers.cookie']
+    level: config.logLevel,
+    redact: ['req.headers.authorization', 'req.headers.cookie'],
+    serializers: {
+      req: (req) => sanitizeForLogging({
+        method: req.method,
+        url: req.url,
+        headers: req.headers,
+        correlationId: req.correlationId
+      }),
+      res: (res) => sanitizeForLogging({
+        statusCode: res.statusCode,
+        headers: res.headers
+      }),
+      err: (err) => sanitizeForLogging(err)
+    }
   }
 });
 
@@ -19,15 +42,17 @@ declare module 'fastify' {
     rateLimit?: {
       remaining: number;
     };
+    correlationId?: string;
+    startTime?: () => number;
   }
 }
 
 async function start() {
   try {
+    await fastify.register(securityHeaders);
+    
     await fastify.register(cors, {
-      origin: process.env.NODE_ENV === 'production' 
-        ? ['https://commercial.charlyapp.com', 'https://residential.charlyapp.com']
-        : true,
+      origin: config.corsOrigins,
       credentials: true
     });
 
@@ -38,11 +63,24 @@ async function start() {
       }
     });
 
-    fastify.addHook('preHandler', async (request, reply) => {
-      reply.header('X-Content-Type-Options', 'nosniff');
-      reply.header('X-Frame-Options', 'DENY');
-      reply.header('X-XSS-Protection', '1; mode=block');
-      reply.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    fastify.addHook('onRequest', async (request, reply) => {
+      // Add correlation ID and start timer
+      const correlationId = request.headers['x-correlation-id'] as string || 
+        uuidv4();
+      request.correlationId = correlationId;
+      request.startTime = startTimer();
+      reply.header('x-correlation-id', correlationId);
+    });
+
+    fastify.addHook('onResponse', async (request, reply) => {
+      const durationMs = request.startTime ? request.startTime() : 0;
+      fastify.log.info({
+        method: request.method,
+        path: request.url,
+        status: reply.statusCode,
+        durationMs,
+        correlationId: request.correlationId
+      }, 'Request completed');
     });
 
     fastify.get('/health', async (request, reply) => {
@@ -55,32 +93,105 @@ async function start() {
       await fastify.register(appealPacketRoutes, { prefix: '/api/v1' });
       await fastify.register(onboardingRoutes, { prefix: '/api/v1' });
       await fastify.register(jurisdictionsRoutes, { prefix: '/api/v1' });
+      await fastify.register(valuationRoutes, { prefix: '/api/v1' });
+      await fastify.register(resultsRoutes, { prefix: '/api/v1' });
     });
 
-    fastify.setErrorHandler((error, request, reply) => {
-      fastify.log.error(error);
+    // RFC7807 compliant 404 handler
+    fastify.setNotFoundHandler((request, reply) => {
+      const correlationId = request.correlationId || 'unknown';
       
-      const statusCode = error.statusCode || 500;
-      const response = {
+      const problemDetails = {
         type: 'about:blank',
-        title: statusCode === 500 ? 'Internal Server Error' : error.name || 'Error',
-        status: statusCode,
-        detail: statusCode === 500 ? 'An unexpected error occurred' : error.message,
+        title: 'Not Found',
+        status: 404,
+        detail: `Route ${request.method}:${request.url} not found`,
         instance: request.url,
-        code: error.code || 'INTERNAL_ERROR'
+        correlationId,
+        code: 'NOT_FOUND'
       };
       
-      reply.status(statusCode).send(response);
+      reply.status(404).send(problemDetails);
     });
 
-    const port = Number(process.env.PORT) || 3000;
-    const host = process.env.HOST || '0.0.0.0';
+    // Centralized error handler with correlation ID
+    fastify.setErrorHandler((error, request, reply) => {
+      const correlationId = request.correlationId || 'unknown';
+      
+      fastify.log.error({
+        error: sanitizeForLogging(error),
+        correlationId,
+        method: request.method,
+        url: request.url,
+        timestamp: new Date().toISOString()
+      }, 'Request error');
+
+      let problemDetails: any;
+
+      if (error.validation) {
+        const validationErrors: Record<string, string[]> = {};
+        if (Array.isArray(error.validation)) {
+          error.validation.forEach((err: any) => {
+            const field = err.instancePath?.replace('/', '') || err.schemaPath || 'unknown';
+            if (!validationErrors[field]) {
+              validationErrors[field] = [];
+            }
+            validationErrors[field].push(err.message || 'Invalid value');
+          });
+        }
+
+        problemDetails = {
+          type: 'about:blank',
+          title: 'Validation Error',
+          status: 400,
+          detail: 'Request validation failed',
+          instance: request.url,
+          correlationId,
+          code: 'VALIDATION_ERROR',
+          errors: validationErrors
+        };
+      } else if (error.statusCode === 404) {
+        problemDetails = {
+          type: 'about:blank',
+          title: 'Not Found',
+          status: 404,
+          detail: error.message || 'Resource not found',
+          instance: request.url,
+          correlationId,
+          code: 'NOT_FOUND'
+        };
+      } else if (error.statusCode && error.statusCode < 500) {
+        problemDetails = {
+          type: 'about:blank',
+          title: error.name || 'Client Error',
+          status: error.statusCode,
+          detail: error.message,
+          instance: request.url,
+          correlationId,
+          code: error.code || 'CLIENT_ERROR'
+        };
+      } else {
+        problemDetails = {
+          type: 'about:blank',
+          title: 'Internal Server Error',
+          status: 500,
+          detail: 'An unexpected error occurred',
+          instance: request.url,
+          correlationId,
+          code: 'INTERNAL_ERROR'
+        };
+      }
+
+      reply.status(problemDetails.status).send(problemDetails);
+    });
+
+    const { port, host } = config;
     
     await fastify.listen({ port, host });
     fastify.log.info(`CHARLY API server listening on ${host}:${port}`);
     
   } catch (err) {
-    fastify.log.error(err);
+    fastify.log.error(sanitizeForLogging(err));
     process.exit(1);
   }
 }

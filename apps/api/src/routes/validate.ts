@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { ValidationService } from '../services/validation-service.js';
 import type { CommercialValidationRequest, ResidentialValidationRequest, ApiError } from '../types/api.js';
+import { sanitizeForLogging } from '../utils/log-sanitizer.js';
 
 export async function validateRoutes(fastify: FastifyInstance) {
   const validationService = new ValidationService();
@@ -47,7 +48,7 @@ export async function validateRoutes(fastify: FastifyInstance) {
       return result;
       
     } catch (error) {
-      fastify.log.error('Commercial validation failed:', error);
+      fastify.log.error('Commercial validation failed:', sanitizeForLogging(error));
       
       const apiError: ApiError = {
         type: 'about:blank',
@@ -80,7 +81,7 @@ export async function validateRoutes(fastify: FastifyInstance) {
       return result;
       
     } catch (error) {
-      fastify.log.error('Residential validation failed:', error);
+      fastify.log.error('Residential validation failed:', sanitizeForLogging(error));
       
       const apiError: ApiError = {
         type: 'about:blank',

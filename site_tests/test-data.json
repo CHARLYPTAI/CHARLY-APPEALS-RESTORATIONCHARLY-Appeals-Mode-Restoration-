@@ -1,0 +1,116 @@
+{
+  "swartz_properties": {
+    "office_building_z": {
+      "property_id": "OBZ-2023-001",
+      "name": "Office Building Z",
+      "address": {
+        "street": "1250 Business Park Drive",
+        "city": "Austin",
+        "state": "TX",
+        "zip": "78759",
+        "county": "Travis"
+      },
+      "assessment_data": {
+        "assessed_value": 2800000,
+        "market_value": 3200000,
+        "tax_rate": 0.0225,
+        "annual_taxes": 63000,
+        "assessment_year": 2023
+      },
+      "financial_data": {
+        "gross_income_2022": 485000,
+        "gross_income_2021": 460000,
+        "gross_income_2020": 445000,
+        "operating_expenses_2022": 145000,
+        "operating_expenses_2021": 138000,
+        "operating_expenses_2020": 135000,
+        "noi_2022": 340000,
+        "noi_2021": 322000,
+        "noi_2020": 310000,
+        "cap_rate": 0.106
+      },
+      "jurisdiction": "travis_county_tx",
+      "expected_decision": "OVER",
+      "expected_savings": 9000
+    },
+    "abc_company_property": {
+      "property_id": "ABC-2023-002", 
+      "name": "ABC Company Office Complex",
+      "address": {
+        "street": "4500 Technology Way",
+        "city": "Austin", 
+        "state": "TX",
+        "zip": "78746",
+        "county": "Travis"
+      },
+      "assessment_data": {
+        "assessed_value": 1850000,
+        "market_value": 1900000,
+        "tax_rate": 0.0225,
+        "annual_taxes": 41625,
+        "assessment_year": 2023
+      },
+      "financial_data": {
+        "gross_income_2022": 285000,
+        "gross_income_2021": 270000,
+        "operating_expenses_2022": 95000,
+        "operating_expenses_2021": 90000,
+        "noi_2022": 190000,
+        "noi_2021": 180000,
+        "cap_rate": 0.103
+      },
+      "jurisdiction": "travis_county_tx",
+      "expected_decision": "FAIR",
+      "expected_savings": 0
+    },
+    "company_123_building": {
+      "property_id": "C123-2023-003",
+      "name": "123 Company Headquarters",
+      "address": {
+        "street": "7890 Corporate Boulevard",
+        "city": "Austin",
+        "state": "TX", 
+        "zip": "78731",
+        "county": "Travis"
+      },
+      "assessment_data": {
+        "assessed_value": 3200000,
+        "market_value": 2900000,
+        "tax_rate": 0.0225,
+        "annual_taxes": 72000,
+        "assessment_year": 2023
+      },
+      "financial_data": {
+        "gross_income_2022": 425000,
+        "operating_expenses_2022": 125000,
+        "noi_2022": 300000,
+        "cap_rate": 0.103
+      },
+      "jurisdiction": "travis_county_tx",
+      "expected_decision": "OVER",
+      "expected_savings": 6750
+    }
+  },
+  "validation_criteria": {
+    "security_requirements": [
+      "AV scan must pass",
+      "EXIF data must be scrubbed",
+      "File size must be under 50MB",
+      "Content type must be allowed"
+    ],
+    "jurisdiction_rules": {
+      "travis_county_tx": {
+        "appeal_deadline": "45 days",
+        "filing_fee": 300,
+        "success_rate": 0.68,
+        "average_resolution_days": 120,
+        "reassessment_risk": 0.12
+      }
+    },
+    "performance_targets": {
+      "file_processing_time_ms": 5000,
+      "decision_confidence_threshold": 0.75,
+      "accuracy_target": 0.85
+    }
+  }
+}

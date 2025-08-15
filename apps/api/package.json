@@ -8,7 +8,8 @@
     "start": "node dist/main.js",
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "security:scan": "node scripts/security-audit.js"
   },
   "dependencies": {
     "fastify": "^4.24.0",

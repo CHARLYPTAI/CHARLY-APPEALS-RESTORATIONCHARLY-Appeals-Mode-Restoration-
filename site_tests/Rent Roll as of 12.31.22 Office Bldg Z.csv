@@ -1,0 +1,38 @@
+Property,Office Building Z
+Address,1250 Business Park Drive Austin TX 78759
+Rent Roll Date,December 31 2022
+Unit,Tenant,Lease Start,Lease End,Monthly Rent,Annual Rent,Square Feet,Rate/SF,Status
+100,TechCorp Solutions Inc,01/01/2020,12/31/2024,8500,102000,2400,42.50,Occupied
+200,Digital Marketing LLC,06/01/2021,05/31/2025,6750,81000,1800,45.00,Occupied
+300,Accounting Services Pro,03/15/2019,03/14/2024,5200,62400,1500,41.60,Occupied
+400,Law Office of Smith & Co,09/01/2022,08/31/2027,7800,93600,2000,46.80,Occupied
+500,Vacant Unit,,,0,0,1600,0.00,Vacant
+600,Medical Consulting Group,11/01/2021,10/31/2026,4950,59400,1350,44.00,Occupied
+Total Occupied,,,32200,398400,9050,44.03,
+Total Vacant,,,0,0,1600,0.00,
+Total Building,,,32200,398400,10650,37.40,
+Occupancy Summary:
+Occupied Square Feet,9050
+Total Square Feet,10650
+Occupancy Rate,85.0%
+Parking Spaces:
+Covered Spaces,42
+Surface Spaces,68
+Total Parking,110
+Parking Revenue,25000
+Additional Revenue:
+Common Area Maintenance,15000
+Utilities Reimbursement,12000
+Total Additional Revenue,27000
+Total Annual Income:
+Base Rent,398400
+Additional Revenue,27000
+Parking Revenue,25000
+Other Income,34600
+Total Gross Income,485000
+Market Analysis:
+Market Rent/SF,46.00
+Current Avg Rent/SF,44.03
+Below Market Indicator,YES
+Potential Rent Increase,2000
+NOI Impact,1500

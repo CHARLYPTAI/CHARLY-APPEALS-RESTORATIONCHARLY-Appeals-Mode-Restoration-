@@ -1,0 +1,68 @@
+{
+  "enabled": false,
+  "agent": {
+    "name": "charly-build-agent",
+    "version": "1.0.0",
+    "description": "CHARLY automated build and quality assurance agent"
+  },
+  "runtime": {
+    "enabled": false,
+    "interval": "0 */6 * * *",
+    "mode": "read-only",
+    "max_execution_time_ms": 300000
+  },
+  "policies": {
+    "never_push_if_tests_fail": true,
+    "require_code_review": true,
+    "enforce_quality_gates": true,
+    "auto_fix_enabled": false,
+    "dry_run_mode": true
+  },
+  "tasks": {
+    "checkSuite": {
+      "enabled": false,
+      "timeout_ms": 120000,
+      "commands": [
+        "npm run test",
+        "npm run build",
+        "npm run lint"
+      ]
+    },
+    "security": {
+      "enabled": false,
+      "run_audit": true,
+      "fail_on_high": true,
+      "generate_sbom": true
+    },
+    "reporting": {
+      "enabled": false,
+      "output_dir": "reports/agent",
+      "formats": ["json", "markdown"],
+      "include_metrics": true
+    }
+  },
+  "git": {
+    "auto_commit": false,
+    "auto_push": false,
+    "require_clean_workspace": true,
+    "protected_branches": ["main", "master", "develop"]
+  },
+  "notifications": {
+    "enabled": false,
+    "on_failure": true,
+    "on_success": false,
+    "channels": []
+  },
+  "logging": {
+    "level": "info",
+    "file": "tools/agent/logs/agent.log",
+    "max_size_mb": 10,
+    "max_files": 5
+  },
+  "safety": {
+    "require_confirmation": true,
+    "backup_before_changes": true,
+    "rollback_on_failure": true,
+    "max_retries": 2
+  }
+}

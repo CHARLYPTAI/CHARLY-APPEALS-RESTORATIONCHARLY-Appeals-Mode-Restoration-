@@ -91,9 +91,34 @@ export async function validateFile(buffer: Buffer, mimeType: string, filename: s
     return { valid: false, errors: ['Empty file'] };
   }
 
+  // Size limit: 50MB
+  if (buffer.length > 50 * 1024 * 1024) {
+    return { valid: false, errors: ['File exceeds maximum size of 50MB'] };
+  }
+
   const allowedTypes = ['application/pdf', 'text/csv', 'application/vnd.ms-excel', 'image/jpeg', 'image/png'];
   if (!allowedTypes.includes(mimeType)) {
     return { valid: false, errors: [`Unsupported file type: ${mimeType}`] };
+  }
+
+  // Extension allowlist validation
+  const allowedExtensions = ['.pdf', '.csv', '.xls', '.xlsx', '.jpg', '.jpeg', '.png'];
+  const fileExt = filename.toLowerCase().match(/\.[^.]*$/)?.[0];
+  if (!fileExt || !allowedExtensions.includes(fileExt)) {
+    return { valid: false, errors: [`Unsupported file extension: ${fileExt || 'none'}`] };
+  }
+
+  // Basic header validation for known file types
+  if (mimeType === 'application/pdf' && !buffer.subarray(0, 4).toString().startsWith('%PDF')) {
+    return { valid: false, errors: ['Invalid PDF file header'] };
+  }
+  
+  if (mimeType === 'image/jpeg' && buffer[0] !== 0xFF && buffer[1] !== 0xD8) {
+    return { valid: false, errors: ['Invalid JPEG file header'] };
+  }
+  
+  if (mimeType === 'image/png' && !buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]))) {
+    return { valid: false, errors: ['Invalid PNG file header'] };
   }
 
   return { valid: true };
@@ -115,11 +140,6 @@ export async function extractTextFromFile(buffer: Buffer, mimeType: string): Pro
     text: 'Mock extracted text content',
     confidence: 0.95
   };
-}
-
-export async function generateThumbnail(buffer: Buffer, mimeType: string): Promise<Buffer> {
-  // Mock implementation - returns same buffer
-  return buffer;
 }
 
 export function checkForDuplicate(buffer: Buffer, uploadId: string): { isDuplicate: boolean; sha256: string } {

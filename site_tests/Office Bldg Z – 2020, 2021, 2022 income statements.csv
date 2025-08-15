@@ -1,0 +1,33 @@
+Property,Office Building Z
+Address,1250 Business Park Drive Austin TX 78759
+Assessment Year,2023
+Three Year Income Analysis
+Item,2022,2021,2020
+Rental Income:
+Base Rent,420000,400000,385000
+Percentage Rent,15000,12000,10000
+Parking Income,25000,24000,22000
+Other Income,25000,24000,28000
+Total Gross Income,485000,460000,445000
+Vacancy & Collection Loss,-24250,-23000,-22250
+Effective Gross Income,460750,437000,422750
+Operating Expenses:
+Management Fees,-19400,-18400,-17800
+Repairs & Maintenance,-32000,-30000,-28000
+Insurance,-22000,-21000,-20000
+Real Estate Taxes,-63000,-60500,-58000
+Utilities,-18000,-17000,-16000
+Professional Services,-8000,-7500,-7000
+Miscellaneous,-2600,-2600,-2200
+Total Operating Expenses,-165000,-156500,-149000
+Net Operating Income,295750,280500,273750
+Average NOI (3 years),283333
+Capitalization Rate Analysis:
+Market Cap Rate,10.6%
+Property Value (NOI/Cap Rate),2674843
+Current Assessed Value,2800000
+Market Value Estimate,3200000
+Assessment Ratio,87.5%
+Over Assessment Indicator,YES
+Recommended Appeal,YES
+Estimated Tax Savings,9000

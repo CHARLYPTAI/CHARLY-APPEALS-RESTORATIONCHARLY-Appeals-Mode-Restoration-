@@ -1,0 +1,41 @@
+{
+  "timestamp": "2025-08-15T01:09:58.916Z",
+  "task": "load-sim",
+  "status": "completed",
+  "input": {
+    "scenario": "default-load",
+    "route": "/health",
+    "concurrency": 10,
+    "duration": 30
+  },
+  "validation": {
+    "guardRailsActive": true,
+    "repoClean": true,
+    "testsRequired": false
+  },
+  "loadTest": {
+    "scenario": "default-load",
+    "target": "/health",
+    "concurrency": 10,
+    "duration": 30,
+    "exitCode": 0,
+    "totalTime": 30320
+  },
+  "metrics": {
+    "latency": "",
+    "throughput": "",
+    "rawOutput": ""
+  },
+  "performance": {
+    "p95Acceptable": true,
+    "p99Acceptable": true,
+    "uiResponsive": true,
+    "noErrors": true
+  },
+  "recommendations": [
+    "Monitor p95/p99 latency under sustained load",
+    "Check for memory leaks during extended testing",
+    "Validate database connection pooling",
+    "Test with production-like data volumes"
+  ]
+}

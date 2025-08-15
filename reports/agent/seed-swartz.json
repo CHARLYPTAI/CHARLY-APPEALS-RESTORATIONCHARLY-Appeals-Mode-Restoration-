@@ -1,0 +1,72 @@
+{
+  "timestamp": "2025-08-15T01:00:30.472Z",
+  "task": "seed-swartz",
+  "status": "completed",
+  "input": {
+    "dataset": "swartz",
+    "mode": "verify-only"
+  },
+  "validation": {
+    "guardRailsActive": true,
+    "repoClean": true,
+    "testsRequired": true
+  },
+  "discovery": {
+    "siteTestsDir": "/Users/georgewohlleb/Desktop/CHARLY_TEST/site_tests",
+    "filesFound": 5,
+    "files": [
+      {
+        "filename": "Income Statement 123 company.csv",
+        "path": "/Users/georgewohlleb/Desktop/CHARLY_TEST/site_tests/Income Statement 123 company.csv",
+        "type": "income_statement",
+        "exists": true
+      },
+      {
+        "filename": "Office Bldg Z – 2020, 2021, 2022 income statements.csv",
+        "path": "/Users/georgewohlleb/Desktop/CHARLY_TEST/site_tests/Office Bldg Z – 2020, 2021, 2022 income statements.csv",
+        "type": "unknown",
+        "exists": true
+      },
+      {
+        "filename": "P&L ABC Company 2021 & 2022.csv",
+        "path": "/Users/georgewohlleb/Desktop/CHARLY_TEST/site_tests/P&L ABC Company 2021 & 2022.csv",
+        "type": "profit_loss",
+        "exists": true
+      },
+      {
+        "filename": "Rent Roll as of 12.31.22 Office Bldg Z.csv",
+        "path": "/Users/georgewohlleb/Desktop/CHARLY_TEST/site_tests/Rent Roll as of 12.31.22 Office Bldg Z.csv",
+        "type": "rent_roll",
+        "exists": true
+      },
+      {
+        "filename": "test-data.json",
+        "path": "/Users/georgewohlleb/Desktop/CHARLY_TEST/site_tests/test-data.json",
+        "type": "unknown",
+        "exists": true
+      }
+    ]
+  },
+  "parsing": {
+    "incomeStatements": 1,
+    "rentRolls": 1,
+    "profitLoss": 1
+  },
+  "seeding": {
+    "mode": "verify-only",
+    "propertiesSeeded": 0,
+    "jurisdictionsAttached": [],
+    "parsedFields": {
+      "noi": false,
+      "capRate": false,
+      "expenseRatio": false,
+      "periods": false
+    }
+  },
+  "warnings": [],
+  "recommendations": [
+    "Verify all CSV files contain expected financial data",
+    "Run backend validation tests after seeding",
+    "Test appeals packet generation with seeded data"
+  ]
+}

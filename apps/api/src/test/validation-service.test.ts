@@ -151,7 +151,7 @@ describe('ValidationService', () => {
 
       expect(result.workfile_id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(result.normalized).toEqual(propertyData);
-      expect(result.errors).toEqual(['Decision preview failed: Error: Decision engine unavailable']);
+      expect(result.errors).toEqual(['Decision preview failed: Decision engine unavailable']);
       expect(result.decision_preview).toBeUndefined();
     });
 

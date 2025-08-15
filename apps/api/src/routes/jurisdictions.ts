@@ -1,6 +1,8 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { JurisdictionService } from '../services/jurisdiction-service.js';
 import type { ApiError } from '../types/onboarding.js';
+import { validateRequiredString } from '../utils/validation.js';
+import { sanitizeForLogging } from '../utils/log-sanitizer.js';
 
 export async function jurisdictionsRoutes(fastify: FastifyInstance) {
   const jurisdictionService = new JurisdictionService();
@@ -36,13 +38,25 @@ export async function jurisdictionsRoutes(fastify: FastifyInstance) {
     }
   }, async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     try {
-      const jurisdiction = await jurisdictionService.getJurisdiction(request.params.id);
+      const idValidation = validateRequiredString(request.params.id, 'jurisdiction id');
+      if (!idValidation.valid) {
+        const apiError: ApiError = {
+          type: 'about:blank',
+          title: 'Invalid Request',
+          status: 400,
+          detail: idValidation.errors?.join(', ') || 'Invalid jurisdiction id',
+          code: 'INVALID_JURISDICTION_ID'
+        };
+        return reply.status(400).send(apiError);
+      }
+
+      const jurisdiction = await jurisdictionService.getJurisdiction(idValidation.data!);
       
       reply.header('X-RateLimit-Remaining', '99');
       return jurisdiction;
       
     } catch (error) {
-      fastify.log.error('Failed to get jurisdiction:', error);
+      fastify.log.error('Failed to get jurisdiction:', sanitizeForLogging(error));
       
       const apiError: ApiError = {
         type: 'about:blank',
@@ -89,13 +103,30 @@ export async function jurisdictionsRoutes(fastify: FastifyInstance) {
     }
   }, async (request: FastifyRequest<{ Querystring: { state?: string } }>, reply: FastifyReply) => {
     try {
-      const jurisdictions = await jurisdictionService.getJurisdictions(request.query.state);
+      let stateFilter: string | undefined = undefined;
+      
+      if (request.query.state !== undefined) {
+        const stateValidation = validateRequiredString(request.query.state, 'state filter');
+        if (!stateValidation.valid) {
+          const apiError: ApiError = {
+            type: 'about:blank',
+            title: 'Invalid Request',
+            status: 400,
+            detail: stateValidation.errors?.join(', ') || 'Invalid state filter',
+            code: 'INVALID_STATE_FILTER'
+          };
+          return reply.status(400).send(apiError);
+        }
+        stateFilter = stateValidation.data;
+      }
+
+      const jurisdictions = await jurisdictionService.getJurisdictions(stateFilter);
       
       reply.header('X-RateLimit-Remaining', '99');
       return jurisdictions;
       
     } catch (error) {
-      fastify.log.error('Failed to get jurisdictions:', error);
+      fastify.log.error('Failed to get jurisdictions:', sanitizeForLogging(error));
       
       const apiError: ApiError = {
         type: 'about:blank',

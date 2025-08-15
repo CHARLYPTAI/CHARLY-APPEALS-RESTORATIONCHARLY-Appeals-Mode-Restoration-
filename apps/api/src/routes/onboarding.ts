@@ -5,6 +5,8 @@ import type {
   OnboardingStepRequest,
   ApiError 
 } from '../types/onboarding.js';
+import { validateUUID } from '../utils/validation.js';
+import { sanitizeForLogging } from '../utils/log-sanitizer.js';
 
 export async function onboardingRoutes(fastify: FastifyInstance) {
   const onboardingService = new OnboardingService();
@@ -109,7 +111,7 @@ export async function onboardingRoutes(fastify: FastifyInstance) {
       return reply.status(201).send(result);
       
     } catch (error) {
-      fastify.log.error('Customer registration failed:', error);
+      fastify.log.error('Customer registration failed:', sanitizeForLogging(error));
       
       const apiError: ApiError = {
         type: 'about:blank',
@@ -135,13 +137,25 @@ export async function onboardingRoutes(fastify: FastifyInstance) {
     }
   }, async (request: FastifyRequest<{ Params: { customer_id: string } }>, reply: FastifyReply) => {
     try {
-      const status = await onboardingService.getOnboardingStatus(request.params.customer_id);
+      const customerIdValidation = validateUUID(request.params.customer_id, 'customer_id');
+      if (!customerIdValidation.valid) {
+        const apiError: ApiError = {
+          type: 'about:blank',
+          title: 'Invalid Request',
+          status: 400,
+          detail: customerIdValidation.errors?.join(', ') || 'Invalid customer ID format',
+          code: 'INVALID_CUSTOMER_ID'
+        };
+        return reply.status(400).send(apiError);
+      }
+
+      const status = await onboardingService.getOnboardingStatus(customerIdValidation.data!);
       
       reply.header('X-RateLimit-Remaining', '99');
       return status;
       
     } catch (error) {
-      fastify.log.error('Failed to get onboarding status:', error);
+      fastify.log.error('Failed to get onboarding status:', sanitizeForLogging(error));
       
       const apiError: ApiError = {
         type: 'about:blank',
@@ -181,8 +195,20 @@ export async function onboardingRoutes(fastify: FastifyInstance) {
     Body: Omit<OnboardingStepRequest, 'customer_id'>
   }>, reply: FastifyReply) => {
     try {
+      const customerIdValidation = validateUUID(request.params.customer_id, 'customer_id');
+      if (!customerIdValidation.valid) {
+        const apiError: ApiError = {
+          type: 'about:blank',
+          title: 'Invalid Request',
+          status: 400,
+          detail: customerIdValidation.errors?.join(', ') || 'Invalid customer ID format',
+          code: 'INVALID_CUSTOMER_ID'
+        };
+        return reply.status(400).send(apiError);
+      }
+
       const stepRequest: OnboardingStepRequest = {
-        customer_id: request.params.customer_id,
+        customer_id: customerIdValidation.data!,
         ...request.body
       };
       
@@ -192,7 +218,7 @@ export async function onboardingRoutes(fastify: FastifyInstance) {
       return result;
       
     } catch (error) {
-      fastify.log.error('Onboarding step failed:', error);
+      fastify.log.error('Onboarding step failed:', sanitizeForLogging(error));
       
       const apiError: ApiError = {
         type: 'about:blank',
@@ -218,13 +244,25 @@ export async function onboardingRoutes(fastify: FastifyInstance) {
     }
   }, async (request: FastifyRequest<{ Params: { customer_id: string } }>, reply: FastifyReply) => {
     try {
-      const kpis = await onboardingService.getKPIData(request.params.customer_id);
+      const customerIdValidation = validateUUID(request.params.customer_id, 'customer_id');
+      if (!customerIdValidation.valid) {
+        const apiError: ApiError = {
+          type: 'about:blank',
+          title: 'Invalid Request',
+          status: 400,
+          detail: customerIdValidation.errors?.join(', ') || 'Invalid customer ID format',
+          code: 'INVALID_CUSTOMER_ID'
+        };
+        return reply.status(400).send(apiError);
+      }
+
+      const kpis = await onboardingService.getKPIData(customerIdValidation.data!);
       
       reply.header('X-RateLimit-Remaining', '99');
       return kpis;
       
     } catch (error) {
-      fastify.log.error('Failed to get KPI data:', error);
+      fastify.log.error('Failed to get KPI data:', sanitizeForLogging(error));
       
       const apiError: ApiError = {
         type: 'about:blank',

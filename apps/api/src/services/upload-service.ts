@@ -1,13 +1,12 @@
-import { v4 as uuidv4 } from 'uuid';
 import { 
   validateFile, 
   scanForViruses, 
   scrubEXIF, 
   extractTextFromFile,
-  generateThumbnail,
   checkForDuplicate
 } from '../mocks/charly-packages.js';
 import type { UploadResponse } from '../types/api.js';
+import { generateUploadId } from '../utils/id-generator.js';
 
 export class UploadService {
   async processUpload(
@@ -15,7 +14,7 @@ export class UploadService {
     mimeType: string,
     buffer: Buffer
   ): Promise<UploadResponse> {
-    const uploadId = uuidv4();
+    const uploadId = generateUploadId();
     
     const validation = await validateFile(buffer, mimeType, filename);
     if (!validation.valid) {

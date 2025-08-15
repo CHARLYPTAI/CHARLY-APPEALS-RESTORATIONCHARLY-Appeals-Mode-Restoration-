@@ -1,3 +1,5 @@
+import { MemoryCache } from '../utils/cache.js';
+
 interface JurisdictionData {
   jurisdiction_id: string;
   name: string;
@@ -15,27 +17,54 @@ interface JurisdictionData {
 
 export class JurisdictionService {
   private jurisdictions: Map<string, JurisdictionData> = new Map();
+  private jurisdictionsByState: Map<string, JurisdictionData[]> = new Map();
+  private allJurisdictionsArray: JurisdictionData[] = [];
+  private cache = new MemoryCache<JurisdictionData | JurisdictionData[]>(300000); // 5 min TTL
+  private cacheEnabled: boolean;
 
   constructor() {
+    this.cacheEnabled = process.env.JURISDICTION_CACHE === 'true';
     this.loadSeedData();
   }
 
   async getJurisdiction(id: string): Promise<JurisdictionData> {
+    if (this.cacheEnabled) {
+      const cached = this.cache.get(`jurisdiction:${id}`) as JurisdictionData;
+      if (cached) return cached;
+    }
+
     const jurisdiction = this.jurisdictions.get(id);
     if (!jurisdiction) {
       throw new Error(`Jurisdiction ${id} not found`);
     }
+
+    if (this.cacheEnabled) {
+      this.cache.set(`jurisdiction:${id}`, jurisdiction);
+    }
+
     return jurisdiction;
   }
 
   async getJurisdictions(state?: string): Promise<JurisdictionData[]> {
-    const allJurisdictions = Array.from(this.jurisdictions.values());
-    
+    const cacheKey = state && state.trim() !== '' ? `jurisdictions:state:${state}` : 'jurisdictions:all';
+
+    if (this.cacheEnabled) {
+      const cached = this.cache.get(cacheKey) as JurisdictionData[];
+      if (cached) return cached;
+    }
+
+    let result: JurisdictionData[];
     if (state && state.trim() !== '') {
-      return allJurisdictions.filter(j => j.state === state);
+      result = this.jurisdictionsByState.get(state) || [];
+    } else {
+      result = this.allJurisdictionsArray;
+    }
+
+    if (this.cacheEnabled) {
+      this.cache.set(cacheKey, result);
     }
     
-    return allJurisdictions;
+    return result;
   }
 
   private loadSeedData(): void {
@@ -86,6 +115,17 @@ export class JurisdictionService {
 
     seedJurisdictions.forEach(jurisdiction => {
       this.jurisdictions.set(jurisdiction.jurisdiction_id, jurisdiction);
+    });
+
+    this.allJurisdictionsArray = Array.from(this.jurisdictions.values());
+    
+    this.jurisdictionsByState.clear();
+    this.allJurisdictionsArray.forEach(jurisdiction => {
+      const state = jurisdiction.state;
+      if (!this.jurisdictionsByState.has(state)) {
+        this.jurisdictionsByState.set(state, []);
+      }
+      this.jurisdictionsByState.get(state)!.push(jurisdiction);
     });
   }
 }

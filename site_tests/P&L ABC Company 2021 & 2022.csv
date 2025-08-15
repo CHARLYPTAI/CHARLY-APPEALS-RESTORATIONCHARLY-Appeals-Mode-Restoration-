@@ -1,0 +1,33 @@
+Property,ABC Company Office Complex
+Address,4500 Technology Way Austin TX 78746
+Assessment Year,2023
+Profit & Loss Statement - Two Year Comparison
+Item,2022,2021,Variance
+Revenue:
+Rental Income,285000,270000,15000
+Parking Revenue,18000,16000,2000
+Miscellaneous Income,7000,6500,500
+Total Revenue,310000,292500,17500
+Operating Expenses:
+Property Management,-12350,-11700,-650
+Building Maintenance,-28000,-26000,-2000
+Landscaping,-8500,-8000,-500
+Insurance,-16000,-15500,-500
+Property Taxes,-41625,-40500,-1125
+Utilities,-14500,-13800,-700
+Professional Services,-6000,-5500,-500
+Office Expenses,-2500,-2400,-100
+Marketing,-3000,-2800,-200
+Miscellaneous,-2525,-2300,-225
+Total Operating Expenses,-135000,-128500,-6500
+Net Operating Income,175000,164000,11000
+Financial Analysis:
+Average NOI,169500
+Market Cap Rate,10.3%
+Indicated Value,1646117
+Current Assessed Value,1850000
+Market Value,1900000
+Assessment to Market Ratio,97.4%
+Over Assessment,NO
+Appeal Recommendation,NO
+Status,FAIR ASSESSMENT

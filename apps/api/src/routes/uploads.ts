@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { UploadService } from '../services/upload-service.js';
 import type { ApiError } from '../types/api.js';
+import { sanitizeForLogging } from '../utils/log-sanitizer.js';
 
 export async function uploadsRoutes(fastify: FastifyInstance) {
   const uploadService = new UploadService();
@@ -66,7 +67,7 @@ export async function uploadsRoutes(fastify: FastifyInstance) {
       return result;
       
     } catch (error) {
-      fastify.log.error('Upload failed:', error);
+      fastify.log.error('Upload failed:', sanitizeForLogging(error));
       
       const apiError: ApiError = {
         type: 'about:blank',
