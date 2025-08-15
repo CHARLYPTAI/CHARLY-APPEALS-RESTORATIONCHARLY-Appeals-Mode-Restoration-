@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import jwt from '@fastify/jwt';
 
 export async function jwtPlugin(fastify: FastifyInstance) {

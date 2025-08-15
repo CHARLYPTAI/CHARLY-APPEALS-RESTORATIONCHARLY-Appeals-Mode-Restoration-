@@ -228,7 +228,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
   fastify.get('/admin/tenants', {
     preHandler: [requireRole('superadmin')],
     schema: tenantListSchema
-  }, async (request: FastifyRequest, reply: FastifyReply): Promise<TenantInfo[]> => {
+  }, async (request, reply) => {
     const client = await db.getClient();
     
     try {
@@ -263,18 +263,8 @@ export async function adminRoutes(fastify: FastifyInstance) {
   fastify.get('/admin/users', {
     preHandler: [requirePermission('admin:users:read'), requireTenantScope()],
     schema: userListSchema
-  }, async (request: FastifyRequest<{
-    Querystring: { 
-      tenant?: 'RESIDENTIAL' | 'COMMERCIAL'; 
-      limit?: number; 
-      offset?: number;
-      search?: string;
-      role?: string;
-      status?: 'active' | 'inactive';
-      sort?: string;
-    }
-  }>, reply: FastifyReply) => {
-    const { tenant, limit = 20, offset = 0, search, role, status, sort } = request.query;
+  }, async (request, reply) => {
+    const { tenant, limit = 20, offset = 0, search, role, status, sort } = request.query as any;
     const admin = request.admin!;
     
     const client = await db.getClient();
@@ -313,7 +303,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
         }
       }
       
-      if (status && status !== 'ALL') {
+      if (status && status !== 'all') {
         // For now, we'll assume all users are active unless explicitly marked inactive
         // This can be enhanced with a proper is_active column
         if (status === 'inactive') {
@@ -329,14 +319,15 @@ export async function adminRoutes(fastify: FastifyInstance) {
         const validDirections = ['asc', 'desc'];
         
         if (validFields.includes(field) && validDirections.includes(direction)) {
-          const dbField = {
+          const dbFieldMap: Record<string, string> = {
             email: 'u.email',
             tenantType: 'u.tenant_type',
             role: 'ra.role',
             createdAt: 'u.created_at',
             lastLogin: 'u.updated_at',
             isActive: 'u.created_at' // Placeholder since we don't have is_active column yet
-          }[field] || 'u.created_at';
+          };
+          const dbField = dbFieldMap[field] || 'u.created_at';
           
           orderBy = `${dbField} ${direction.toUpperCase()}`;
         }
@@ -397,8 +388,8 @@ export async function adminRoutes(fastify: FastifyInstance) {
   fastify.post('/admin/users', {
     preHandler: [requirePermission('admin:users:write'), requireTenantScope()],
     schema: createUserSchema
-  }, async (request: FastifyRequest<{ Body: CreateUserRequest }>, reply: FastifyReply) => {
-    const { email, password, tenantType, role } = request.body;
+  }, async (request, reply) => {
+    const { email, password, tenantType, role } = request.body as any;
     const admin = request.admin!;
     
     // Tenant admin can only create users in their tenant
@@ -502,10 +493,8 @@ export async function adminRoutes(fastify: FastifyInstance) {
   fastify.get('/admin/users/:id/roles', {
     preHandler: [requirePermission('admin:users:read'), requireTenantScope()],
     schema: userRolesSchema
-  }, async (request: FastifyRequest<{
-    Params: { id: string };
-  }>, reply: FastifyReply) => {
-    const { id } = request.params;
+  }, async (request, reply) => {
+    const { id } = request.params as any;
     const admin = request.admin!;
     
     const client = await db.getClient();
@@ -566,12 +555,9 @@ export async function adminRoutes(fastify: FastifyInstance) {
   fastify.patch('/admin/users/:id', {
     preHandler: [requirePermission('admin:users:write'), requireTenantScope()],
     schema: updateUserSchema
-  }, async (request: FastifyRequest<{
-    Params: { id: string };
-    Body: UpdateUserRequest;
-  }>, reply: FastifyReply) => {
-    const { id } = request.params;
-    const { role, isActive } = request.body;
+  }, async (request, reply) => {
+    const { id } = request.params as any;
+    const { role, isActive } = request.body as any;
     const admin = request.admin!;
     
     const client = await db.getClient();
@@ -666,10 +652,8 @@ export async function adminRoutes(fastify: FastifyInstance) {
   fastify.get('/admin/rules/templates', {
     preHandler: [requirePermission('admin:templates:read'), requireTenantScope()],
     schema: templateListSchema
-  }, async (request: FastifyRequest<{
-    Querystring: { tenant?: 'RESIDENTIAL' | 'COMMERCIAL'; limit?: number; offset?: number; }
-  }>, reply: FastifyReply) => {
-    const { tenant, limit = 20, offset = 0 } = request.query;
+  }, async (request, reply) => {
+    const { tenant, limit = 20, offset = 0 } = request.query as any;
     const admin = request.admin!;
     
     const tenantClient = await db.getTenantClient(
@@ -700,7 +684,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
         LIMIT $1 OFFSET $2
       `, params);
       
-      const templates: RuleTemplate[] = result.rows.map(row => ({
+      const templates: RuleTemplate[] = result.rows.map((row: any) => ({
         id: row.id,
         name: row.name,
         version: row.version,
@@ -739,8 +723,8 @@ export async function adminRoutes(fastify: FastifyInstance) {
         }
       }
     }
-  }, async (request: FastifyRequest<{ Body: ImportTemplatesRequest }>, reply: FastifyReply) => {
-    const { templates, conflictResolution } = request.body;
+  }, async (request, reply) => {
+    const { templates, conflictResolution } = request.body as any;
     const admin = request.admin!;
     
     // Import logic would go here - this is a placeholder
@@ -755,19 +739,8 @@ export async function adminRoutes(fastify: FastifyInstance) {
   fastify.get('/admin/audit/logs', {
     preHandler: [requirePermission('admin:audit:read'), requireTenantScope()],
     schema: auditLogSchema
-  }, async (request: FastifyRequest<{
-    Querystring: {
-      tenant?: 'RESIDENTIAL' | 'COMMERCIAL';
-      userId?: string;
-      action?: string;
-      resourceType?: string;
-      from?: string;
-      to?: string;
-      limit?: number;
-      offset?: number;
-    }
-  }>, reply: FastifyReply) => {
-    const { tenant, userId, action, resourceType, from, to, limit = 50, offset = 0 } = request.query;
+  }, async (request, reply) => {
+    const { tenant, userId, action, resourceType, from, to, limit = 50, offset = 0 } = request.query as any;
     const admin = request.admin!;
     
     const client = await db.getClient();
@@ -850,6 +823,511 @@ export async function adminRoutes(fastify: FastifyInstance) {
       }));
       
       return { logs };
+    } finally {
+      client.release();
+    }
+  });
+
+  // Role & Permission Management Endpoints
+
+  // GET /api/admin/roles - List roles
+  fastify.get('/admin/roles', {
+    preHandler: [requirePermission('admin:roles:read'), requireTenantScope()]
+  }, async (request, reply) => {
+    const { tenant, limit = 20, offset = 0, search, scope, sort } = request.query as any;
+    const admin = request.admin!;
+    
+    const client = await db.getClient();
+    
+    try {
+      let query = `
+        SELECT r.id, r.name, r.description, r.scope, r.tenant_type, 
+               r.version, r.last_editor, r.updated_at, r.created_at,
+               COALESCE(array_agg(rp.permission_id) FILTER (WHERE rp.permission_id IS NOT NULL), '{}') as permissions
+        FROM roles r
+        LEFT JOIN role_permissions rp ON r.id = rp.role_id
+        WHERE 1=1
+      `;
+      
+      const params: any[] = [];
+      let paramIndex = 1;
+      
+      // Tenant admin can only see their tenant's roles and global roles
+      if (admin.role === 'tenant_admin') {
+        query += ` AND (r.scope = 'global' OR (r.scope = 'tenant' AND r.tenant_type = $${paramIndex}))`;
+        params.push(admin.tenant_type);
+        paramIndex++;
+      }
+      
+      // Filter by search term
+      if (search) {
+        query += ` AND (r.name ILIKE $${paramIndex} OR r.description ILIKE $${paramIndex})`;
+        params.push(`%${search}%`);
+        paramIndex++;
+      }
+      
+      // Filter by scope
+      if (scope && scope !== 'all') {
+        query += ` AND r.scope = $${paramIndex}`;
+        params.push(scope);
+        paramIndex++;
+      }
+      
+      // Filter by tenant type
+      if (tenant && tenant !== 'all') {
+        query += ` AND (r.scope = 'global' OR r.tenant_type = $${paramIndex})`;
+        params.push(tenant);
+        paramIndex++;
+      }
+      
+      query += ` GROUP BY r.id, r.name, r.description, r.scope, r.tenant_type, r.version, r.last_editor, r.updated_at, r.created_at`;
+      
+      // Add sorting
+      let orderBy = 'r.name ASC';
+      if (sort) {
+        const [field, direction] = sort.split(':');
+        const validFields = ['name', 'scope', 'lastModified'];
+        const validDirections = ['asc', 'desc'];
+        
+        if (validFields.includes(field) && validDirections.includes(direction)) {
+          const dbFieldMap: Record<string, string> = {
+            name: 'r.name',
+            scope: 'r.scope',
+            lastModified: 'r.updated_at'
+          };
+          orderBy = `${dbFieldMap[field]} ${direction.toUpperCase()}`;
+        }
+      }
+      
+      query += ` ORDER BY ${orderBy} LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+      params.push(limit, offset);
+      
+      const result = await client.query(query, params);
+      
+      const roles = result.rows.map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        scope: row.scope,
+        tenantType: row.tenant_type,
+        permissions: row.permissions || [],
+        version: row.version,
+        lastEditor: row.last_editor,
+        lastModified: row.updated_at.toISOString()
+      }));
+      
+      return { roles };
+    } finally {
+      client.release();
+    }
+  });
+
+  // GET /api/admin/permissions - List permissions
+  fastify.get('/admin/permissions', {
+    preHandler: [requirePermission('admin:roles:read')]
+  }, async (request, reply) => {
+    const client = await db.getClient();
+    
+    try {
+      const result = await client.query(`
+        SELECT id, name, category, description, is_system
+        FROM permissions
+        ORDER BY category, name
+      `);
+      
+      const permissions = result.rows.map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        category: row.category,
+        description: row.description,
+        isSystem: row.is_system
+      }));
+      
+      return { permissions };
+    } finally {
+      client.release();
+    }
+  });
+
+  // POST /api/admin/roles - Create role
+  fastify.post('/admin/roles', {
+    preHandler: [requirePermission('admin:roles:write'), requireTenantScope()]
+  }, async (request, reply) => {
+    const { name, description, scope, tenantType, permissions, changeNotes } = request.body as any;
+    const admin = request.admin!;
+    
+    // Validation
+    if (admin.role === 'tenant_admin' && scope === 'global') {
+      return reply.status(403).send({
+        type: 'about:blank',
+        title: 'Forbidden',
+        status: 403,
+        detail: 'Tenant administrators cannot create global roles',
+        instance: request.url,
+        correlationId: request.correlationId || 'unknown',
+        code: 'GLOBAL_ROLE_DENIED'
+      });
+    }
+    
+    if (admin.role === 'tenant_admin' && scope === 'tenant' && tenantType !== admin.tenant_type) {
+      return reply.status(403).send({
+        type: 'about:blank',
+        title: 'Forbidden',
+        status: 403,
+        detail: `Cannot create roles for ${tenantType} tenant`,
+        instance: request.url,
+        correlationId: request.correlationId || 'unknown',
+        code: 'CROSS_TENANT_ROLE_DENIED'
+      });
+    }
+    
+    const client = await db.getClient();
+    
+    try {
+      await client.query('BEGIN');
+      
+      // Check for duplicate name
+      const existingRole = await client.query(`
+        SELECT id FROM roles 
+        WHERE name = $1 AND scope = $2 AND ($3::text IS NULL OR tenant_type = $3)
+      `, [name, scope, tenantType]);
+      
+      if (existingRole.rows.length > 0) {
+        await client.query('ROLLBACK');
+        return reply.status(409).send({
+          type: 'about:blank',
+          title: 'Conflict',
+          status: 409,
+          detail: 'A role with this name already exists in the specified scope',
+          instance: request.url,
+          correlationId: request.correlationId || 'unknown',
+          code: 'ROLE_NAME_CONFLICT'
+        });
+      }
+      
+      // Create role
+      const roleResult = await client.query(`
+        INSERT INTO roles (name, description, scope, tenant_type, version, last_editor, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, 1, $5, NOW(), NOW())
+        RETURNING id, version, created_at, updated_at
+      `, [name, description, scope, tenantType, admin.email]);
+      
+      const roleId = roleResult.rows[0].id;
+      
+      // Add permissions
+      if (permissions && permissions.length > 0) {
+        for (const permissionId of permissions) {
+          await client.query(`
+            INSERT INTO role_permissions (role_id, permission_id)
+            VALUES ($1, $2)
+          `, [roleId, permissionId]);
+        }
+      }
+      
+      await client.query('COMMIT');
+      
+      const newRole = {
+        id: roleId,
+        name,
+        description,
+        scope,
+        tenantType,
+        permissions,
+        version: 1,
+        lastEditor: admin.email,
+        lastModified: roleResult.rows[0].updated_at.toISOString()
+      };
+      
+      return reply.status(201).send(newRole);
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  });
+
+  // PATCH /api/admin/roles/:id - Update role
+  fastify.patch('/admin/roles/:id', {
+    preHandler: [requirePermission('admin:roles:write'), requireTenantScope()]
+  }, async (request, reply) => {
+    const { id } = request.params as any;
+    const { name, description, permissions, changeNotes } = request.body as any;
+    const admin = request.admin!;
+    
+    const client = await db.getClient();
+    
+    try {
+      await client.query('BEGIN');
+      
+      // Get existing role
+      const existingResult = await client.query(`
+        SELECT * FROM roles WHERE id = $1
+      `, [id]);
+      
+      if (existingResult.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return reply.status(404).send({
+          type: 'about:blank',
+          title: 'Not Found',
+          status: 404,
+          detail: 'Role not found',
+          instance: request.url,
+          correlationId: request.correlationId || 'unknown',
+          code: 'ROLE_NOT_FOUND'
+        });
+      }
+      
+      const existingRole = existingResult.rows[0];
+      
+      // Check permissions for tenant admin
+      if (admin.role === 'tenant_admin') {
+        if (existingRole.scope === 'global' || 
+           (existingRole.scope === 'tenant' && existingRole.tenant_type !== admin.tenant_type)) {
+          await client.query('ROLLBACK');
+          return reply.status(403).send({
+            type: 'about:blank',
+            title: 'Forbidden',
+            status: 403,
+            detail: 'Cannot modify this role',
+            instance: request.url,
+            correlationId: request.correlationId || 'unknown',
+            code: 'ROLE_MODIFY_DENIED'
+          });
+        }
+      }
+      
+      // Update role
+      const updateResult = await client.query(`
+        UPDATE roles 
+        SET name = COALESCE($1, name),
+            description = COALESCE($2, description),
+            version = version + 1,
+            last_editor = $3,
+            updated_at = NOW()
+        WHERE id = $4
+        RETURNING version, updated_at
+      `, [name, description, admin.email, id]);
+      
+      // Update permissions if provided
+      if (permissions) {
+        // Remove existing permissions
+        await client.query('DELETE FROM role_permissions WHERE role_id = $1', [id]);
+        
+        // Add new permissions
+        for (const permissionId of permissions) {
+          await client.query(`
+            INSERT INTO role_permissions (role_id, permission_id)
+            VALUES ($1, $2)
+          `, [id, permissionId]);
+        }
+      }
+      
+      await client.query('COMMIT');
+      
+      const updatedRole = {
+        ...existingRole,
+        name: name || existingRole.name,
+        description: description || existingRole.description,
+        permissions: permissions || [],
+        version: updateResult.rows[0].version,
+        lastEditor: admin.email,
+        lastModified: updateResult.rows[0].updated_at.toISOString()
+      };
+      
+      return updatedRole;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  });
+
+  // DELETE /api/admin/roles/:id - Delete role
+  fastify.delete('/admin/roles/:id', {
+    preHandler: [requirePermission('admin:roles:write'), requireTenantScope()]
+  }, async (request, reply) => {
+    const { id } = request.params as any;
+    const admin = request.admin!;
+    
+    const client = await db.getClient();
+    
+    try {
+      // Check if role exists and permissions
+      const roleResult = await client.query(`
+        SELECT * FROM roles WHERE id = $1
+      `, [id]);
+      
+      if (roleResult.rows.length === 0) {
+        return reply.status(404).send({
+          type: 'about:blank',
+          title: 'Not Found',
+          status: 404,
+          detail: 'Role not found',
+          instance: request.url,
+          correlationId: request.correlationId || 'unknown',
+          code: 'ROLE_NOT_FOUND'
+        });
+      }
+      
+      const role = roleResult.rows[0];
+      
+      // Check permissions for tenant admin
+      if (admin.role === 'tenant_admin') {
+        if (role.scope === 'global' || 
+           (role.scope === 'tenant' && role.tenant_type !== admin.tenant_type)) {
+          return reply.status(403).send({
+            type: 'about:blank',
+            title: 'Forbidden',
+            status: 403,
+            detail: 'Cannot delete this role',
+            instance: request.url,
+            correlationId: request.correlationId || 'unknown',
+            code: 'ROLE_DELETE_DENIED'
+          });
+        }
+      }
+      
+      // Check if role is assigned to any users
+      const assignmentResult = await client.query(`
+        SELECT COUNT(*) as count FROM user_roles WHERE role_id = $1
+      `, [id]);
+      
+      if (parseInt(assignmentResult.rows[0].count) > 0) {
+        return reply.status(409).send({
+          type: 'about:blank',
+          title: 'Conflict',
+          status: 409,
+          detail: 'Cannot delete role that is assigned to users',
+          instance: request.url,
+          correlationId: request.correlationId || 'unknown',
+          code: 'ROLE_IN_USE'
+        });
+      }
+      
+      await client.query('BEGIN');
+      
+      // Delete role permissions
+      await client.query('DELETE FROM role_permissions WHERE role_id = $1', [id]);
+      
+      // Delete role
+      await client.query('DELETE FROM roles WHERE id = $1', [id]);
+      
+      await client.query('COMMIT');
+      
+      return reply.status(204).send();
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  });
+
+  // POST /api/admin/roles/import - Import roles
+  fastify.post('/admin/roles/import', {
+    preHandler: [requirePermission('admin:roles:write'), requireTenantScope()]
+  }, async (request, reply) => {
+    const { roles, conflictResolution } = request.body as any;
+    const admin = request.admin!;
+    
+    const client = await db.getClient();
+    const importResults = {
+      imported: 0,
+      skipped: 0,
+      conflicts: [] as string[],
+      errors: [] as string[]
+    };
+    
+    try {
+      await client.query('BEGIN');
+      
+      for (const roleData of roles) {
+        try {
+          // Validate role permissions for tenant admin
+          if (admin.role === 'tenant_admin') {
+            if (roleData.scope === 'global') {
+              importResults.errors.push(`Skipped "${roleData.name}": Tenant admin cannot import global roles`);
+              continue;
+            }
+            if (roleData.scope === 'tenant' && roleData.tenantType !== admin.tenant_type) {
+              importResults.errors.push(`Skipped "${roleData.name}": Cannot import role for different tenant type`);
+              continue;
+            }
+          }
+          
+          // Check for existing role
+          const existingResult = await client.query(`
+            SELECT id, name FROM roles 
+            WHERE name = $1 AND scope = $2 AND ($3::text IS NULL OR tenant_type = $3)
+          `, [roleData.name, roleData.scope, roleData.tenantType]);
+          
+          if (existingResult.rows.length > 0) {
+            if (conflictResolution === 'skip') {
+              importResults.skipped++;
+              continue;
+            } else if (conflictResolution === 'rename') {
+              // Find unique name
+              let counter = 1;
+              let newName = `${roleData.name} (${counter})`;
+              while (true) {
+                const checkResult = await client.query(`
+                  SELECT id FROM roles 
+                  WHERE name = $1 AND scope = $2 AND ($3::text IS NULL OR tenant_type = $3)
+                `, [newName, roleData.scope, roleData.tenantType]);
+                
+                if (checkResult.rows.length === 0) break;
+                counter++;
+                newName = `${roleData.name} (${counter})`;
+              }
+              
+              roleData.name = newName;
+              importResults.conflicts.push(`Role "${roleData.name}" renamed to "${newName}"`);
+            } else if (conflictResolution === 'overwrite') {
+              // Delete existing role and permissions
+              const existingId = existingResult.rows[0].id;
+              await client.query('DELETE FROM role_permissions WHERE role_id = $1', [existingId]);
+              await client.query('DELETE FROM roles WHERE id = $1', [existingId]);
+              importResults.conflicts.push(`Role "${roleData.name}" overwritten`);
+            }
+          }
+          
+          // Create new role
+          const roleResult = await client.query(`
+            INSERT INTO roles (name, description, scope, tenant_type, version, last_editor, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, 1, $5, NOW(), NOW())
+            RETURNING id
+          `, [roleData.name, roleData.description, roleData.scope, roleData.tenantType, admin.email]);
+          
+          const roleId = roleResult.rows[0].id;
+          
+          // Add permissions
+          if (roleData.permissions && roleData.permissions.length > 0) {
+            for (const permissionId of roleData.permissions) {
+              try {
+                await client.query(`
+                  INSERT INTO role_permissions (role_id, permission_id)
+                  VALUES ($1, $2)
+                `, [roleId, permissionId]);
+              } catch (permError) {
+                importResults.errors.push(`Invalid permission "${permissionId}" in role "${roleData.name}"`);
+              }
+            }
+          }
+          
+          importResults.imported++;
+        } catch (roleError) {
+          importResults.errors.push(`Failed to import role "${roleData.name}": ${roleError.message}`);
+        }
+      }
+      
+      await client.query('COMMIT');
+      
+      return importResults;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
     } finally {
       client.release();
     }

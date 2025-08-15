@@ -26,7 +26,7 @@ declare module 'fastify' {
   }
 }
 
-export async function build(opts = {}) {
+export async function build(opts: { logger?: boolean | object } = {}) {
   const fastify = Fastify({
     logger: opts.logger !== false ? {
       level: config.logLevel,

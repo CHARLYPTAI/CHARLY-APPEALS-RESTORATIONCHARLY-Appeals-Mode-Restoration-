@@ -6,6 +6,7 @@ import { AdminGuard } from './AdminGuard';
 const Dashboard = React.lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
 const Tenants = React.lazy(() => import('./pages/Tenants').then(m => ({ default: m.Tenants })));
 const Users = React.lazy(() => import('./pages/Users').then(m => ({ default: m.Users })));
+const RolePermissions = React.lazy(() => import('./pages/RolePermissions').then(m => ({ default: m.RolePermissions })));
 const RulesTemplates = React.lazy(() => import('./pages/RulesTemplates').then(m => ({ default: m.RulesTemplates })));
 const AuditLogs = React.lazy(() => import('./pages/AuditLogs').then(m => ({ default: m.AuditLogs })));
 const Settings = React.lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
@@ -26,6 +27,11 @@ export const adminRoutes = {
     component: Users,
     permissions: ['admin:users:read'] as const,
     label: 'Users'
+  },
+  '/admin/roles': {
+    component: RolePermissions,
+    permissions: ['admin:roles:read'] as const,
+    label: 'Roles & Permissions'
   },
   '/admin/rules/templates': {
     component: RulesTemplates,

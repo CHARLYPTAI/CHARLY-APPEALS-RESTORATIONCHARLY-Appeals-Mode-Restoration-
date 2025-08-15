@@ -1,5 +1,5 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
-import { AuthTokenPayload } from '../routes/auth.js';
+import type { FastifyRequest, FastifyReply } from 'fastify';
+import type { AuthTokenPayload } from '../routes/auth.js';
 import { db, TenantClient } from '../db/connection.js';
 
 export interface TenantContext {

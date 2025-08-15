@@ -1,6 +1,6 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { db } from '../db/connection.js';
-import { AuthTokenPayload } from '../routes/auth.js';
+import type { AuthTokenPayload } from '../routes/auth.js';
 
 export interface AuditLogData {
   userId: string;

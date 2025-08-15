@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { requireCommercialTenant } from '../../middleware/tenant-auth.js';
 import { uploadsRoutes } from '../uploads.js';
 import { validateRoutes } from '../validate.js';

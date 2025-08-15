@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
 export interface AuthTokenPayload {
   sub: string;
@@ -85,7 +85,7 @@ function createLoginHandler(fastify: FastifyInstance) {
         aud: audience
       };
       
-      const token = fastify.jwt.sign(payload, { expiresIn });
+      const token = fastify.jwt.sign(payload as any, { expiresIn });
       
       return {
         access_token: token,
