@@ -9,6 +9,14 @@
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
     "test:watch": "vitest",
+    "test:perf": "vitest run src/test/performance-agent.test.ts",
+    "test:g4": "vitest run src/test/g4-performance-integration.test.ts",
+    "perf:full": "node ../../tools/performance-runner.js --scale full",
+    "perf:medium": "node ../../tools/performance-runner.js --scale medium",
+    "perf:light": "node ../../tools/performance-runner.js --scale light",
+    "perf:residential": "node ../../tools/performance-runner.js --scenario heavy-residential",
+    "perf:commercial": "node ../../tools/performance-runner.js --scenario moderate-commercial",
+    "perf:ai": "node ../../tools/performance-runner.js --scenario ai-router-stress",
     "security:scan": "node scripts/security-audit.js"
   },
   "dependencies": {
