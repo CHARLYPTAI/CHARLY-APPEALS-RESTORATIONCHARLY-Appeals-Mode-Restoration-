@@ -1,55 +1,78 @@
 import React from 'react';
-import { Navigation } from '../components/Navigation';
-import { ToastProvider } from '../components/ToastProvider';
+import { Navigation, NavigationMobile } from '../components/Navigation';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { useTheme } from '../design-system/ThemeProvider';
 
 interface AppShellProps {
   children: React.ReactNode;
 }
 
 export function AppShell({ children }: AppShellProps) {
+  const { colors } = useTheme();
+
   return (
-    <ToastProvider>
-      <div className="min-h-screen bg-gray-50">
-        {/* Top Bar */}
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center">
-                <h1 className="text-xl font-semibold text-gray-900">CHARLY</h1>
-                <span className="ml-2 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+      {/* Top Bar - Jony Ive inspired minimal header */}
+      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Brand */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-baseline gap-1">
+                <h1 className="text-2xl font-light tracking-tight text-gray-900 dark:text-gray-100">
+                  CHARLY
+                </h1>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Commercial
                 </span>
               </div>
+            </div>
+            
+            {/* Actions */}
+            <div className="flex items-center gap-1">
+              {/* Theme Toggle */}
+              <ThemeToggle size="md" />
               
-              <div className="flex items-center space-x-4">
-                <button className="text-gray-500 hover:text-gray-700">
-                  <span className="sr-only">Notifications</span>
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                </button>
-                
-                <div className="h-6 w-px bg-gray-300" />
-                
-                <button className="flex items-center text-sm text-gray-700 hover:text-gray-900">
-                  <div className="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-medium">U</span>
-                  </div>
-                  <span className="ml-2">User</span>
-                </button>
-              </div>
+              {/* Divider */}
+              <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-2" />
+              
+              {/* Notifications */}
+              <button className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
+                <span className="sr-only">Notifications</span>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+              </button>
+              
+              {/* User Menu */}
+              <button className="flex items-center gap-2 p-2 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
+                <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                  <span className="text-xs font-semibold text-white">U</span>
+                </div>
+                <span className="text-sm font-medium hidden sm:block">User</span>
+              </button>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Navigation Tabs */}
+      {/* Navigation - Desktop */}
+      <div className="hidden md:block">
         <Navigation />
-
-        {/* Main Content */}
-        <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          {children}
-        </main>
       </div>
-    </ToastProvider>
+      
+      {/* Navigation - Mobile */}
+      <NavigationMobile />
+
+      {/* Main Content with generous spacing */}
+      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-8 lg:py-12">
+        <div className="space-y-8">
+          {children}
+        </div>
+      </main>
+      
+      {/* Subtle footer spacer */}
+      <div className="h-16" />
+    </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { LLMRequest } from '@charly/llm-router';
+import { getRouter } from '@charly/llm-router';
 import { createErrorBuilder, formatServiceError } from '../utils/error-handler.js';
 import { sanitizeForLogging } from '../utils/log-sanitizer.js';
 import type { ApproachData } from './appeal-service.js';
@@ -33,14 +34,11 @@ export class AINewNarrativeService {
   
   constructor() {
     try {
-      // Dynamic import to handle cases where router isn't available
-      import('@charly/llm-router').then(({ getRouter }) => {
-        this.router = getRouter();
-      }).catch(() => {
-        console.warn('LLM Router not available');
-      });
+      // Use the centralized LLM Router with all security features
+      this.router = getRouter();
     } catch (error) {
-      console.warn('LLM Router initialization failed');
+      console.error('LLM Router initialization failed:', sanitizeForLogging(error));
+      throw new Error('AI Narrative Service requires LLM Router to be available');
     }
   }
 
@@ -165,7 +163,7 @@ export class AINewNarrativeService {
       };
 
       if (!this.router) {
-        throw new Error('LLM Router not available');
+        throw new Error('LLM Router not available - ensure router is properly initialized');
       }
       
       const response = await this.router.generateCompletion(llmRequest);
@@ -211,7 +209,7 @@ export class AINewNarrativeService {
       };
 
       if (!this.router) {
-        throw new Error('LLM Router not available');
+        throw new Error('LLM Router not available - ensure router is properly initialized');
       }
       
       const response = await this.router.generateCompletion(llmRequest);
@@ -253,7 +251,7 @@ export class AINewNarrativeService {
       };
 
       if (!this.router) {
-        throw new Error('LLM Router not available');
+        throw new Error('LLM Router not available - ensure router is properly initialized');
       }
       
       const response = await this.router.generateCompletion(llmRequest);
