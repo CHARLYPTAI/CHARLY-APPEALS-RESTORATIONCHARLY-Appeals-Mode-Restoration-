@@ -212,10 +212,15 @@ const auditLogSchema = {
     properties: {
       tenant: { type: 'string', enum: ['RESIDENTIAL', 'COMMERCIAL'] },
       userId: { type: 'string', format: 'uuid' },
+      actor: { type: 'string' },
       action: { type: 'string' },
       resourceType: { type: 'string' },
+      route: { type: 'string' },
+      status: { type: 'string', enum: ['SUCCESS', 'DENIED', 'ERROR'] },
+      correlationId: { type: 'string' },
       from: { type: 'string', format: 'date-time' },
       to: { type: 'string', format: 'date-time' },
+      sort: { type: 'string' },
       limit: { type: 'number', minimum: 1, maximum: 100, default: 50 },
       offset: { type: 'number', minimum: 0, default: 0 }
     }
@@ -740,7 +745,21 @@ export async function adminRoutes(fastify: FastifyInstance) {
     preHandler: [requirePermission('admin:audit:read'), requireTenantScope()],
     schema: auditLogSchema
   }, async (request, reply) => {
-    const { tenant, userId, action, resourceType, from, to, limit = 50, offset = 0 } = request.query as any;
+    const { 
+      tenant, 
+      userId, 
+      actor, 
+      action, 
+      resourceType, 
+      route, 
+      status, 
+      correlationId, 
+      from, 
+      to, 
+      sort,
+      limit = 50, 
+      offset = 0 
+    } = request.query as any;
     const admin = request.admin!;
     
     const client = await db.getClient();
@@ -768,6 +787,12 @@ export async function adminRoutes(fastify: FastifyInstance) {
         paramIndex++;
       }
       
+      if (actor) {
+        whereClause += ` AND (u.email ILIKE $${paramIndex} OR al.user_id::text ILIKE $${paramIndex})`;
+        params.push(`%${actor}%`);
+        paramIndex++;
+      }
+      
       if (action) {
         whereClause += ` AND al.action = $${paramIndex}`;
         params.push(action);
@@ -777,6 +802,202 @@ export async function adminRoutes(fastify: FastifyInstance) {
       if (resourceType) {
         whereClause += ` AND al.resource_type = $${paramIndex}`;
         params.push(resourceType);
+        paramIndex++;
+      }
+
+      if (route) {
+        whereClause += ` AND al.route ILIKE $${paramIndex}`;
+        params.push(`%${route}%`);
+        paramIndex++;
+      }
+
+      if (status) {
+        whereClause += ` AND al.status = $${paramIndex}`;
+        params.push(status);
+        paramIndex++;
+      }
+
+      if (correlationId) {
+        whereClause += ` AND al.correlation_id = $${paramIndex}`;
+        params.push(correlationId);
+        paramIndex++;
+      }
+      
+      if (from) {
+        whereClause += ` AND al.created_at >= $${paramIndex}`;
+        params.push(from);
+        paramIndex++;
+      }
+      
+      if (to) {
+        whereClause += ` AND al.created_at <= $${paramIndex}`;
+        params.push(to);
+        paramIndex++;
+      }
+
+      // Parse sort parameter
+      let orderBy = 'al.created_at DESC';
+      if (sort) {
+        const [field, direction] = sort.split(':');
+        const validFields = ['createdAt', 'userEmail', 'action', 'resourceType', 'status'];
+        const validDirections = ['asc', 'desc'];
+        
+        if (validFields.includes(field) && validDirections.includes(direction)) {
+          const dbFieldMap: Record<string, string> = {
+            createdAt: 'al.created_at',
+            userEmail: 'u.email',
+            action: 'al.action',
+            resourceType: 'al.resource_type',
+            status: 'al.status'
+          };
+          const dbField = dbFieldMap[field] || 'al.created_at';
+          orderBy = `${dbField} ${direction.toUpperCase()}`;
+        }
+      }
+      
+      // Get total count for pagination
+      const countQuery = `
+        SELECT COUNT(*) as total
+        FROM audit_logs al
+        JOIN users u ON al.user_id = u.id
+        ${whereClause}
+      `;
+      
+      const dataQuery = `
+        SELECT 
+          al.id, al.user_id, u.email as user_email,
+          al.action, al.resource_type, al.resource_id,
+          al.tenant_type, al.details, al.ip_address,
+          al.user_agent, al.correlation_id, al.created_at,
+          al.status, al.route, al.method
+        FROM audit_logs al
+        JOIN users u ON al.user_id = u.id
+        ${whereClause}
+        ORDER BY ${orderBy}
+        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+      `;
+      
+      params.push(limit, offset);
+
+      const [countResult, dataResult] = await Promise.all([
+        client.query(countQuery, params.slice(0, -2)), // Remove limit/offset for count
+        client.query(dataQuery, params)
+      ]);
+      
+      const logs: AuditLogEntry[] = dataResult.rows.map(row => ({
+        id: row.id,
+        userId: row.user_id,
+        userEmail: row.user_email,
+        action: row.action,
+        resourceType: row.resource_type,
+        resourceId: row.resource_id,
+        tenantType: row.tenant_type,
+        details: row.details,
+        ipAddress: row.ip_address,
+        userAgent: row.user_agent,
+        correlationId: row.correlation_id,
+        status: row.status,
+        route: row.route,
+        method: row.method,
+        createdAt: row.created_at.toISOString()
+      }));
+      
+      return { 
+        logs, 
+        total: parseInt(countResult.rows[0].total),
+        limit,
+        offset
+      };
+    } finally {
+      client.release();
+    }
+  });
+
+  // GET /api/admin/audit/logs/export - Export audit logs as CSV
+  fastify.get('/admin/audit/logs/export', {
+    preHandler: [requirePermission('admin:audit:read'), requireTenantScope()],
+    schema: {
+      querystring: {
+        type: 'object',
+        properties: {
+          tenant: { type: 'string', enum: ['RESIDENTIAL', 'COMMERCIAL'] },
+          actor: { type: 'string' },
+          action: { type: 'string' },
+          resourceType: { type: 'string' },
+          route: { type: 'string' },
+          status: { type: 'string', enum: ['SUCCESS', 'DENIED', 'ERROR'] },
+          correlationId: { type: 'string' },
+          from: { type: 'string', format: 'date-time' },
+          to: { type: 'string', format: 'date-time' }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    const { 
+      tenant, 
+      actor, 
+      action, 
+      resourceType, 
+      route, 
+      status, 
+      correlationId, 
+      from, 
+      to 
+    } = request.query as any;
+    const admin = request.admin!;
+    
+    const client = await db.getClient();
+    
+    try {
+      let whereClause = 'WHERE 1=1';
+      let params: any[] = [];
+      let paramIndex = 1;
+      
+      // Apply tenant filtering for tenant_admin
+      if (admin.role === 'tenant_admin') {
+        whereClause += ` AND al.tenant_type = $${paramIndex}`;
+        params.push(admin.tenant_type);
+        paramIndex++;
+      } else if (tenant) {
+        whereClause += ` AND al.tenant_type = $${paramIndex}`;
+        params.push(tenant);
+        paramIndex++;
+      }
+      
+      // Add filters (same as regular endpoint)
+      if (actor) {
+        whereClause += ` AND (u.email ILIKE $${paramIndex} OR al.user_id::text ILIKE $${paramIndex})`;
+        params.push(`%${actor}%`);
+        paramIndex++;
+      }
+      
+      if (action) {
+        whereClause += ` AND al.action = $${paramIndex}`;
+        params.push(action);
+        paramIndex++;
+      }
+      
+      if (resourceType) {
+        whereClause += ` AND al.resource_type = $${paramIndex}`;
+        params.push(resourceType);
+        paramIndex++;
+      }
+
+      if (route) {
+        whereClause += ` AND al.route ILIKE $${paramIndex}`;
+        params.push(`%${route}%`);
+        paramIndex++;
+      }
+
+      if (status) {
+        whereClause += ` AND al.status = $${paramIndex}`;
+        params.push(status);
+        paramIndex++;
+      }
+
+      if (correlationId) {
+        whereClause += ` AND al.correlation_id = $${paramIndex}`;
+        params.push(correlationId);
         paramIndex++;
       }
       
@@ -792,37 +1013,93 @@ export async function adminRoutes(fastify: FastifyInstance) {
         paramIndex++;
       }
       
-      params.push(limit, offset);
-      
-      const result = await client.query(`
+      const dataQuery = `
         SELECT 
-          al.id, al.user_id, u.email as user_email,
-          al.action, al.resource_type, al.resource_id,
-          al.tenant_type, al.details, al.ip_address,
-          al.user_agent, al.correlation_id, al.created_at
+          al.created_at,
+          u.email as user_email,
+          al.action,
+          al.resource_type,
+          al.resource_id,
+          al.tenant_type,
+          al.status,
+          al.route,
+          al.method,
+          al.correlation_id,
+          al.ip_address
         FROM audit_logs al
         JOIN users u ON al.user_id = u.id
         ${whereClause}
         ORDER BY al.created_at DESC
-        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
-      `, params);
+        LIMIT 10000
+      `;
       
-      const logs: AuditLogEntry[] = result.rows.map(row => ({
-        id: row.id,
-        userId: row.user_id,
-        userEmail: row.user_email,
-        action: row.action,
-        resourceType: row.resource_type,
-        resourceId: row.resource_id,
-        tenantType: row.tenant_type,
-        details: row.details,
-        ipAddress: row.ip_address,
-        userAgent: row.user_agent,
-        correlationId: row.correlation_id,
-        createdAt: row.created_at.toISOString()
-      }));
+      const result = await client.query(dataQuery, params);
       
-      return { logs };
+      // Generate CSV
+      const csvHeaders = [
+        'Timestamp',
+        'User Email',
+        'Action',
+        'Resource Type',
+        'Resource ID', 
+        'Tenant Type',
+        'Status',
+        'Route',
+        'Method',
+        'Correlation ID',
+        'IP Address (Anonymized)'
+      ];
+
+      const anonymizeIP = (ip: string): string => {
+        if (!ip) return '';
+        if (ip.includes('.')) {
+          const parts = ip.split('.');
+          if (parts.length === 4) {
+            return `${parts[0]}.${parts[1]}.${parts[2]}.xxx`;
+          }
+        }
+        if (ip.includes(':')) {
+          const parts = ip.split(':');
+          if (parts.length >= 4) {
+            return `${parts.slice(0, 4).join(':')}::xxxx`;
+          }
+        }
+        return 'xxx.xxx.xxx.xxx';
+      };
+
+      const csvRows = result.rows.map(row => [
+        row.created_at?.toISOString() || '',
+        row.user_email || '',
+        row.action || '',
+        row.resource_type || '',
+        row.resource_id || '',
+        row.tenant_type || '',
+        row.status || '',
+        row.route || '',
+        row.method || '',
+        row.correlation_id || '',
+        anonymizeIP(row.ip_address)
+      ]);
+
+      // Escape CSV values
+      const escapeCsvValue = (value: string): string => {
+        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value;
+      };
+
+      const csvContent = [
+        csvHeaders.map(escapeCsvValue).join(','),
+        ...csvRows.map(row => row.map(cell => escapeCsvValue(String(cell))).join(','))
+      ].join('\n');
+
+      // Set headers for file download
+      reply.header('Content-Type', 'text/csv; charset=utf-8');
+      reply.header('Content-Disposition', `attachment; filename="audit-logs-${new Date().toISOString().split('T')[0]}.csv"`);
+      reply.header('Cache-Control', 'no-cache');
+      
+      return csvContent;
     } finally {
       client.release();
     }
@@ -1318,7 +1595,8 @@ export async function adminRoutes(fastify: FastifyInstance) {
           
           importResults.imported++;
         } catch (roleError) {
-          importResults.errors.push(`Failed to import role "${roleData.name}": ${roleError.message}`);
+          const errorMessage = roleError instanceof Error ? roleError.message : 'Unknown error';
+          importResults.errors.push(`Failed to import role "${roleData.name}": ${errorMessage}`);
         }
       }
       
