@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CombinedValuation",
+  "type": "object",
+  "required": ["property_id", "income", "sales", "cost", "income_value", "sales_value", "cost_value"],
+  "properties": {
+    "property_id": { "type": "string" },
+    "income_value": { "type": "number" },
+    "sales_value":  { "type": "number" },
+    "cost_value":   { "type": "number" },
+    "income": { "type": "object" },
+    "sales":  { "type": "object" },
+    "cost":   { "type": "object" }
+  },
+  "additionalProperties": true
+}

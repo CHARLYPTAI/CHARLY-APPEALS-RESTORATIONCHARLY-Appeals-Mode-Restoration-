@@ -6,35 +6,13 @@ import { validateRoutes } from './routes/validate.js';
 import { appealPacketRoutes } from './routes/appeal-packet.js';
 import { onboardingRoutes } from './routes/onboarding.js';
 import { jurisdictionsRoutes } from './routes/jurisdictions.js';
-import { valuationRoutes } from './routes/valuation.js';
-import { resultsRoutes } from './routes/results.js';
-import { aiSwartzRoutes } from './routes/ai-swartz.js';
 import { sanitizeForLogging } from './utils/log-sanitizer.js';
 import securityHeaders from './plugins/security-headers.js';
-import { loadConfig } from './config/index.js';
-import { v4 as uuidv4 } from 'uuid';
-import { startTimer } from './utils/timing.js';
-
-// Load and validate configuration
-const config = loadConfig();
 
 const fastify = Fastify({
   logger: {
-    level: config.logLevel,
-    redact: ['req.headers.authorization', 'req.headers.cookie'],
-    serializers: {
-      req: (req) => sanitizeForLogging({
-        method: req.method,
-        url: req.url,
-        headers: req.headers,
-        correlationId: req.correlationId
-      }),
-      res: (res) => sanitizeForLogging({
-        statusCode: res.statusCode,
-        headers: res.headers
-      }),
-      err: (err) => sanitizeForLogging(err)
-    }
+    level: process.env.LOG_LEVEL || 'info',
+    redact: ['req.headers.authorization', 'req.headers.cookie']
   }
 });
 
@@ -44,7 +22,6 @@ declare module 'fastify' {
       remaining: number;
     };
     correlationId?: string;
-    startTime?: () => number;
   }
 }
 
@@ -53,7 +30,9 @@ async function start() {
     await fastify.register(securityHeaders);
     
     await fastify.register(cors, {
-      origin: config.corsOrigins,
+      origin: process.env.NODE_ENV === 'production' 
+        ? ['https://commercial.charlyapp.com', 'https://residential.charlyapp.com']
+        : true,
       credentials: true
     });
 
@@ -65,23 +44,11 @@ async function start() {
     });
 
     fastify.addHook('onRequest', async (request, reply) => {
-      // Add correlation ID and start timer
+      // Add correlation ID to request (onRequest runs before validation)
       const correlationId = request.headers['x-correlation-id'] as string || 
-        uuidv4();
+        require('uuid').v4();
       request.correlationId = correlationId;
-      request.startTime = startTimer();
       reply.header('x-correlation-id', correlationId);
-    });
-
-    fastify.addHook('onResponse', async (request, reply) => {
-      const durationMs = request.startTime ? request.startTime() : 0;
-      fastify.log.info({
-        method: request.method,
-        path: request.url,
-        status: reply.statusCode,
-        durationMs,
-        correlationId: request.correlationId
-      }, 'Request completed');
     });
 
     fastify.get('/health', async (request, reply) => {
@@ -94,9 +61,6 @@ async function start() {
       await fastify.register(appealPacketRoutes, { prefix: '/api/v1' });
       await fastify.register(onboardingRoutes, { prefix: '/api/v1' });
       await fastify.register(jurisdictionsRoutes, { prefix: '/api/v1' });
-      await fastify.register(valuationRoutes, { prefix: '/api/v1' });
-      await fastify.register(resultsRoutes, { prefix: '/api/v1' });
-      await fastify.register(aiSwartzRoutes, { prefix: '/api/v1' });
     });
 
     // RFC7807 compliant 404 handler
@@ -187,7 +151,8 @@ async function start() {
       reply.status(problemDetails.status).send(problemDetails);
     });
 
-    const { port, host } = config;
+    const port = Number(process.env.PORT) || 3000;
+    const host = process.env.HOST || '0.0.0.0';
     
     await fastify.listen({ port, host });
     fastify.log.info(`CHARLY API server listening on ${host}:${port}`);

@@ -1,6 +1,8 @@
 import type { CommercialPropertyCore } from '@charly/contracts';
 import { generateWorkfileId } from '../utils/id-generator.js';
 import { createErrorBuilder, formatServiceError } from '../utils/error-handler.js';
+import { AINewNarrativeService } from './ai-narrative-service.js';
+import type { NarrativeRequest } from './ai-narrative-service.js';
 
 export interface ApproachData {
   approach: 'income' | 'sales' | 'cost';
@@ -47,6 +49,8 @@ export interface AppealPacketStatus {
 }
 
 export class AppealService {
+  private narrativeService = new AINewNarrativeService();
+
   async generateAppealPacket(workfileId: string): Promise<Buffer> {
     const mockProperty: Partial<CommercialPropertyCore> = {
       address: {
@@ -99,8 +103,35 @@ export class AppealService {
         };
       }
 
-      // Generate enhanced PDF content
-      const pdfContent = this.generateEnhancedPDF(request, packetId);
+      // Generate AI-powered narratives if not provided or to enhance existing ones
+      let narrativeSections = request.narrativeSections || [];
+      
+      if (narrativeSections.length === 0) {
+        const narrativeRequest: NarrativeRequest = {
+          propertyId: request.propertyId,
+          propertyType: 'commercial', // Default - in production this would be determined from property data
+          approaches: request.approaches,
+          propertyData: {
+            address: '123 Business Ave, Anytown, CA', // Placeholder - get from property service
+            assessedValue: 2500000, // Placeholder
+            estimatedMarketValue: request.reconciliation.finalValue,
+            jurisdiction: 'Sample County'
+          }
+        };
+
+        const narrativeResponse = await this.narrativeService.generateCommercialNarrative(narrativeRequest);
+        narrativeSections = narrativeResponse.sections;
+        
+        if (narrativeResponse.errors.length > 0) {
+          console.warn('AI narrative generation warnings:', narrativeResponse.errors);
+        }
+      }
+
+      // Generate enhanced PDF content with AI narratives
+      const pdfContent = this.generateEnhancedPDF({
+        ...request,
+        narrativeSections
+      }, packetId);
       
       // In a real implementation, this would save the PDF and return a download URL
       const downloadUrl = `/api/v1/appeal-packet/${packetId}/download`;
