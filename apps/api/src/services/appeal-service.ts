@@ -24,6 +24,7 @@ export interface NarrativeSection {
 
 export interface AppealPacketRequest {
   propertyId: string;
+  propertyType?: 'commercial' | 'residential';
   approaches: ApproachData[];
   reconciliation: {
     finalValue: number;
@@ -32,6 +33,11 @@ export interface AppealPacketRequest {
     savingsEstimate: number;
   };
   narrativeSections: NarrativeSection[];
+  propertyData?: {
+    address: string;
+    assessedValue: number;
+    jurisdiction: string;
+  };
 }
 
 export interface AppealPacketResponse {
@@ -121,23 +127,30 @@ export class AppealService {
       let narrativeSections = request.narrativeSections || [];
       
       if (narrativeSections.length === 0) {
+        // Determine property type - default to commercial if not specified
+        const propertyType = request.propertyType || 'commercial';
+        
         const narrativeRequest: NarrativeRequest = {
           propertyId: request.propertyId,
-          propertyType: 'commercial', // Default - in production this would be determined from property data
+          propertyType,
           approaches: request.approaches,
           propertyData: {
-            address: '123 Business Ave, Anytown, CA', // Placeholder - get from property service
-            assessedValue: 2500000, // Placeholder
+            address: request.propertyData?.address || '123 Property St, Anytown, CA',
+            assessedValue: request.propertyData?.assessedValue || 500000,
             estimatedMarketValue: request.reconciliation.finalValue,
-            jurisdiction: 'Sample County'
+            jurisdiction: request.propertyData?.jurisdiction || 'Sample County'
           }
         };
 
-        const narrativeResponse = await this.narrativeService.generateCommercialNarrative(narrativeRequest);
+        // Use appropriate narrative service based on property type
+        const narrativeResponse = propertyType === 'residential' 
+          ? await this.narrativeService.generateResidentialNarrative(narrativeRequest)
+          : await this.narrativeService.generateCommercialNarrative(narrativeRequest);
+          
         narrativeSections = narrativeResponse.sections;
         
         if (narrativeResponse.errors.length > 0) {
-          console.warn('AI narrative generation warnings:', narrativeResponse.errors);
+          console.warn(`AI ${propertyType} narrative generation warnings:`, narrativeResponse.errors);
         }
       }
 

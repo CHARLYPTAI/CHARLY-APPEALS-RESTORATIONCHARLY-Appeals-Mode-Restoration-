@@ -57,6 +57,7 @@
 ## CHANGE LOG (append newest at top)
 | Time (UTC) | Track/Task | Commit SHA | Status | Notes |
 |---|---|---|---|---|
+| 2025-08-15 00:08:23 | Phase 1 — Residential auth & tenancy isolation | (pending cc_milestone) | ✅ Complete | Dual login system implemented: Commercial (/login/commercial → /c/*) & Residential (/login/residential → /r/*). JWT audience-based tenant isolation with DB RLS. Testing Agent Grade B+, Compliance Agent Grade C+ (auth fixes needed). |
 |  |  |  |  |  |
 
 ---
@@ -240,3 +241,6 @@
 ✅ Track G — Integration Audit & Heavy-Usage Sign-off G2-G3 complete — completed at 2025-08-14 22:42:05
 ✅ Track G4 — Heavy-Usage Sign-off complete with 11k+ properties/sec performance — completed at 2025-08-14 22:57:35
 ✅ Track G — Integration Audit & Heavy-Usage Sign-off G2-G3 complete — completed at 2025-08-14 23:25:13
+✅ Track F – Global layout & providers complete — completed at 2025-08-14 23:33:08
+✅ Track F – Portfolio tab complete — completed at 2025-08-14 23:33:08
+✅ Track G4 — Heavy-Usage Sign-off complete with 11k+ properties/sec performance — completed at 2025-08-14 23:33:40
